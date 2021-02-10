@@ -1,4 +1,6 @@
-import { StatusBar } from 'expo-status-bar';
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -13,15 +15,58 @@ import * as firebase from 'firebase';
 import "firebase/firestore";
 import { firebaseConfig } from './config';
 //  Set the config for firebase
-firebase.initializeApp(firebaseConfig);
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const SearchPollsScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text>Search for polls!</Text>
+    </View>
+  )
+}
+
+const MyPollsScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text>Here u can see polls where you created or you where invented from somebody!</Text>
+    </View>
+  )
+}
+
+const ClosedPollsScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text>Here appears all closed Polls</Text>
+    </View>
+  )
+}
+
+
+const SettingsScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text>Settings!</Text>
+    </View>
+  )
+}
+
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
     <Provider store={store}>
-      <View style={styles.container}>
-        <Text>My super cool PokerPoll App!</Text>
-        <StatusBar style="auto" />
-      </View>
+      <NavigationContainer>
+        <Tab.Navigator>
+          <Tab.Screen name="SearchPolls" component={SearchPollsScreen} />
+          <Tab.Screen name="MyPolls" component={MyPollsScreen} />
+          <Tab.Screen name="ClosedPolls" component={ClosedPollsScreen} />
+          <Tab.Screen name="Settings" component={SettingsScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
     </Provider>
   );
 }
