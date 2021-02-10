@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
-import usersReducer from '../features/users/userSlice'
+import pollSlice from '../features/polls/pollSlice'
 
 export default configureStore({
   reducer: {
-    users: usersReducer,
+    polls: pollSlice,
   }
 })
