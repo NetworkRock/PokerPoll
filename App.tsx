@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button } from 'react-native';
 // Navigation imports
@@ -22,6 +21,7 @@ import { firebaseConfig } from './config';
 //  App component imports
 import PollList from './src/app/components/Polls/PollList';
 import { HEADER_BTN_TYPES } from './src/app/components/NavigationComponents/HeaderButtonEnum';
+import AddPostForm from './src/app/components/Polls/AddPollForm';
 
 /**
  * Check if there already exist a firebase instance
@@ -29,6 +29,7 @@ import { HEADER_BTN_TYPES } from './src/app/components/NavigationComponents/Head
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+
 
 /**
  * Define the Navigators for the app 
@@ -99,9 +100,7 @@ const AddMembersToPollScreen = () => {
 }
 const CreateNewPollScreen = () => {
   return (
-    <View style={globalStyles.container}>
-      <Text>Create a new Poll here!</Text>
-    </View>
+    <AddPostForm/>
   )
 }
 

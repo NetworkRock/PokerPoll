@@ -7,7 +7,7 @@ const renderPollListItem = ({item}: Object) => {
       <TouchableHighlight
         onPress={() => {}}>
         <View style={stylePollList.listItem}>
-          <Text>{item.id} - {item.title}</Text>
+          <Text>{item.title} - {item.description}</Text>
         </View>
       </TouchableHighlight>
   );

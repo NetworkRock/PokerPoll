@@ -1,5 +1,5 @@
-import React from 'react';
-import { useSelector } from 'react-redux'
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux'
 import {
   Text,
   TextInput,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import renderPollListItem from './PollListItem'
 import stylePollList from './style_pollList';
+import { selectAllPolls, fetchPolls } from '../../../features/polls/pollSlice'
 
 const FlatListHeader = () => {
   return (
@@ -24,9 +25,18 @@ const FlatListHeader = () => {
 };
 
 const SearchPollsList = () => {
-  const polls = useSelector(state => state.polls)
+  const dispatch = useDispatch();
+  const polls = useSelector(selectAllPolls)
+  const pollStatus = useSelector(state => state.polls.status)
   // Test log for what the useSelector returns
-  console.log(polls);
+  console.log("POLLS: ", polls);
+
+  useEffect(() => {
+    if(pollStatus === 'idle') {
+      dispatch(fetchPolls())
+    }
+  }, [pollStatus, dispatch])
+
   return (
     <View style={stylePollList.listContainer}>
       <StatusBar
