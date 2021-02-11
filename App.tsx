@@ -1,8 +1,10 @@
 
+import React from 'react';
+import { StyleSheet, Text, View, SafeAreaView, Button } from 'react-native';
+// Navigation imports
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
-import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
 // Redux imports
 import { Provider } from 'react-redux';
 import store from './src/app/store'
@@ -19,14 +21,138 @@ import { firebaseConfig } from './config';
 
 //  App component imports
 import PollList from './src/app/components/Polls/PollList';
+import { HEADER_BTN_TYPES } from './src/app/components/NavigationComponents/HeaderButtonEnum';
 
-
+/**
+ * Check if there already exist a firebase instance
+ */
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
+/**
+ * Define the Navigators for the app 
+ */
+const RootStack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+const RootSearchPollsStack = createStackNavigator();
+
+/**
+ * Workflow of search polls
+ */
+const SearchPollsStack = () => {
+  return (
+    <RootSearchPollsStack.Navigator mode="card" headerMode="float">
+      <RootSearchPollsStack.Screen
+        name="SearchPollsScreen"
+        component={SearchPollsScreen}
+        options={({ navigation }) => ({
+          headerTitle: () => <Text>Search Polls</Text>,
+          headerRight: () => <Button title={HEADER_BTN_TYPES.CREATE} onPress={() => navigation.navigate('CreatePollsStack')}/>,
+          headerLeft: () => <View />,
+        })}
+      />
+    </RootSearchPollsStack.Navigator>
+  )
+}
+
+/**
+ * Workflow of creating polls
+ */
+const CreatePollsStack = () => {
+  return (
+    <RootSearchPollsStack.Navigator mode="card" headerMode="float"
+      screenOptions={{
+          headerBackTitle: HEADER_BTN_TYPES.CANCEL,
+      }}
+      >
+      <RootSearchPollsStack.Screen
+        name="AddMembersToPollScreen"
+        component={AddMembersToPollScreen}
+        options={({ navigation }) => ({
+          headerTitle: () => <Text>Member</Text>,
+          headerRight: () => <Button title={HEADER_BTN_TYPES.NEXT} onPress={() => navigation.navigate('CreateNewPollScreen')} />,
+        })}
+      />
+      <RootSearchPollsStack.Screen
+        name="CreateNewPollScreen"
+        component={CreateNewPollScreen}
+        options={({ navigation }) => ({
+          headerTitle: () => <Text>Create poll</Text>,
+          headerRight: () => <Button title={HEADER_BTN_TYPES.CREATE} onPress={() => navigation.navigate('SearchPollsScreen')} />,
+          headerBackTitleVisible: false
+        })}
+      />
+    </RootSearchPollsStack.Navigator>
+  )
+}
+
+/**
+ * Detail screens for creating the poll workflow
+ */
+const AddMembersToPollScreen = () => {
+  return (
+    <View style={globalStyles.container}>
+      <Text>Add members here!</Text>
+    </View>
+  )
+}
+const CreateNewPollScreen = () => {
+  return (
+    <View style={globalStyles.container}>
+      <Text>Create a new Poll here!</Text>
+    </View>
+  )
+}
+
+
+
+/**
+ * Define how the navigatio details for the tab bar
+ */
+const BottomTabBar = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="SearchPollsStack" component={SearchPollsStack} />
+      <Tab.Screen name="MyPollsScreen" component={MyPollsScreen} />
+      <Tab.Screen name="ClosedPolls" component={ClosedPollsScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
+    </Tab.Navigator>
+  )
+}
+
+/**
+ * App global entry point
+ */
+export default function App() {
+  return (
+    <Provider store={store}>
+      <SafeAreaView style={globalStyles.safeArea}>
+        <NavigationContainer>
+          <RootStack.Navigator mode="modal" headerMode="none">
+            <RootStack.Screen
+              name='BottomTabBar'
+              component={BottomTabBar}
+            />
+            <RootStack.Screen
+              name='CreatePollsStack'
+              component={CreatePollsStack}
+            />
+            <RootStack.Screen
+              name='AddMembersToPoll'
+              component={AddMembersToPollScreen} />
+          </RootStack.Navigator>
+        </NavigationContainer>
+      </SafeAreaView>
+    </Provider>
+  );
+}
+
+
 const SearchPollsScreen = () => {
-  return <PollList/>
+  return (
+    <PollList />
+  )
 }
 
 const MyPollsScreen = () => {
@@ -53,24 +179,8 @@ const SettingsScreen = () => {
   )
 }
 
-const Tab = createBottomTabNavigator();
 
-export default function App() {
-  return (
-    <Provider store={store}>
-      <SafeAreaView style={globalStyles.safeArea}>
-      <NavigationContainer>
-        <Tab.Navigator>
-          <Tab.Screen name="SearchPolls" component={SearchPollsScreen} />
-          <Tab.Screen name="MyPolls" component={MyPollsScreen} />
-          <Tab.Screen name="ClosedPolls" component={ClosedPollsScreen} />
-          <Tab.Screen name="Settings" component={SettingsScreen} />
-        </Tab.Navigator>
-      </NavigationContainer>
-      </SafeAreaView>
-    </Provider>
-  );
-}
+
 
 // TODO: later do that in a seperated file --> styles for the App.tsx file
 const globalStyles = StyleSheet.create({
