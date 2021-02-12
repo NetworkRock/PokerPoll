@@ -1,30 +1,39 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { nanoid } from '@reduxjs/toolkit';
-import { pollAdded } from '../../../features/polls/pollSlice';
+import { addNewPoll, pollAdded } from '../../../features/polls/pollSlice';
 import { StyleSheet, View, Text, Button } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
+import { unwrapResult } from '@reduxjs/toolkit'
 
 const AddPostForm = () => {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [addRequestStatus, setAddRequestStatus] = useState('idle')
+
+  const canSave =
+  [title, description].every(Boolean) && addRequestStatus === 'idle'
 
   const onTitleChanged = e => setTitle(e)
   const onDescriptionChanged = e => setDescription(e)
 
   const dispatch = useDispatch()
 
-  const onSavePollClicked = () => {
-    if(title && description) {
-      dispatch(
-        pollAdded({
-          id: nanoid(),
-          title,
-          description
-        })
-      )
-      setTitle('')
-      setDescription('')
+  const onSavePollClicked = async () => {
+    if(canSave) {
+      try {
+        setAddRequestStatus('pending')
+        const resultAction = await dispatch(
+          addNewPoll({title, description})
+        )
+        unwrapResult(resultAction)
+        setTitle('')
+        setDescription('')
+      } catch (error) {
+        console.error('Failed to save the post: ', error)
+      } finally {
+        setAddRequestStatus('idle')
+      }
     } 
   }
 

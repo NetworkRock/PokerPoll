@@ -27,6 +27,9 @@ export const pollSlice = createSlice({
       state.status = 'failed'
       state.error = action.error.message
     })
+    builder.addCase('polls/addNewPoll/fulfilled', (state, action) => {
+      state.polls.push(action.payload)
+    })
   }
 })
 
@@ -48,6 +51,16 @@ export const fetchPolls = createAsyncThunk('polls/fetchPolls', async () => {
     console.log(error)
   }
   return pollsArray
+})
+
+/**
+ * Define a thunk funktion for save a new poll
+ */
+export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (initialPoll) => {
+  const db = firebase.firestore();
+  const response = await db.collection('polls').add(initialPoll)
+  const dataResponse = await db.collection('polls').doc(response.id).get()
+  return dataResponse.data()
 })
 
 
