@@ -15,6 +15,19 @@ export const pollSlice = createSlice({
       state.polls.push(action.payload)
     }
   },
+  extraReducers: builder => {
+    builder.addCase('polls/fetchPolls/pending', (state, action) => {
+      state.status = 'loading'
+    })
+    builder.addCase('polls/fetchPolls/fulfilled', (state, action) => {
+      state.status = 'succeeded'
+      state.polls = state.polls.concat(action.payload)
+    })
+    builder.addCase('polls/fetchPolls/rejected', (state, action) => {
+      state.status = 'failed'
+      state.error = action.error.message
+    })
+  }
 })
 
 
@@ -23,17 +36,18 @@ export const pollSlice = createSlice({
  */
 export const fetchPolls = createAsyncThunk('polls/fetchPolls', async () => {
   const db = firebase.firestore();
-  let polls = {};
+  let pollsArray: Array<Object> = [];
   try {
     const snapshot = await db.collection('polls').get(); 
     snapshot.forEach((doc) => {
-      polls = {...{}, ...doc.data()}
-      console.log(polls);
+      // Use concat because of immutability
+      pollsArray = pollsArray.concat(doc.data())
     })
+    console.log(pollsArray);
   } catch (error) {
     console.log(error)
   }
-  return polls.polls
+  return pollsArray
 })
 
 

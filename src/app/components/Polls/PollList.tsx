@@ -28,6 +28,7 @@ const SearchPollsList = () => {
   const dispatch = useDispatch();
   const polls = useSelector(selectAllPolls)
   const pollStatus = useSelector(state => state.polls.status)
+  const error = useSelector(state => state.polls.error)
   // Test log for what the useSelector returns
   console.log("POLLS: ", polls);
 
@@ -37,22 +38,32 @@ const SearchPollsList = () => {
     }
   }, [pollStatus, dispatch])
 
+  let content
+
+  if(pollStatus === 'loading') {
+    content = <Text>Loading...</Text>
+  } else if (pollStatus === 'succeeded') {
+    content = <View style={stylePollList.listContainer}>
+    <StatusBar
+      barStyle="dark-content"
+      hidden={false}
+      backgroundColor="#00BCD4"
+      translucent={true}
+    />
+    <FlatList
+      ListHeaderComponent={FlatListHeader}
+      ListHeaderComponentStyle={stylePollList.flatListHeader}
+      data={polls}
+      renderItem={(item) => renderPollListItem(item)}
+      keyExtractor={(item, index) => index.toString()}
+    />
+  </View>
+  } else if (pollStatus === 'failed') {
+    content = <View>{error}</View>
+  }
+
   return (
-    <View style={stylePollList.listContainer}>
-      <StatusBar
-        barStyle="dark-content"
-        hidden={false}
-        backgroundColor="#00BCD4"
-        translucent={true}
-      />
-      <FlatList
-        ListHeaderComponent={FlatListHeader}
-        ListHeaderComponentStyle={stylePollList.flatListHeader}
-        data={polls}
-        renderItem={(item) => renderPollListItem(item)}
-        keyExtractor={polls.id}
-      />
-    </View>
+    <View style={stylePollList.listContainer}>{content}</View>
   );
 }
 

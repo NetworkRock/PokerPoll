@@ -7,12 +7,7 @@ export const userSlice = createSlice({
     { id: '1', name: 'Carly Mill', value: 0},
     { id: '2', name: 'Britney Pearce', value: 0},
   ],
-    reducers: {
-    test: state => {
-    },
-  }
+    reducers: {}
 })
-
-export const { test } = userSlice.actions
 
 export default userSlice.reducer
