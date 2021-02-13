@@ -1,54 +1,37 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  
-  searchListHeader: {
+  container: {
     flex: 1,
-    padding: 10,
-    alignSelf: 'stretch',
-    flexDirection: 'column',
-    alignItems: 'stretch'
+    backgroundColor: 'midnightblue',
   },
-
-  addedMembersScrollView: {
-    display: 'flex',
-    flex: 1,
-  },
-  
   listContainer: {
-    display: 'flex',
-    alignSelf: 'stretch',
-    flex: 8,
+    flex: 1,
     backgroundColor: 'skyblue',
     padding: 10
   },
-  
+  flatListHeader: {
+    flexDirection: 'column',
+    alignItems: 'stretch'
+  },
   listItem: {
     flex: 1,
     flexDirection: 'row',
     minHeight: 50,
     borderStyle: 'solid',
     borderWidth: 0.5,
+    margin: 2
   },
-
-  container: {
-    display: 'flex',
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'skyblue',
-
-  },
-
-
   headerTitle: {
     fontSize: 30,
     fontWeight: 'bold'
   },
   searchField: {
-    padding: 5,
     borderRadius: 10,
     fontSize: 20,
     backgroundColor: '#e3e3e3',
+    padding: 5,
+    marginTop: 5,
+    marginBottom: 5,
   },
 })

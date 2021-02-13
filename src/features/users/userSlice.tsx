@@ -4,6 +4,8 @@ import firebase from "firebase";
 
 const initialState = {
   user: {},
+  titleOfDisplayNameUserSearch: '',
+  filteredUsersByDisplayUserName: [],
   status: 'idle',
   error: null
 }
@@ -12,8 +14,22 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    addSearchUserTitle(state, action) {
+      state.titleOfDisplayNameUserSearch = action.payload
+    }
   },
   extraReducers: builder => {
+    builder.addCase('user/fetchUsers/pending', (state, action) => {
+      state.status = 'loading'
+    })
+    builder.addCase('user/fetchUsers/fulfilled', (state, action) => {
+      state.status = 'succeeded'
+      state.filteredUsersByDisplayUserName = action.payload
+    })
+    builder.addCase('user/fetchUsers/rejected', (state, action) => {
+      state.status = 'failed'
+      state.error = action.error.message
+    })
     builder.addCase('user/addNewUser/fulfilled', (state, action) => {
       state.user = action.payload
     })
@@ -32,5 +48,31 @@ export const addNewUser = createAsyncThunk('user/addNewUser', async (user) => {
   const dataResponse = await db.collection('users').doc(response.id).get()
   return dataResponse.data()
 })
+
+/**
+ * Query a user in realtime to the given user id
+ */
+/**
+ * Define a thunk function create slice not support that
+ */
+export const fetchUserListById = createAsyncThunk('user/fetchUsers', async (displayName) => {
+  const db = firebase.firestore();
+  let filteredUsersArray: Array<Object> = [];
+  console.log("DISPLAY NAME:", displayName.searchTitle);
+  try {
+    const snapshot = await db.collection('users').where("displayName", "==", displayName.searchTitle).get()
+    snapshot.forEach((user) => {
+      filteredUsersArray = filteredUsersArray.concat(user.data())
+    });
+  } catch (error) {
+    console.log("Fetch user error: ", error)
+  }
+  console.log("FILTERED USERS: ", filteredUsersArray)
+  return filteredUsersArray
+})
+
+export const { addSearchUserTitle } = userSlice.actions
+
+export const selectAllFilteredUsers = state => state.user.filteredUsersByDisplayUserName
 
 export default userSlice.reducer
