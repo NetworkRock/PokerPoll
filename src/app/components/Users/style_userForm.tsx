@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  
+
   searchListHeader: {
     flex: 1,
     padding: 10,
@@ -14,7 +14,7 @@ export default StyleSheet.create({
     display: 'flex',
     flex: 1,
   },
-  
+
   listContainer: {
     display: 'flex',
     alignSelf: 'stretch',
@@ -22,7 +22,7 @@ export default StyleSheet.create({
     backgroundColor: 'skyblue',
     padding: 10
   },
-  
+
   listItem: {
     flex: 1,
     flexDirection: 'row',
@@ -50,5 +50,26 @@ export default StyleSheet.create({
     borderRadius: 10,
     fontSize: 20,
     backgroundColor: '#e3e3e3',
+  },
+
+  imgContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 200,
+    width: 200,
+    borderRadius: 100,
+    backgroundColor: 'grey',
+    marginBottom: 30
+  },
+  img: {
+    borderRadius: 100,
+    height: 200,
+    width: 200
+  },
+  iconInList: {
+    borderRadius: 100,
+    height: 60,
+    width: 60
   },
 })

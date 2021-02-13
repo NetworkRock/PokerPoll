@@ -1,7 +1,7 @@
 import React from 'react';
-import { TouchableHighlight, View, Text, Alert } from 'react-native';
+import { TouchableHighlight, View, Text, Image } from 'react-native';
 import { unwrapResult } from '@reduxjs/toolkit'
-import styleTeamList from "../Teams/style_teamList";
+import style_userForm from './style_userForm';
 import { addMemberToNewTeam } from '../../../features/team/teamSlice';
 
 const renderUserListItem = ({ item }: Object, dispatch: Dispatch<any>) => {
@@ -11,7 +11,6 @@ const renderUserListItem = ({ item }: Object, dispatch: Dispatch<any>) => {
     try {
       const resultAction = await dispatch(addMemberToNewTeam(item))
       unwrapResult(resultAction)
-      Alert.alert(resultAction.payload.displayName);
 
     } catch (error) {
       console.error('Failed to add member to group: ', error)
@@ -22,7 +21,10 @@ const renderUserListItem = ({ item }: Object, dispatch: Dispatch<any>) => {
   return (
     <TouchableHighlight
       onPress={onAddMemberClicked}>
-      <View style={styleTeamList.listItem}>
+      <View style={style_userForm.listItem}>
+      <Image source={{
+          uri: item.profilePictureURL,
+        }} style={style_userForm.iconInList} />
         <Text>{item.displayName}</Text>
       </View>
     </TouchableHighlight>

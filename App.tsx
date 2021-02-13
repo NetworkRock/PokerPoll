@@ -7,16 +7,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 // Redux imports
 import { Provider } from 'react-redux';
 import store from './src/app/store'
-// Firebase imports
-import * as firebase from 'firebase';
-// Optionally import the services that you want to use
-//  import "firebase/auth";
-//  import "firebase/database";
-//  import "firebase/functions";
-//  import "firebase/storage";
-import "firebase/firestore";
-import { firebaseConfig } from './config';
-//  Set the config for firebase
+// Import firebase config
+import { firebaseApp } from './config';
 
 //  App component imports
 import PollList from './src/app/components/Polls/PollList';
@@ -32,9 +24,7 @@ import UserSearchListAddedMemebersHeader from './src/app/components/Users/UserSe
 /**
  * Check if there already exist a firebase instance
  */
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+
 
 
 /**
@@ -267,7 +257,7 @@ const ClosedPollsScreen = () => {
 }
 
 const SettingsScreen = () => {
-  const logout = async () => await firebase.auth().signOut();
+  const logout = async () => await firebaseApp.auth().signOut();
   return (
     <View style={globalStyles.container}>
       <Text>Logout!</Text>
