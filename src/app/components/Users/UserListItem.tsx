@@ -22,10 +22,14 @@ const renderUserListItem = ({ item }: Object, dispatch: Dispatch<any>) => {
     <TouchableHighlight
       onPress={onAddMemberClicked}>
       <View style={style_userForm.listItem}>
-      <Image source={{
-          uri: item.profilePictureURL,
-        }} style={style_userForm.iconInList} />
-        <Text>{item.displayName}</Text>
+        <View style={style_userForm.iconInListContainer} >
+          <Image source={{
+            uri: item.profilePictureURL,
+          }} style={style_userForm.iconInList} />
+        </View>
+        <View style={style_userForm.listItemContainerWithoutImage}>
+          <Text style={style_userForm.displayNameInUserSearchList}>{item.displayName}</Text>
+        </View>
       </View>
     </TouchableHighlight>
   );

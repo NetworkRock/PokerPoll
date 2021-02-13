@@ -20,15 +20,26 @@ export default StyleSheet.create({
     alignSelf: 'stretch',
     flex: 8,
     backgroundColor: 'skyblue',
-    padding: 10
   },
 
   listItem: {
     flex: 1,
     flexDirection: 'row',
     minHeight: 50,
-    borderStyle: 'solid',
-    borderWidth: 0.5,
+    paddingTop: 10
+  },
+
+  listItemContainerWithoutImage: {
+    fontSize: 15,
+    flexGrow: 1,
+    justifyContent: 'center',
+    borderColor: 'lightgrey',
+    borderBottomWidth: 0.7, 
+  },
+
+  displayNameInUserSearchList: {
+    fontWeight: 'bold',
+    paddingLeft: 5
   },
 
   container: {
@@ -40,11 +51,11 @@ export default StyleSheet.create({
 
   },
 
-
   headerTitle: {
     fontSize: 30,
     fontWeight: 'bold'
   },
+
   searchField: {
     padding: 5,
     borderRadius: 10,
@@ -62,14 +73,22 @@ export default StyleSheet.create({
     backgroundColor: 'grey',
     marginBottom: 30
   },
+
   img: {
     borderRadius: 100,
     height: 200,
     width: 200
   },
+
+  iconInListContainer: {
+    alignItems: 'center',
+    flexGrow: 0.2,
+  },
+  
   iconInList: {
     borderRadius: 100,
     height: 60,
-    width: 60
+    width: 60,
+    fontSize: 15,
   },
 })
