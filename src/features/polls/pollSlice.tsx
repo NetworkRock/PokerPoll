@@ -46,9 +46,9 @@ export const fetchPolls = createAsyncThunk('polls/fetchPolls', async () => {
       // Use concat because of immutability
       pollsArray = pollsArray.concat(doc.data())
     })
-    console.log(pollsArray);
+    console.log("Polls: Array: ", pollsArray);
   } catch (error) {
-    console.log(error)
+    console.log("Fetch polls error: ", error)
   }
   return pollsArray
 })

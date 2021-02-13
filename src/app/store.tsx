@@ -5,6 +5,6 @@ import usersReducer from '../features/users/userSlice'
 export default configureStore({
   reducer: {
     polls: pollsReducer,
-    users: usersReducer
+    user: usersReducer
   }
 })

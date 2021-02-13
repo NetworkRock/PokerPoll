@@ -22,6 +22,7 @@ import { firebaseConfig } from './config';
 import PollList from './src/app/components/Polls/PollList';
 import { HEADER_BTN_TYPES } from './src/app/components/NavigationComponents/HeaderButtonEnum';
 import AddPostForm from './src/app/components/Polls/AddPollForm';
+import AddUserForm from './src/app/components/Users/AddUserForm';
 
 /**
  * Check if there already exist a firebase instance
@@ -120,6 +121,30 @@ const BottomTabBar = () => {
   )
 }
 
+
+/**
+ * Workflow for verify and log in user
+ */
+const UserLogInScreen = ({navigation}) => {
+  return (
+    <AddUserForm navigate={navigation}/>
+  )
+}
+const UserLogInStack = () => {
+  return (
+    <RootSearchPollsStack.Navigator mode="card" headerMode="float">
+      <RootSearchPollsStack.Screen
+        name="UserLogInScreen"
+        component={UserLogInScreen}
+      />
+    </RootSearchPollsStack.Navigator>
+  )
+}
+
+
+
+
+
 /**
  * App global entry point
  */
@@ -129,6 +154,10 @@ export default function App() {
       <SafeAreaView style={globalStyles.safeArea}>
         <NavigationContainer>
           <RootStack.Navigator mode="modal" headerMode="none">
+            <RootStack.Screen
+              name='UserLogInStack'
+              component={UserLogInStack}
+            />
             <RootStack.Screen
               name='BottomTabBar'
               component={BottomTabBar}
@@ -171,9 +200,11 @@ const ClosedPollsScreen = () => {
 }
 
 const SettingsScreen = () => {
+  const logout = async () => await firebase.auth().signOut();
   return (
     <View style={globalStyles.container}>
-      <Text>Settings!</Text>
+      <Text>Logout!</Text>
+      <Button title="Logout" onPress={logout}></Button>
     </View>
   )
 }

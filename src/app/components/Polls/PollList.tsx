@@ -29,8 +29,6 @@ const SearchPollsList = () => {
   const polls = useSelector(selectAllPolls)
   const pollStatus = useSelector(state => state.polls.status)
   const error = useSelector(state => state.polls.error)
-  // Test log for what the useSelector returns
-  console.log("POLLS: ", polls);
 
   useEffect(() => {
     if(pollStatus === 'idle') {
