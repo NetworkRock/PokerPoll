@@ -45,6 +45,7 @@ export const addNewUser = createAsyncThunk('user/addNewUser', async (user) => {
   console.log("USER: ", user);
   const db = firebase.firestore();
   const response = await db.collection('users').add(user)
+  await db.collection('users').doc(response.id).update({id: response.id})
   const dataResponse = await db.collection('users').doc(response.id).get()
   return dataResponse.data()
 })
