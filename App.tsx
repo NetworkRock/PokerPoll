@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, ScrollView } from 'react-native';
 // Navigation imports
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -100,9 +100,13 @@ const CreatePollTeamStack = () => {
 const AddMembersToPollScreen = () => {
   return (
     <View style={globalStyles.container}>
-      <UserSearchListHeader/>
-      <UserSearchListAddedMemebersHeader/>
-      <UserSearchList/>
+      <UserSearchListHeader />
+      <View style={globalStyles.addedMembersScrollView}>
+        <ScrollView horizontal={true} alwaysBounceHorizontal={false} >
+          <UserSearchListAddedMemebersHeader/>
+        </ScrollView>
+      </View>
+      <UserSearchList />
     </View>
   )
 }
@@ -282,5 +286,8 @@ const globalStyles = StyleSheet.create({
   },
   addMembersToPollScreen: {
     flex: 1,
-  }
+  },
+  addedMembersScrollView: {
+    flex: 1,
+  },
 });

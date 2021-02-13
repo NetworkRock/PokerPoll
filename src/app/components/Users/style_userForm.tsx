@@ -10,11 +10,6 @@ export default StyleSheet.create({
     alignItems: 'stretch'
   },
 
-  addedMembersScrollView: {
-    display: 'flex',
-    flex: 1,
-  },
-
   listContainer: {
     display: 'flex',
     alignSelf: 'stretch',
@@ -31,15 +26,15 @@ export default StyleSheet.create({
 
   listItemContainerWithoutImage: {
     fontSize: 15,
+    flexDirection: 'row',
     flexGrow: 1,
-    justifyContent: 'center',
     borderColor: 'lightgrey',
+    justifyContent: 'space-between',
     borderBottomWidth: 0.7, 
   },
 
   displayNameInUserSearchList: {
     fontWeight: 'bold',
-    paddingLeft: 5
   },
 
   container: {
@@ -84,11 +79,17 @@ export default StyleSheet.create({
     alignItems: 'center',
     flexGrow: 0.2,
   },
-  
+
   iconInList: {
     borderRadius: 100,
     height: 60,
     width: 60,
-    fontSize: 15,
+  },
+  iconInAddMemberHeader: {
+    borderRadius: 100,
+    height: 60,
+    width: 60,
+    marginRight: 5,
+    marginLeft: 5
   },
 })

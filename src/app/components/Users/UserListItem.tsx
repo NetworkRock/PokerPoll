@@ -1,13 +1,14 @@
-import React from 'react';
-import { TouchableHighlight, View, Text, Image } from 'react-native';
+import React, {useEffect} from 'react';
+import { TouchableHighlight, View, Text, Image, Button } from 'react-native';
 import { unwrapResult } from '@reduxjs/toolkit'
 import style_userForm from './style_userForm';
 import { addMemberToNewTeam } from '../../../features/team/teamSlice';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const renderUserListItem = ({ item }: Object, dispatch: Dispatch<any>) => {
 
-
   const onAddMemberClicked = async () => {
+
     try {
       const resultAction = await dispatch(addMemberToNewTeam(item))
       unwrapResult(resultAction)

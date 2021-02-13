@@ -66,6 +66,6 @@ export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (initialPol
 
 export const { addMemberToNewTeam } = teamSlice.actions
 
-export const selectAllTeams= state => state.teams.teams
+export const selectNewAddedTeamMembers= state => state.teams.createANewTeamWithNewMembers
 
 export default teamSlice.reducer
