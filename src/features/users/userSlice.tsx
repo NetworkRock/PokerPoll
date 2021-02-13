@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import firebase from "firebase";
+import { firebaseApp } from "../../../config";
 
 
 const initialState = {
@@ -43,8 +43,9 @@ export const userSlice = createSlice({
  */
 export const addNewUser = createAsyncThunk('user/addNewUser', async (user) => {
   console.log("USER: ", user);
-  const db = firebase.firestore();
+  const db = firebaseApp.firestore();
   const response = await db.collection('users').add(user)
+  await db.collection('users').doc(response.id).update({id: response.id})
   const dataResponse = await db.collection('users').doc(response.id).get()
   return dataResponse.data()
 })
@@ -56,7 +57,7 @@ export const addNewUser = createAsyncThunk('user/addNewUser', async (user) => {
  * Define a thunk function create slice not support that
  */
 export const fetchUserListById = createAsyncThunk('user/fetchUsers', async (displayName) => {
-  const db = firebase.firestore();
+  const db = firebaseApp.firestore();
   let filteredUsersArray: Array<Object> = [];
   console.log("DISPLAY NAME:", displayName.searchTitle);
   try {
