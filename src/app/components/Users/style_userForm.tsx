@@ -7,13 +7,15 @@ export default StyleSheet.create({
     padding: 10,
     alignSelf: 'stretch',
     flexDirection: 'column',
-    alignItems: 'stretch'
+    backgroundColor: 'grey',
+    alignItems: 'stretch',
+    justifyContent: 'center'
   },
 
   listContainer: {
     display: 'flex',
     alignSelf: 'stretch',
-    flex: 8,
+    flex: 6,
     backgroundColor: '#0099ff',
   },
 
@@ -57,6 +59,7 @@ export default StyleSheet.create({
     backgroundColor: '#e3e3e3',
   },
 
+
   iconInListContainer: {
     alignItems: 'center',
     flexGrow: 0.2,
@@ -69,9 +72,8 @@ export default StyleSheet.create({
   },
   iconInAddMemberHeader: {
     borderRadius: 100,
-    height: 60,
-    width: 60,
-    marginRight: 5,
-    marginLeft: 5
+    height: 70,
+    width: 70,
+    margin: 15
   },
 })

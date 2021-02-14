@@ -101,9 +101,9 @@ const AddMembersToPollScreen = () => {
   return (
     <View style={globalStyles.container}>
       <UserSearchListHeader />
-      <View style={globalStyles.addedMembersScrollView}>
+      <View style={globalStyles.container}>
         <ScrollView horizontal={true} alwaysBounceHorizontal={false} >
-          <UserSearchListAddedMemebersHeader/>
+          <UserSearchListAddedMemebersHeader />
         </ScrollView>
       </View>
       <UserSearchList />
@@ -112,7 +112,14 @@ const AddMembersToPollScreen = () => {
 }
 const CreateNewTeamScreen = () => {
   return (
+    <View style={globalStyles.container}>
       <AddTeamForm />
+      <View style={globalStyles.container} >
+        <ScrollView contentContainerStyle={globalStyles.addTeamFormHorizontalScrollView} horizontal={false} alwaysBounceHorizontal={false} >
+          <UserSearchListAddedMemebersHeader />
+        </ScrollView>
+      </View>
+    </View>
   )
 }
 
@@ -288,6 +295,12 @@ const globalStyles = StyleSheet.create({
     flex: 1,
   },
   addedMembersScrollView: {
-    flex: 1,
+    backgroundColor: 'skyblue',
   },
+  addTeamFormHorizontalScrollView: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    flexWrap: 'wrap',
+  }
 });

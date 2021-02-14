@@ -31,7 +31,7 @@ const UserSearchList = () => {
 
   let content
   if (userStatus === 'loading') {
-    content = <Text>Loading...</Text>
+    content = <View style={style_userForm.container}><Text>Loading...</Text></View>
   } else if (userStatus === 'succeeded') {
     content = <View style={style_userForm.listContainer}>
     <StatusBar

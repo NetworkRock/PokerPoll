@@ -57,6 +57,7 @@ const styleAddPollForm = StyleSheet.create({
   },
   container: {
     flex: 1,
+    alignSelf: 'stretch',
     backgroundColor: '#0099ff',
     alignItems: 'center',
     justifyContent: 'center',
