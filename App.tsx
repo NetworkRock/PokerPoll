@@ -14,7 +14,7 @@ import { firebaseApp } from './config';
 import PollList from './src/app/components/Polls/PollList';
 import { HEADER_BTN_TYPES } from './src/app/components/NavigationComponents/HeaderButtonEnum';
 import AddPostForm from './src/app/components/Polls/AddPollForm';
-import AddUserForm from './src/app/components/Users/AddUserForm';
+import AddUserForm from './src/app/components/Users/UserLogInComponents/AddUserForm';
 import AddTeamForm from './src/app/components/Teams/AddTeamForm';
 import UserSearchList from './src/app/components/Users/UserSearchList';
 import UserSearchListHeader from './src/app/components/Users/UserSearchListHeader';
@@ -195,7 +195,7 @@ const UserLogInScreen = ({ navigation }) => {
 }
 const UserLogInStack = () => {
   return (
-    <RootSearchPollsStack.Navigator mode="card" headerMode="float">
+    <RootSearchPollsStack.Navigator mode="card" headerMode="none">
       <RootSearchPollsStack.Screen
         name="UserLogInScreen"
         component={UserLogInScreen}

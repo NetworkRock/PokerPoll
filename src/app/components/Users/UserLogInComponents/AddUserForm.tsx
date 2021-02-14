@@ -1,21 +1,34 @@
 import { unwrapResult } from '@reduxjs/toolkit'
 import { useDispatch } from 'react-redux';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, TextInput, Button, Image, TouchableOpacity } from "react-native";
-import style_userForm from './style_userForm';
-import { addNewUser } from '../../../features/users/userSlice';
+import style_userLogIn from './style_userLogIn';
+import { addNewUser } from '../../../../features/users/userSlice';
 import * as ImagePicker from 'expo-image-picker';
-import { firebaseApp } from '../../../../config';
+import { firebaseApp } from '../../../../../config';
 import { nanoid } from '@reduxjs/toolkit'
-
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 
 export const AddUserForm = (props) => {
+  const [defaultImage, setDefaultImage] = useState(null);
   const [displayName, setDisplayName] = useState('');
   const [profilePictureURL, setProfilePictureURL] = useState(null)
   const [addRequestStatus, setAddRequestStatus] = useState('idle')
 
   const dispatch = useDispatch()
+
+  useEffect (() => {
+    if (!profilePictureURL) {
+      setDefaultImage(
+        <View style={style_userLogIn.imgContainer}>
+          <Icon name='account' color="lightgrey" size={130}/>
+        </View>)
+    } else {
+      setDefaultImage(<Image source={{ uri: profilePictureURL }} style={style_userLogIn.img} />)
+    }
+  }, [profilePictureURL])
+
 
   const onDisplayNameDisplayName = e => setDisplayName(e)
 
@@ -60,6 +73,7 @@ export const AddUserForm = (props) => {
   }
 
   const selectAProfilePicture = async () => {
+
       const permissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
       if (permissions.status !== 'granted') {
         alert("Sorry, we need camera roll permissions to make this work!");
@@ -77,6 +91,7 @@ export const AddUserForm = (props) => {
           const blobFile = await b64toBlob(result.uri)
           await fileRef.put(blobFile)
           setProfilePictureURL(await fileRef.getDownloadURL());
+          
         }
       }
   }
@@ -84,26 +99,28 @@ export const AddUserForm = (props) => {
 
 
   return (
-    <View style={style_userForm.container}>
-      <TouchableOpacity style={style_userForm.imgContainer}
+    <View style={style_userLogIn.container}>
+      <Text style={style_userLogIn.signInTitle}>PokerPoll</Text>
+      <TouchableOpacity style={style_userLogIn.imgContainer}
         onPress={selectAProfilePicture}
       >
-        <Image source={{
-          uri: profilePictureURL,
-        }} style={style_userForm.img} />
+        {defaultImage}
       </TouchableOpacity>
-      <Text>SIGN IN</Text>
       <TextInput
-        placeholder="Give yourself a cool Nickname!"
+        placeholder="Type a Nickname!"
         placeholderTextColor="#C8C8C8"
         value={displayName}
         onChangeText={onDisplayNameDisplayName}
+        style={style_userLogIn.nickNameField}
+        maxLength = {25}
       />
-      <Button
-        title="Log In"
-        disabled={!canLogin}
-        onPress={signInAnonymouslyClicked}
-      />
+      <View style={style_userLogIn.logInBtn}>
+        <Button
+          title="Log In"
+          disabled={!canLogin}
+          onPress={signInAnonymouslyClicked}
+        />
+      </View>
     </View>
   )
 }

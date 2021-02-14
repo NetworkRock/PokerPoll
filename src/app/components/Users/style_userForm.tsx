@@ -42,8 +42,7 @@ export default StyleSheet.create({
     flex: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'skyblue',
-
+    backgroundColor: '#0099ff',
   },
 
   headerTitle: {
@@ -56,23 +55,6 @@ export default StyleSheet.create({
     borderRadius: 10,
     fontSize: 20,
     backgroundColor: '#e3e3e3',
-  },
-
-  imgContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 200,
-    width: 200,
-    borderRadius: 100,
-    backgroundColor: 'grey',
-    marginBottom: 30
-  },
-
-  img: {
-    borderRadius: 100,
-    height: 200,
-    width: 200
   },
 
   iconInListContainer: {
