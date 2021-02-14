@@ -2,8 +2,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import firebase from "firebase";
 
 const initialState = {
-  teams: [],
-  createANewTeamWithNewMembers: [],
+  teams: null,
+  createANewTeamWithNewMembers: {
+    title: null,
+    members: [],
+  },
   status: 'idle',
   error: null
 }
@@ -13,7 +16,10 @@ export const teamSlice = createSlice({
   initialState,
   reducers: {
     addMemberToNewTeam(state, action) {
-      state.createANewTeamWithNewMembers = action.payload
+      state.createANewTeamWithNewMembers.members = action.payload
+    },  
+    addTeamTitle(state, action) {
+      state.createANewTeamWithNewMembers.title = action.payload
     }
   },
   extraReducers: builder => {
@@ -29,7 +35,7 @@ export const teamSlice = createSlice({
       state.error = action.error.message
     })
     builder.addCase('teams/addNewTeam/fulfilled', (state, action) => {
-      state.teams.push(action.payload)
+      state.teams = action.payload
     })
   }
 })
@@ -57,15 +63,16 @@ export const fetchTeams = createAsyncThunk('teams/fetchTeams', async () => {
 /**
  * Define a thunk funktion for save a new team
  */
-export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (initialPoll) => {
+export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team) => {
+  console.log('TEAM:', team);
   const db = firebase.firestore();
-  const response = await db.collection('teams').add(initialPoll)
+  const response = await db.collection('teams').add(team)
   const dataResponse = await db.collection('teams').doc(response.id).get()
   return dataResponse.data()
 })
 
-export const { addMemberToNewTeam } = teamSlice.actions
+export const { addMemberToNewTeam, addTeamTitle } = teamSlice.actions
 
-export const selectNewAddedTeamMembers = state => state.teams.createANewTeamWithNewMembers
+export const selectNewAddedTeamMembers = state => state.teams.createANewTeamWithNewMembers.members
 
 export default teamSlice.reducer

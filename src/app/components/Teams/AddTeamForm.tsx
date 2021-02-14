@@ -1,33 +1,36 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { addNewTeam } from '../../../features/team/teamSlice';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { StyleSheet, View, Text, Button } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { unwrapResult } from '@reduxjs/toolkit'
+import { addTeamTitle, addNewTeam } from '../../../features/team/teamSlice'
+import { selectNewAddedTeamMembers } from '../../../features/team/teamSlice'
 
 const AddTeamForm = () => {
   const [title, setTitle] = useState('')
-  const [members, setMembers] = useState([])
+  const addedUsers = useSelector(selectNewAddedTeamMembers)
   const [addRequestStatus, setAddRequestStatus] = useState('idle')
 
   const canSave =
-  [title, members.length !== 0].every(Boolean) && addRequestStatus === 'idle'
+  [title, addedUsers.length > 0].every(Boolean) && addRequestStatus === 'idle'
 
   const onTitleChanged = e => setTitle(e)
-  const onMembersChanged = e => setMembers(e)
 
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(addTeamTitle(title));
+  }, [title])
 
   const onCreatedTeamClicked = async () => {
     if(canSave) {
       try {
         setAddRequestStatus('pending')
         const resultAction = await dispatch(
-          addNewTeam({title, members})
+          addNewTeam({title, addedUsers})
         )
         unwrapResult(resultAction)
         setTitle('')
-        setMembers([])
       } catch (error) {
         console.error('Failed to save the team: ', error)
       } finally {
