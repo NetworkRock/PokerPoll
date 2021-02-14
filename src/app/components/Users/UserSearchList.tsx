@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import {
   Text,
@@ -10,20 +10,27 @@ import {
 import renderTeamListItem from './UserListItem'
 import style_userForm from './style_userForm';
 import { selectAllFilteredUsers ,fetchUserListById } from '../../../features/users/userSlice'
+import { addMemberToNewTeam } from '../../../features/team/teamSlice';
 
 const UserSearchList = () => {
-  const dispatch = useDispatch();
+  let tempMemberList = []
+  const [memberList, setMemberList] = useState([])
   const searchTitle = useSelector(state => state.user.titleOfDisplayNameUserSearch)
   const filteredUsers = useSelector(selectAllFilteredUsers)
   const userStatus = useSelector(state => state.user.status)
   const error = useSelector(state => state.user.error)
+  const dispatch = useDispatch();
 
   useEffect(() => {
-      dispatch(fetchUserListById({searchTitle}))
+    dispatch(fetchUserListById({ searchTitle }))
   }, [searchTitle, dispatch])
 
+  useEffect(() => {
+    dispatch(addMemberToNewTeam(memberList));
+  }, [memberList])
+
   let content
-  if(userStatus === 'loading') {
+  if (userStatus === 'loading') {
     content = <Text>Loading...</Text>
   } else if (userStatus === 'succeeded') {
     content = <View style={style_userForm.listContainer}>
@@ -35,8 +42,8 @@ const UserSearchList = () => {
     />
     <FlatList
       data={filteredUsers}
-      renderItem={(item) => renderTeamListItem(item, dispatch)}
-      keyExtractor={(item, index) => index.toString()}
+      renderItem={(item) => renderTeamListItem(item, setMemberList, memberList, tempMemberList)}
+      keyExtractor={(item) => item.id.toString()}
     />
   </View>
   } else if (userStatus === 'failed') {

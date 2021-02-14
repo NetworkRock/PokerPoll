@@ -112,7 +112,7 @@ const AddMembersToPollScreen = () => {
 }
 const CreateNewTeamScreen = () => {
   return (
-    <AddTeamForm />
+      <AddTeamForm />
   )
 }
 

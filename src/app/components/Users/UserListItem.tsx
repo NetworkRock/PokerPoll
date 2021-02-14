@@ -1,21 +1,20 @@
 import React, {useEffect} from 'react';
+import { useSelector, useDispatch } from 'react-redux'
 import { TouchableHighlight, View, Text, Image, Button } from 'react-native';
 import { unwrapResult } from '@reduxjs/toolkit'
 import style_userForm from './style_userForm';
-import { addMemberToNewTeam } from '../../../features/team/teamSlice';
+import { selectNewAddedTeamMembers } from '../../../features/team/teamSlice';
 
-const renderUserListItem = ({ item }: Object, dispatch: Dispatch<any>) => {
 
-  const onAddMemberClicked = async () => {
-
-    try {
-      const resultAction = await dispatch(addMemberToNewTeam(item))
-      unwrapResult(resultAction)
-
-    } catch (error) {
-      console.error('Failed to add member to group: ', error)
-    } finally {
+const renderUserListItem = ({ item }, setMemberList, memberList, tempMemberList) => {
+  const onAddMemberClicked = () => {
+    if(!tempMemberList.includes(item)) {
+      tempMemberList.push(item);
+    } else {
+      const indexOfItemForDeletion = tempMemberList.indexOf(item);
+      tempMemberList.splice(indexOfItemForDeletion, 1);
     }
+    tempMemberList.length <= 0 ? setMemberList([]) : setMemberList([...memberList, ...tempMemberList])
   }
 
   return (

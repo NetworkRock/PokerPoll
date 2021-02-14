@@ -4,18 +4,13 @@ import {
   Text,
   TextInput,
   View,
-  Button,
-  FlatList,
-  ScrollView,
-  StatusBar,
 } from 'react-native';
-import renderTeamListItem from './UserListItem'
 import style_userForm from './style_userForm';
-import { addSearchUserTitle, selectAllFilteredUsers, fetchUserListById } from '../../../features/users/userSlice'
+import { addSearchUserTitle } from '../../../features/users/userSlice'
 
 const UserSearchListHeader = () => {
   const dispatch = useDispatch()
-  
+
   const onSearchTitleChanged = searchName => {
     if (searchName) {
       dispatch(addSearchUserTitle(searchName))

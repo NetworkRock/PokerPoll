@@ -13,7 +13,7 @@ export const teamSlice = createSlice({
   initialState,
   reducers: {
     addMemberToNewTeam(state, action) {
-      state.createANewTeamWithNewMembers.push(action.payload)
+      state.createANewTeamWithNewMembers = action.payload
     }
   },
   extraReducers: builder => {

@@ -14,7 +14,7 @@ export default StyleSheet.create({
     display: 'flex',
     alignSelf: 'stretch',
     flex: 8,
-    backgroundColor: 'skyblue',
+    backgroundColor: '#0099ff',
   },
 
   listItem: {
