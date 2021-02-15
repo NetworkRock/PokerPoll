@@ -9,11 +9,6 @@ import style_addTeamForm from "./style_addTeamForm";
 
 const AddTeamForm = () => {
   const [title, setTitle] = useState('')
-  const addedUsers = useSelector(selectNewAddedTeamMembers)
-  const [addRequestStatus, setAddRequestStatus] = useState('idle')
-
-  const canSave =
-    [title, addedUsers.length > 0].every(Boolean) && addRequestStatus === 'idle'
 
   const onTitleChanged = e => setTitle(e)
 
@@ -22,23 +17,6 @@ const AddTeamForm = () => {
   useEffect(() => {
     dispatch(addTeamTitle(title));
   }, [title])
-
-  const onCreatedTeamClicked = async () => {
-    if (canSave) {
-      try {
-        setAddRequestStatus('pending')
-        const resultAction = await dispatch(
-          addNewTeam({ title, addedUsers })
-        )
-        unwrapResult(resultAction)
-        setTitle('')
-      } catch (error) {
-        console.error('Failed to save the team: ', error)
-      } finally {
-        setAddRequestStatus('idle')
-      }
-    }
-  }
 
   return (
     <View style={style_addTeamForm.container}>
@@ -50,9 +28,6 @@ const AddTeamForm = () => {
         value={title}
         onChangeText={onTitleChanged}
       />
-      <View style={style_addTeamForm.btn}>
-        <Button title="create the team" onPress={onCreatedTeamClicked} />
-      </View>
     </View>
   )
 }

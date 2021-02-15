@@ -9,7 +9,7 @@ const renderTeamListItem = ({ item }: Object) => {
       onPress={() => { }}>
       <View style={style_teamList.listItem}>
         <View style={style_teamList.listItemContainerWithoutImage}>
-          <Text>{item.title}</Text>
+          <Text>{item.teamTitle}</Text>
         </View>
       </View>
     </TouchableHighlight>

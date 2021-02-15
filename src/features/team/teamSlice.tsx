@@ -70,17 +70,18 @@ export const fetchTeams = createAsyncThunk('teams/fetchTeams', async () => {
  * Define a thunk funktion for save a new team
  */
 export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team) => {
-  
   const db = firebase.firestore();
   const response = await db.collection('teams').add(team)
   const dataResponse = await db.collection('teams').doc(response.id).get()
-  console.log('TEAM:', dataResponse.data());
+  console.log('RESPONSE TEAM:', dataResponse.data());
   return dataResponse.data()
 })
 
 export const { addMemberToNewTeam, addTeamTitle } = teamSlice.actions
 
 export const selectNewAddedTeamMembers = state => state.teams.createANewTeamWithNewMembers.members
+
+export const selectTeamTitle = state => state.teams.createANewTeamWithNewMembers.title
 
 export const selectAllTeams = state => state.teams.teams
 

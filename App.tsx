@@ -16,6 +16,7 @@ import { HEADER_BTN_TYPES } from './src/app/components/NavigationComponents/Head
 import AddPostForm from './src/app/components/Polls/AddPollForm';
 import AddUserForm from './src/app/components/Users/UserLogInComponents/AddUserForm';
 import AddTeamForm from './src/app/components/Teams/AddTeamForm';
+import AddTeamHeaderBtn from './src/app/components/Teams/AddTeamHeaderBtn'
 import UserSearchList from './src/app/components/Users/UserSearchList';
 import UserSearchListHeader from './src/app/components/Users/UserSearchListHeader';
 import UserSearchListAddedMemebersHeader from './src/app/components/Users/UserSearchListAddedMembersHeader';
@@ -87,7 +88,7 @@ const CreatePollTeamStack = () => {
         component={CreateNewTeamScreen}
         options={({ navigation }) => ({
           headerTitle: () => <Text>Create your team</Text>,
-          headerRight: () => <Button title={HEADER_BTN_TYPES.CREATE} onPress={() => navigation.navigate('PollTeamScreen')} />,
+          headerRight: () => <AddTeamHeaderBtn navigation={navigation}/>,
           headerBackTitleVisible: false
         })}
       />
