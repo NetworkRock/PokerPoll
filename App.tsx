@@ -19,6 +19,7 @@ import AddTeamForm from './src/app/components/Teams/AddTeamForm';
 import UserSearchList from './src/app/components/Users/UserSearchList';
 import UserSearchListHeader from './src/app/components/Users/UserSearchListHeader';
 import UserSearchListAddedMemebersHeader from './src/app/components/Users/UserSearchListAddedMembersHeader';
+import TeamList from './src/app/components/Teams/TeamList';
 
 
 /**
@@ -57,7 +58,7 @@ const PollTeamStack = () => {
 const PollTeamScreen = () => {
   return (
     <View style={globalStyles.container}>
-      <Text>MY TEAMS!</Text>
+      <TeamList/>
     </View>
   )
 }
@@ -102,7 +103,7 @@ const AddMembersToPollScreen = () => {
     <View style={globalStyles.container}>
       <UserSearchListHeader />
       <View style={globalStyles.container}>
-        <ScrollView horizontal={true} alwaysBounceHorizontal={false} >
+        <ScrollView contentContainerStyle={{flexGrow: 1}} horizontal={true} alwaysBounceHorizontal={false} >
           <UserSearchListAddedMemebersHeader />
         </ScrollView>
       </View>
@@ -299,6 +300,7 @@ const globalStyles = StyleSheet.create({
   },
   addTeamFormHorizontalScrollView: {
     flex: 1,
+    flexGrow: 1,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     flexWrap: 'wrap',

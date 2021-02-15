@@ -14,7 +14,7 @@ const UserSearchListAddedMemebersHeader = () => {
 
 
   return addedUsers.map((user) => (
-      <Image source={{
+      <Image key={user.id} source={{
             uri: user.profilePictureURL,
           }} style={style_userForm.iconInAddMemberHeader} />
   ))}

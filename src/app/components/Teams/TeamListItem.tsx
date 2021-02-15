@@ -1,17 +1,17 @@
 import React from 'react';
 import { TouchableHighlight, View, Text } from 'react-native';
-import stylePollList from "./style_pollList";
+import style_teamList from "./style_teamList";
 
-const renderPollListItem = ({item}: Object) => {
+const renderTeamListItem = ({item}: Object) => {
   return (
       <TouchableHighlight
         key={item.id}
         onPress={() => {}}>
-        <View style={stylePollList.listItem}>
-          <Text>{item.title} - {item.description}</Text>
+        <View style={style_teamList.listItem}>
+          <Text>{item.title}</Text>
         </View>
       </TouchableHighlight>
   );
 };
 
-export default renderPollListItem
+export default renderTeamListItem

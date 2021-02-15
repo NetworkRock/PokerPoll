@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import firebase from "firebase";
 
 const initialState = {
-  teams: null,
+  teams: [],
   createANewTeamWithNewMembers: {
     title: null,
     members: [],
@@ -16,7 +16,12 @@ export const teamSlice = createSlice({
   initialState,
   reducers: {
     addMemberToNewTeam(state, action) {
-      state.createANewTeamWithNewMembers.members = action.payload
+      const found = state.createANewTeamWithNewMembers.members.find((user) => user.id === action.payload.id)
+      if(!found){
+        state.createANewTeamWithNewMembers.members.push(action.payload);
+      } else {
+        state.createANewTeamWithNewMembers.members = state.createANewTeamWithNewMembers.members.filter((exisitngUser) => exisitngUser.id !== found.id)
+      }
     },  
     addTeamTitle(state, action) {
       state.createANewTeamWithNewMembers.title = action.payload
@@ -35,7 +40,7 @@ export const teamSlice = createSlice({
       state.error = action.error.message
     })
     builder.addCase('teams/addNewTeam/fulfilled', (state, action) => {
-      state.teams = action.payload
+      state.teams.push(action.payload)
     })
   }
 })
@@ -57,6 +62,7 @@ export const fetchTeams = createAsyncThunk('teams/fetchTeams', async () => {
   } catch (error) {
     console.log("Fetch polls error: ", error)
   }
+  console.log("TEAMSARRAY:", teamsArray)
   return teamsArray
 })
 
@@ -64,15 +70,18 @@ export const fetchTeams = createAsyncThunk('teams/fetchTeams', async () => {
  * Define a thunk funktion for save a new team
  */
 export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team) => {
-  console.log('TEAM:', team);
+  
   const db = firebase.firestore();
   const response = await db.collection('teams').add(team)
   const dataResponse = await db.collection('teams').doc(response.id).get()
+  console.log('TEAM:', dataResponse.data());
   return dataResponse.data()
 })
 
 export const { addMemberToNewTeam, addTeamTitle } = teamSlice.actions
 
 export const selectNewAddedTeamMembers = state => state.teams.createANewTeamWithNewMembers.members
+
+export const selectAllTeams = state => state.teams.teams
 
 export default teamSlice.reducer

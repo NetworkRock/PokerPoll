@@ -1,25 +1,26 @@
 import React, {useEffect} from 'react';
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { TouchableHighlight, View, Text, Image, Button } from 'react-native';
 import { unwrapResult } from '@reduxjs/toolkit'
 import style_userForm from './style_userForm';
-import { selectNewAddedTeamMembers } from '../../../features/team/teamSlice';
+import { addMemberToNewTeam, selectNewAddedTeamMembers } from '../../../features/team/teamSlice';
 
+const renderUserListItem = ({ item }, dispatch) => {
+  
 
-const renderUserListItem = ({ item }, setMemberList, memberList, tempMemberList) => {
   const onAddMemberClicked = () => {
-    if(!tempMemberList.includes(item)) {
-      tempMemberList.push(item);
-    } else {
-      const indexOfItemForDeletion = tempMemberList.indexOf(item);
-      tempMemberList.splice(indexOfItemForDeletion, 1);
+      try {
+        dispatch(addMemberToNewTeam(item));
+      } catch (error) {
+        console.log(error)
+      }
     }
-    tempMemberList.length <= 0 ? setMemberList([]) : setMemberList([...memberList, ...tempMemberList])
-  }
 
   return (
     <TouchableHighlight
-      onPress={onAddMemberClicked}>
+      key={item.id.toString()}
+      onPress={onAddMemberClicked}
+      >
       <View style={style_userForm.listItem}>
         <View style={style_userForm.iconInListContainer} >
           <Image source={{
