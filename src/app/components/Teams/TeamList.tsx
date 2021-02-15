@@ -7,21 +7,23 @@ import {
   FlatList,
   StatusBar,
 } from 'react-native';
-import { selectAllTeams, fetchTeams } from '../../../features/team/teamSlice'
+import { selectAllTeams, fetchAllTeamsForOneUser } from '../../../features/team/teamSlice'
 import style_teamList from './style_teamList';
 import renderTeamListItem from './TeamListItem';
 import { useNavigation } from '@react-navigation/native';
+import { selectCurrentUser } from '../../../features/users/userSlice'
 
 const TeamList = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const teams = useSelector(selectAllTeams)
+  const currentUser = useSelector(selectCurrentUser)
   const teamStatus = useSelector(state => state.teams.status)
   const error = useSelector(state => state.teams.error)
 
   useEffect(() => {
     if(teamStatus === 'idle') {
-      dispatch(fetchTeams())
+      dispatch(fetchAllTeamsForOneUser({currentUser}))
     }
   }, [teams, teamStatus, dispatch])
 

@@ -28,14 +28,14 @@ export const teamSlice = createSlice({
     }
   },
   extraReducers: builder => {
-    builder.addCase('teams/fetchTeams/pending', (state, action) => {
+    builder.addCase('teams/fetchAllTeamsForOneUser/pending', (state, action) => {
       state.status = 'loading'
     })
-    builder.addCase('teams/fetchTeams/fulfilled', (state, action) => {
+    builder.addCase('teams/fetchAllTeamsForOneUser/fulfilled', (state, action) => {
       state.status = 'succeeded'
       state.teams = state.teams.concat(action.payload)
     })
-    builder.addCase('teams/fetchTeams/rejected', (state, action) => {
+    builder.addCase('teams/fetchAllTeamsForOneUser/rejected', (state, action) => {
       state.status = 'failed'
       state.error = action.error.message
     })
@@ -49,11 +49,12 @@ export const teamSlice = createSlice({
 /**
  * Define a thunk function create slice not support that
  */
-export const fetchTeams = createAsyncThunk('teams/fetchTeams', async () => {
+export const fetchAllTeamsForOneUser = createAsyncThunk('teams/fetchAllTeamsForOneUser', async (user) => {
   const db = firebase.firestore();
+  console.log("FETCH FOR USER:", user.currentUser.id);
   let teamsArray: Array<Object> = [];
   try {
-    const snapshot = await db.collection('teams').get(); 
+    const snapshot = await db.collection('teams').where('createdBy','==', user.currentUser.id).get(); 
     snapshot.forEach((doc) => {
       // Use concat because of immutability
       teamsArray = teamsArray.concat(doc.data())
