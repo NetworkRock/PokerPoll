@@ -54,22 +54,22 @@ export const AddUserForm = (props) => {
           }
         }
       } else {
-        console.log("USER LOG OUT")
+        console.info("USER LOG OUT")
       }
     });
     try {
       firebaseApp.auth().signInAnonymously().then(() => {
-        console.log("SIGNED IN");
+        console.info("SIGNED IN");
       })
     } catch (error) {
-      console.log("Error sign in: ", error)
+      console.error("Error sign in: ", error)
     }
   }
 
   const b64toBlob = async (uri: string)  => {
-    const dieter = await (await fetch(uri)).blob()
-    console.log("HALLO: ", dieter);
-    return dieter
+    const blobFile = await (await fetch(uri)).blob()
+    console.info("blobFile: ", blobFile);
+    return blobFile
   }
 
   const selectAProfilePicture = async () => {
@@ -86,7 +86,6 @@ export const AddUserForm = (props) => {
         });
         if (!result.cancelled) {
           const storageRef = firebaseApp.storage().ref()
-          console.log(result);
           const fileRef = storageRef.child('userProfilePicture/' + nanoid())
           const blobFile = await b64toBlob(result.uri)
           await fileRef.put(blobFile)

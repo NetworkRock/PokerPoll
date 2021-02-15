@@ -12,19 +12,6 @@ import stylePollList from './style_pollList';
 import { selectAllPolls, fetchPollsByGroupId } from '../../../features/polls/pollSlice'
 import { selectCurrentGroup} from '../../../features/polls/pollSlice'
 
-const FlatListHeader = () => {
-  return (
-    <View>
-      <Text style={stylePollList.headerTitle}>Polls</Text>
-      <TextInput
-        placeholder="Search"
-        placeholderTextColor="#C8C8C8"
-        style={stylePollList.searchField}
-      ></TextInput>
-    </View>
-  );
-};
-
 const SearchPollsList = () => {
   const dispatch = useDispatch();
   const currentTeamId = useSelector(selectCurrentGroup)
@@ -51,8 +38,6 @@ const SearchPollsList = () => {
       translucent={true}
     />
     <FlatList
-      ListHeaderComponent={FlatListHeader}
-      ListHeaderComponentStyle={stylePollList.flatListHeader}
       data={polls}
       renderItem={(item) => renderPollListItem(item)}
       keyExtractor={(item, index) => index.toString()}
