@@ -25,7 +25,7 @@ export const teamSlice = createSlice({
     },  
     addTeamTitle(state, action) {
       state.createANewTeamWithNewMembers.title = action.payload
-    }
+    },
   },
   extraReducers: builder => {
     builder.addCase('teams/fetchAllTeamsForOneUser/pending', (state, action) => {
@@ -33,14 +33,14 @@ export const teamSlice = createSlice({
     })
     builder.addCase('teams/fetchAllTeamsForOneUser/fulfilled', (state, action) => {
       state.status = 'succeeded'
-      state.teams = state.teams.concat(action.payload)
+      state.teams = action.payload
     })
     builder.addCase('teams/fetchAllTeamsForOneUser/rejected', (state, action) => {
       state.status = 'failed'
       state.error = action.error.message
     })
     builder.addCase('teams/addNewTeam/fulfilled', (state, action) => {
-      state.teams.push(action.payload)
+      state.status = 'idle'
     })
   }
 })
@@ -51,7 +51,6 @@ export const teamSlice = createSlice({
  */
 export const fetchAllTeamsForOneUser = createAsyncThunk('teams/fetchAllTeamsForOneUser', async (user) => {
   const db = firebase.firestore();
-  console.log("FETCH FOR USER:", user.currentUser.id);
   let teamsArray: Array<Object> = [];
   try {
     const snapshot = await db.collection('teams').where('createdBy','==', user.currentUser.id).get(); 
@@ -59,11 +58,10 @@ export const fetchAllTeamsForOneUser = createAsyncThunk('teams/fetchAllTeamsForO
       // Use concat because of immutability
       teamsArray = teamsArray.concat(doc.data())
     })
-    console.log("Teams: Array: ", teamsArray);
   } catch (error) {
-    console.log("Fetch polls error: ", error)
+    console.error("Fetch polls error: ", error)
   }
-  console.log("TEAMSARRAY:", teamsArray)
+  console.info("TEAMSARRAY:", teamsArray)
   return teamsArray
 })
 
@@ -73,8 +71,8 @@ export const fetchAllTeamsForOneUser = createAsyncThunk('teams/fetchAllTeamsForO
 export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team) => {
   const db = firebase.firestore();
   const response = await db.collection('teams').add(team)
+  await db.collection('teams').doc(response.id).update({id: response.id})
   const dataResponse = await db.collection('teams').doc(response.id).get()
-  console.log('RESPONSE TEAM:', dataResponse.data());
   return dataResponse.data()
 })
 

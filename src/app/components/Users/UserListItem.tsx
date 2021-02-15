@@ -12,7 +12,7 @@ const renderUserListItem = ({ item }, dispatch) => {
       try {
         dispatch(addMemberToNewTeam(item));
       } catch (error) {
-        console.log(error)
+        console.error(error)
       }
     }
 

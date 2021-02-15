@@ -25,7 +25,7 @@ const TeamList = () => {
     if(teamStatus === 'idle') {
       dispatch(fetchAllTeamsForOneUser({currentUser}))
     }
-  }, [teams, teamStatus, dispatch])
+  }, [teamStatus, dispatch])
 
   let content
 
@@ -41,7 +41,7 @@ const TeamList = () => {
     />
     <FlatList
       data={teams}
-      renderItem={(item) => renderTeamListItem(item, navigation)}
+      renderItem={(item) => renderTeamListItem(item, navigation, dispatch)}
       keyExtractor={(item, index) => index.toString()}
     />
   </View>

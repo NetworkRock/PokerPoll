@@ -5,7 +5,7 @@ import stylePollList from "./style_pollList";
 const renderPollListItem = ({item}: Object) => {
   return (
       <TouchableHighlight
-        key={item.id}
+        key={item.currentTeamId}
         onPress={() => {}}>
         <View style={stylePollList.listItem}>
           <Text>{item.title} - {item.description}</Text>

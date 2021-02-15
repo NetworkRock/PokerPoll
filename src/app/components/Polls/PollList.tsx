@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import renderPollListItem from './PollListItem'
 import stylePollList from './style_pollList';
-import { selectAllPolls, fetchPolls } from '../../../features/polls/pollSlice'
+import { selectAllPolls, fetchPollsByGroupId } from '../../../features/polls/pollSlice'
+import { selectCurrentGroup} from '../../../features/polls/pollSlice'
 
 const FlatListHeader = () => {
   return (
@@ -26,13 +27,14 @@ const FlatListHeader = () => {
 
 const SearchPollsList = () => {
   const dispatch = useDispatch();
+  const currentTeamId = useSelector(selectCurrentGroup)
   const polls = useSelector(selectAllPolls)
   const pollStatus = useSelector(state => state.polls.status)
   const error = useSelector(state => state.polls.error)
 
   useEffect(() => {
     if(pollStatus === 'idle') {
-      dispatch(fetchPolls())
+      dispatch(fetchPollsByGroupId({currentTeamId}))
     }
   }, [pollStatus, dispatch])
 

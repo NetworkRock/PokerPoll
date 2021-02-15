@@ -42,7 +42,6 @@ export const userSlice = createSlice({
  * Get the user back and add them to the redux store as the actual user then
  */
 export const addNewUser = createAsyncThunk('user/addNewUser', async (user) => {
-  console.log("USER: ", user);
   const db = firebaseApp.firestore();
   const response = await db.collection('users').add(user)
   await db.collection('users').doc(response.id).update({id: response.id})
@@ -59,16 +58,15 @@ export const addNewUser = createAsyncThunk('user/addNewUser', async (user) => {
 export const fetchUserListById = createAsyncThunk('user/fetchUsers', async (displayName) => {
   const db = firebaseApp.firestore();
   let filteredUsersArray: Array<Object> = [];
-  console.log("DISPLAY NAME:", displayName.searchTitle);
   try {
     const snapshot = await db.collection('users').where("displayName", "==", displayName.searchTitle).get()
     snapshot.forEach((user) => {
       filteredUsersArray = filteredUsersArray.concat(user.data())
     });
   } catch (error) {
-    console.log("Fetch user error: ", error)
+    console.error("Fetch user error: ", error)
   }
-  console.log("FILTERED USERS: ", filteredUsersArray)
+  console.info("FILTERED USERS: ", filteredUsersArray)
   return filteredUsersArray
 })
 
