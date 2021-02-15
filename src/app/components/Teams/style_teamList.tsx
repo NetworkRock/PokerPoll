@@ -7,9 +7,10 @@ export default StyleSheet.create({
   },
   listContainer: {
     flex: 1,
-    backgroundColor: 'skyblue',
-    padding: 10
+    alignSelf: 'stretch',
+    backgroundColor: '#0099ff',
   },
+
   flatListHeader: {
     flexDirection: 'column',
     alignItems: 'stretch'
@@ -18,9 +19,15 @@ export default StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     minHeight: 50,
-    borderStyle: 'solid',
-    borderWidth: 0.5,
     margin: 2
+  },
+  listItemContainerWithoutImage: {
+    fontSize: 15,
+    flexDirection: 'row',
+    flexGrow: 1,
+    borderColor: 'lightgrey',
+    justifyContent: 'space-between',
+    borderBottomWidth: 0.7, 
   },
   headerTitle: {
     fontSize: 30,
@@ -34,4 +41,5 @@ export default StyleSheet.create({
     marginTop: 5,
     marginBottom: 5,
   },
+  
 })

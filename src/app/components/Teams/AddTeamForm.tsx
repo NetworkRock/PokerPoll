@@ -5,6 +5,7 @@ import { TextInput } from 'react-native-gesture-handler';
 import { unwrapResult } from '@reduxjs/toolkit'
 import { addTeamTitle, addNewTeam } from '../../../features/team/teamSlice'
 import { selectNewAddedTeamMembers } from '../../../features/team/teamSlice'
+import style_addTeamForm from "./style_addTeamForm";
 
 const AddTeamForm = () => {
   const [title, setTitle] = useState('')
@@ -12,7 +13,7 @@ const AddTeamForm = () => {
   const [addRequestStatus, setAddRequestStatus] = useState('idle')
 
   const canSave =
-  [title, addedUsers.length > 0].every(Boolean) && addRequestStatus === 'idle'
+    [title, addedUsers.length > 0].every(Boolean) && addRequestStatus === 'idle'
 
   const onTitleChanged = e => setTitle(e)
 
@@ -23,11 +24,11 @@ const AddTeamForm = () => {
   }, [title])
 
   const onCreatedTeamClicked = async () => {
-    if(canSave) {
+    if (canSave) {
       try {
         setAddRequestStatus('pending')
         const resultAction = await dispatch(
-          addNewTeam({title, addedUsers})
+          addNewTeam({ title, addedUsers })
         )
         unwrapResult(resultAction)
         setTitle('')
@@ -36,35 +37,24 @@ const AddTeamForm = () => {
       } finally {
         setAddRequestStatus('idle')
       }
-    } 
+    }
   }
 
   return (
-    <View style={styleAddPollForm.container}>
-      <Text>Create a new Team</Text>
+    <View style={style_addTeamForm.container}>
+      <Text style={style_addTeamForm.label}>Create a new Team</Text>
       <TextInput
+        style={style_addTeamForm.textField}
         placeholder="How is your team called?"
         placeholderTextColor="#C8C8C8"
         value={title}
         onChangeText={onTitleChanged}
       />
-      <Button title="create the team" onPress={onCreatedTeamClicked} />
+      <View style={style_addTeamForm.btn}>
+        <Button title="create the team" onPress={onCreatedTeamClicked} />
+      </View>
     </View>
   )
 }
-
-// TODO: later do that in a seperated file --> styles for the App.tsx file
-const styleAddPollForm = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    alignSelf: 'stretch',
-    backgroundColor: '#0099ff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default AddTeamForm
