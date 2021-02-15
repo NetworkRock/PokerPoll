@@ -74,6 +74,8 @@ export const fetchUserListById = createAsyncThunk('user/fetchUsers', async (disp
 
 export const { addSearchUserTitle } = userSlice.actions
 
+export const selectCurrentUser = state => state.user.user
+
 export const selectAllFilteredUsers = state => state.user.filteredUsersByDisplayUserName
 
 export default userSlice.reducer

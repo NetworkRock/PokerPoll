@@ -7,9 +7,11 @@ import { selectTeamTitle, addNewTeam, addTeamTitle } from '../../../features/tea
 import { selectNewAddedTeamMembers } from '../../../features/team/teamSlice'
 import style_addTeamForm from "./style_addTeamForm";
 import { HEADER_BTN_TYPES } from '../NavigationComponents/HeaderButtonEnum';
+import { selectCurrentUser } from '../../../features/users/userSlice'
 
 const AddTeamHeaderBtn = (props) => {
   const teamTitle = useSelector(selectTeamTitle);
+  const currentUser = useSelector(selectCurrentUser)
   const addedUsers = useSelector(selectNewAddedTeamMembers)
   const [addRequestStatus, setAddRequestStatus] = useState('idle')
 
@@ -22,8 +24,9 @@ const AddTeamHeaderBtn = (props) => {
     if (canSave) {
       try {
         setAddRequestStatus('pending')
+        const createdBy = currentUser.id
         const resultAction = await dispatch(
-          addNewTeam({ teamTitle, addedUsers })
+          addNewTeam({ teamTitle, addedUsers, createdBy})
         )
         unwrapResult(resultAction)
       } catch (error) {
