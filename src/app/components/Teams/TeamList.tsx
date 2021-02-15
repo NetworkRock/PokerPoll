@@ -10,8 +10,10 @@ import {
 import { selectAllTeams, fetchTeams } from '../../../features/team/teamSlice'
 import style_teamList from './style_teamList';
 import renderTeamListItem from './TeamListItem';
+import { useNavigation } from '@react-navigation/native';
 
 const TeamList = () => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const teams = useSelector(selectAllTeams)
   const teamStatus = useSelector(state => state.teams.status)
@@ -37,7 +39,7 @@ const TeamList = () => {
     />
     <FlatList
       data={teams}
-      renderItem={(item) => renderTeamListItem(item)}
+      renderItem={(item) => renderTeamListItem(item, navigation)}
       keyExtractor={(item, index) => index.toString()}
     />
   </View>
