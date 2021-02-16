@@ -9,16 +9,18 @@ import {
 import renderTeamListItem from './UserListItem'
 import style_userForm from './style_userForm';
 import { selectAllFilteredUsers ,fetchUserListById } from '../../../features/users/userSlice'
+import { selectCurrentUser } from '../../../features/users/userSlice'
 
 const UserSearchList = () => {
   const searchTitle = useSelector(state => state.user.titleOfDisplayNameUserSearch)
   const filteredUsers = useSelector(selectAllFilteredUsers)
   const userStatus = useSelector(state => state.user.status)
   const error = useSelector(state => state.user.error)
+  const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchUserListById({ searchTitle }))
+    dispatch(fetchUserListById({ searchTitle, currentUser }))
   }, [searchTitle, dispatch])
 
   let content

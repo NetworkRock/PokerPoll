@@ -55,13 +55,15 @@ export const addNewUser = createAsyncThunk('user/addNewUser', async (user) => {
 /**
  * Define a thunk function create slice not support that
  */
-export const fetchUserListById = createAsyncThunk('user/fetchUsers', async (displayName) => {
+export const fetchUserListById = createAsyncThunk('user/fetchUsers', async (search) => {
   const db = firebaseApp.firestore();
   let filteredUsersArray: Array<Object> = [];
   try {
-    const snapshot = await db.collection('users').where("displayName", "==", displayName.searchTitle).get()
+    const snapshot = await db.collection('users').where("displayName", "==", search.searchTitle).get()
     snapshot.forEach((user) => {
-      filteredUsersArray = filteredUsersArray.concat(user.data())
+      if(search.searchTitle !== search.currentUser.displayName) {
+        filteredUsersArray = filteredUsersArray.concat(user.data())
+      }
     });
   } catch (error) {
     console.error("Fetch user error: ", error)
