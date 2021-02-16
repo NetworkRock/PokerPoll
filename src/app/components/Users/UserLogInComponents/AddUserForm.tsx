@@ -18,11 +18,11 @@ export const AddUserForm = (props) => {
 
   const dispatch = useDispatch()
 
-  useEffect (() => {
+  useEffect(() => {
     if (!profilePictureURL) {
       setDefaultImage(
         <View style={style_userLogIn.imgContainer}>
-          <Icon name='account' color="lightgrey" size={130}/>
+          <Icon name='account' color="lightgrey" size={130} />
         </View>)
     } else {
       setDefaultImage(<Image source={{ uri: profilePictureURL }} style={style_userLogIn.img} />)
@@ -66,7 +66,7 @@ export const AddUserForm = (props) => {
     }
   }
 
-  const b64toBlob = async (uri: string)  => {
+  const b64toBlob = async (uri: string) => {
     const blobFile = await (await fetch(uri)).blob()
     console.info("blobFile: ", blobFile);
     return blobFile
@@ -74,53 +74,53 @@ export const AddUserForm = (props) => {
 
   const selectAProfilePicture = async () => {
 
-      const permissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
-      if (permissions.status !== 'granted') {
-        alert("Sorry, we need camera roll permissions to make this work!");
-      } else {
-        let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [5, 5],
-          quality: 1,
-        });
-        if (!result.cancelled) {
-          const storageRef = firebaseApp.storage().ref()
-          const fileRef = storageRef.child('userProfilePicture/' + nanoid())
-          const blobFile = await b64toBlob(result.uri)
-          await fileRef.put(blobFile)
-          setProfilePictureURL(await fileRef.getDownloadURL());
-          
-        }
+    const permissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (permissions.status !== 'granted') {
+      alert("Sorry, we need camera roll permissions to make this work!");
+    } else {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [5, 5],
+        quality: 1,
+      });
+      if (!result.cancelled) {
+        const storageRef = firebaseApp.storage().ref()
+        const fileRef = storageRef.child('userProfilePicture/' + nanoid())
+        const blobFile = await b64toBlob(result.uri)
+        await fileRef.put(blobFile)
+        setProfilePictureURL(await fileRef.getDownloadURL());
+      
       }
+    }
   }
 
 
 
   return (
-    <View style={style_userLogIn.container}>
-      <Text style={style_userLogIn.signInTitle}>PokerPoll</Text>
-      <TouchableOpacity style={style_userLogIn.imgContainer}
-        onPress={selectAProfilePicture}
-      >
-        {defaultImage}
-      </TouchableOpacity>
-      <TextInput
-        placeholder="Type a Nickname!"
-        placeholderTextColor="#C8C8C8"
-        value={displayName}
-        onChangeText={onDisplayNameDisplayName}
-        style={style_userLogIn.nickNameField}
-        maxLength = {25}
-      />
-      <View style={style_userLogIn.logInBtn}>
-        <Button
-          title="Log In"
-          disabled={!canLogin}
-          onPress={signInAnonymouslyClicked}
+      <View style={style_userLogIn.container}>
+        <Text style={style_userLogIn.signInTitle}>PokerPoll</Text>
+        <TouchableOpacity style={style_userLogIn.imgContainer}
+          onPress={selectAProfilePicture}
+        >
+          {defaultImage}
+        </TouchableOpacity>
+        <TextInput
+          placeholder="Type a Nickname!"
+          placeholderTextColor="#C8C8C8"
+          value={displayName}
+          onChangeText={onDisplayNameDisplayName}
+          style={style_userLogIn.nickNameField}
+          maxLength={25}
         />
+        <View style={style_userLogIn.logInBtn}>
+          <Button
+            title="Log In"
+            disabled={!canLogin}
+            onPress={signInAnonymouslyClicked}
+          />
+        </View>
       </View>
-    </View>
   )
 }
 

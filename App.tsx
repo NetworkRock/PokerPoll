@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 // Navigation imports
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -26,7 +26,6 @@ import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import SettingsView from './src/app/components/Settings/SettingsView';
 
 
-
 /**
  * Define the Navigators for the app 
  */
@@ -41,9 +40,9 @@ const RootTeamStack = createStackNavigator();
  */
 const PollTeamStack = () => {
   return (
-    <RootTeamStack.Navigator 
-      mode="card" 
-      headerMode="float" 
+    <RootTeamStack.Navigator
+      mode="card"
+      headerMode="float"
       screenOptions={{
         headerBackTitleVisible: false,
       }}>
@@ -73,7 +72,7 @@ const PollTeamStack = () => {
 const PollTeamScreen = () => {
   return (
     <View style={globalStyles.container}>
-      <TeamList/>
+      <TeamList />
     </View>
   )
 }
@@ -113,7 +112,7 @@ const CreatePollTeamStack = () => {
         component={AddMembersToPollScreen}
         options={({ navigation }) => ({
           headerTitle: () => <Text>Invite members to vote</Text>,
-          headerRight: () => <Button title={HEADER_BTN_TYPES.NEXT} onPress={() =>  navigation.navigate('CreateNewTeamScreen')}/>,
+          headerRight: () => <Button title={HEADER_BTN_TYPES.NEXT} onPress={() => navigation.navigate('CreateNewTeamScreen')} />,
         })}
       />
       <RootTeamStack.Screen
@@ -121,7 +120,7 @@ const CreatePollTeamStack = () => {
         component={CreateNewTeamScreen}
         options={({ navigation }) => ({
           headerTitle: () => <Text>Create your team</Text>,
-          headerRight: () => <AddTeamHeaderBtn navigation={navigation}/>,
+          headerRight: () => <AddTeamHeaderBtn navigation={navigation} />,
           headerBackTitleVisible: false
         })}
       />
@@ -133,27 +132,31 @@ const CreatePollTeamStack = () => {
  */
 const AddMembersToPollScreen = () => {
   return (
-    <View style={globalStyles.container}>
-      <UserSearchListHeader />
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={{ flex: 1 }}>
       <View style={globalStyles.container}>
-        <ScrollView contentContainerStyle={{flexGrow: 1}} horizontal={true} alwaysBounceHorizontal={false} >
-          <UserSearchListAddedMemebersHeader />
-        </ScrollView>
+        <UserSearchListHeader />
+        <View style={globalStyles.container}>
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }} horizontal={true} alwaysBounceHorizontal={false} >
+            <UserSearchListAddedMemebersHeader />
+          </ScrollView>
+        </View>
+        <UserSearchList />
       </View>
-      <UserSearchList />
-    </View>
+    </KeyboardAvoidingView>
   )
 }
 const CreateNewTeamScreen = () => {
   return (
-    <View style={globalStyles.container}>
-      <AddTeamForm />
-      <View style={globalStyles.container} >
-        <ScrollView contentContainerStyle={globalStyles.addTeamFormHorizontalScrollView} horizontal={false} alwaysBounceHorizontal={false} >
-          <UserSearchListAddedMemebersHeader />
-        </ScrollView>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={{ flex: 1 }}>
+      <View style={globalStyles.container}>
+        <AddTeamForm />
+        <View style={globalStyles.container} >
+          <ScrollView contentContainerStyle={globalStyles.addTeamFormHorizontalScrollView} horizontal={false} alwaysBounceHorizontal={false} >
+            <UserSearchListAddedMemebersHeader />
+          </ScrollView>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -187,7 +190,9 @@ const CreatePollsStack = () => {
 
 const CreateNewPollScreen = () => {
   return (
-    <AddPostForm />
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={{ flex: 1 }}>
+      <AddPostForm />
+    </KeyboardAvoidingView>
   )
 }
 
@@ -208,10 +213,10 @@ const BottomTabBar = () => {
         inactiveTintColor: "gray",
       }}
     >
-      <Tab.Screen 
-        name="PollTeamStack" 
+      <Tab.Screen
+        name="PollTeamStack"
         component={PollTeamStack}
-        options={({route}) => ({
+        options={({ route }) => ({
           title: 'Poll Teams',
           tabBarIcon: ({ color, size }) => {
             // You can return any component that you like here!
@@ -219,10 +224,10 @@ const BottomTabBar = () => {
           },
         })}
       />
-      <Tab.Screen 
-        name="ClosedPolls" 
-        component={ClosedPollsScreen} 
-        options={({route}) => ({
+      <Tab.Screen
+        name="ClosedPolls"
+        component={ClosedPollsScreen}
+        options={({ route }) => ({
           title: 'Closed Polls',
           tabBarIcon: ({ color, size }) => {
             // You can return any component that you like here!
@@ -230,10 +235,10 @@ const BottomTabBar = () => {
           },
         })}
       />
-      <Tab.Screen 
-        name="Settings" 
-        component={SettingsScreen} 
-        options={({navigation}) => ({
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={({ navigation }) => ({
           title: 'Settings',
           tabBarIcon: ({ color, size }) => {
             // You can return any component that you like here!
@@ -251,7 +256,9 @@ const BottomTabBar = () => {
  */
 const UserLogInScreen = ({ navigation }) => {
   return (
-    <AddUserForm navigate={navigation} />
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={{ flex: 1 }}>
+      <AddUserForm navigate={navigation} />
+    </KeyboardAvoidingView>
   )
 }
 const UserLogInStack = () => {
@@ -275,16 +282,16 @@ const UserLogInStack = () => {
 export default function App() {
   return (
     <Provider store={store}>
-        <NavigationContainer>
-          <RootStack.Navigator mode="modal" headerMode="none">
-            <RootStack.Screen
-              name='UserLogInStack'
-              component={UserLogInStack}
-            />
-            <RootStack.Screen
-              name='BottomTabBar'
-              component={BottomTabBar}
-            />
+      <NavigationContainer>
+        <RootStack.Navigator mode="modal" headerMode="none">
+          <RootStack.Screen
+            name='UserLogInStack'
+            component={UserLogInStack}
+          />
+          <RootStack.Screen
+            name='BottomTabBar'
+            component={BottomTabBar}
+          />
           <RootStack.Screen
             name='CreatePollTeamStack'
             component={CreatePollTeamStack}
@@ -297,8 +304,8 @@ export default function App() {
           <RootStack.Screen
             name='AddMembersToPoll'
             component={AddMembersToPollScreen} />
-          </RootStack.Navigator>
-        </NavigationContainer>
+        </RootStack.Navigator>
+      </NavigationContainer>
     </Provider>
   );
 }
@@ -311,10 +318,10 @@ const ClosedPollsScreen = () => {
   )
 }
 
-const SettingsScreen = ({navigation}) => {
-  
+const SettingsScreen = ({ navigation }) => {
+
   return (
-    <SettingsView navigation={navigation}/>
+    <SettingsView navigation={navigation} />
   )
 }
 
@@ -323,9 +330,6 @@ const SettingsScreen = ({navigation}) => {
 
 // TODO: later do that in a seperated file --> styles for the App.tsx file
 const globalStyles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
