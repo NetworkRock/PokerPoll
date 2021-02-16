@@ -21,6 +21,8 @@ import UserSearchList from './src/app/components/Users/UserSearchList';
 import UserSearchListHeader from './src/app/components/Users/UserSearchListHeader';
 import UserSearchListAddedMemebersHeader from './src/app/components/Users/UserSearchListAddedMembersHeader';
 import TeamList from './src/app/components/Teams/TeamList';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
 
 
@@ -48,7 +50,7 @@ const PollTeamStack = () => {
         name="PollTeamScreen"
         component={PollTeamScreen}
         options={({ navigation }) => ({
-          headerTitle: () => <Text>Search for poll teams</Text>,
+          headerTitle: () => <Text>Poll Teams</Text>,
           headerRight: () => <Button title={HEADER_BTN_TYPES.CREATE} onPress={() => navigation.navigate('CreatePollTeamStack')} />,
           headerLeft: () => <View />,
         })}
@@ -195,11 +197,49 @@ const CreateNewPollScreen = () => {
  */
 const BottomTabBar = () => {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="PollTeamStack" component={PollTeamStack}></Tab.Screen>
-      <Tab.Screen name="MyPollsScreen" component={MyPollsScreen} />
-      <Tab.Screen name="ClosedPolls" component={ClosedPollsScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+    <Tab.Navigator
+      tabBarOptions={{
+        style: {
+          backgroundColor: "white",
+          minHeight: 90
+        },
+        activeTintColor: "#0099ff",
+        inactiveTintColor: "gray",
+      }}
+    >
+      <Tab.Screen 
+        name="PollTeamStack" 
+        component={PollTeamStack}
+        options={({route}) => ({
+          title: 'Poll Teams',
+          tabBarIcon: ({ color, size }) => {
+            // You can return any component that you like here!
+            return <Icon name="account-group" size={size} color={color} />;
+          },
+        })}
+      />
+      <Tab.Screen 
+        name="ClosedPolls" 
+        component={ClosedPollsScreen} 
+        options={({route}) => ({
+          title: 'Closed Polls',
+          tabBarIcon: ({ color, size }) => {
+            // You can return any component that you like here!
+            return <SimpleLineIcons name="lock" size={size} color={color} />;
+          },
+        })}
+      />
+      <Tab.Screen 
+        name="Settings" 
+        component={SettingsScreen} 
+        options={({route}) => ({
+          title: 'Settings',
+          tabBarIcon: ({ color, size }) => {
+            // You can return any component that you like here!
+            return <Icon name="cog" size={size} color={color} />;
+          },
+        })}
+      />
     </Tab.Navigator>
   )
 }
@@ -260,14 +300,6 @@ export default function App() {
         </NavigationContainer>
     </Provider>
   );
-}
-
-const MyPollsScreen = () => {
-  return (
-    <View style={globalStyles.container}>
-      <Text>Here u can see polls where you created or you where invented from somebody!</Text>
-    </View>
-  )
 }
 
 const ClosedPollsScreen = () => {
