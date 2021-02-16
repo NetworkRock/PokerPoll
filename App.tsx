@@ -23,6 +23,7 @@ import UserSearchListAddedMemebersHeader from './src/app/components/Users/UserSe
 import TeamList from './src/app/components/Teams/TeamList';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import SettingsView from './src/app/components/Settings/SettingsView';
 
 
 
@@ -232,7 +233,7 @@ const BottomTabBar = () => {
       <Tab.Screen 
         name="Settings" 
         component={SettingsScreen} 
-        options={({route}) => ({
+        options={({navigation}) => ({
           title: 'Settings',
           tabBarIcon: ({ color, size }) => {
             // You can return any component that you like here!
@@ -310,13 +311,10 @@ const ClosedPollsScreen = () => {
   )
 }
 
-const SettingsScreen = () => {
-  const logout = async () => await firebaseApp.auth().signOut();
+const SettingsScreen = ({navigation}) => {
+  
   return (
-    <View style={globalStyles.container}>
-      <Text>Logout!</Text>
-      <Button title="Logout" onPress={logout}></Button>
-    </View>
+    <SettingsView navigation={navigation}/>
   )
 }
 
