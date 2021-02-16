@@ -53,7 +53,9 @@ export const fetchAllTeamsForOneUser = createAsyncThunk('teams/fetchAllTeamsForO
   const db = firebase.firestore();
   let teamsArray: Array<Object> = [];
   try {
-    const snapshot = await db.collection('teams').where('createdBy','==', user.currentUser.id).get(); 
+    const teamsRef = db.collection('teams')
+    teamsRef.where('addedUsersId','array-contains', [user.currentUser.id])
+    const snapshot = await teamsRef.get(); 
     snapshot.forEach((doc) => {
       // Use concat because of immutability
       teamsArray = teamsArray.concat(doc.data())

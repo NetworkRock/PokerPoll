@@ -25,8 +25,10 @@ const AddTeamHeaderBtn = (props) => {
       try {
         setAddRequestStatus('pending')
         const createdBy = currentUser.id
+        const addedUsersId = addedUsers.map(user => user.id)
+        addedUsersId.push(createdBy)
         const resultAction = await dispatch(
-          addNewTeam({ teamTitle, addedUsers, createdBy})
+          addNewTeam({ teamTitle, addedUsersId, createdBy})
         )
         unwrapResult(resultAction)
       } catch (error) {

@@ -7,7 +7,6 @@ const renderUserListItem = ({ item }, dispatch) => {
   
 
   const onAddMemberClicked = () => {
-    console.log("User: ", item)
       try {
         dispatch(addMemberToNewTeam(item));
       } catch (error) {
