@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { View, Text, } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import { unwrapResult } from '@reduxjs/toolkit'
-import { addTeamTitle, addNewTeam } from '../../../features/team/teamSlice'
-import { selectNewAddedTeamMembers } from '../../../features/team/teamSlice'
+import { addTeamTitle } from '../../../features/team/teamSlice'
 import style_addTeamForm from "./style_addTeamForm";
 
 const AddTeamForm = () => {

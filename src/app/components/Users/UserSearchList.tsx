@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import {
   Text,
-  TextInput,
   View,
   FlatList,
   StatusBar,
@@ -10,7 +9,6 @@ import {
 import renderTeamListItem from './UserListItem'
 import style_userForm from './style_userForm';
 import { selectAllFilteredUsers ,fetchUserListById } from '../../../features/users/userSlice'
-import { addMemberToNewTeam, selectNewAddedTeamMembers } from '../../../features/team/teamSlice';
 
 const UserSearchList = () => {
   const searchTitle = useSelector(state => state.user.titleOfDisplayNameUserSearch)

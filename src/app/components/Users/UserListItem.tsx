@@ -1,14 +1,13 @@
-import React, {useEffect} from 'react';
-import { useSelector } from 'react-redux'
-import { TouchableHighlight, View, Text, Image, Button } from 'react-native';
-import { unwrapResult } from '@reduxjs/toolkit'
+import React from 'react';
+import { TouchableHighlight, View, Text, Image } from 'react-native';
 import style_userForm from './style_userForm';
-import { addMemberToNewTeam, selectNewAddedTeamMembers } from '../../../features/team/teamSlice';
+import { addMemberToNewTeam } from '../../../features/team/teamSlice';
 
 const renderUserListItem = ({ item }, dispatch) => {
   
 
   const onAddMemberClicked = () => {
+    console.log("User: ", item)
       try {
         dispatch(addMemberToNewTeam(item));
       } catch (error) {
