@@ -7,7 +7,7 @@ import {
   FlatList,
   StatusBar,
 } from 'react-native';
-import { selectAllTeams, addTeamToAllTeams } from '../../../features/team/teamSlice'
+import { selectAllTeams, addTeamToAllTeams, exchangeModifiedTeamToExistingTeam } from '../../../features/team/teamSlice'
 import style_teamList from './style_teamList';
 import renderTeamListItem from './TeamListItem';
 import { useNavigation } from '@react-navigation/native';
@@ -24,47 +24,44 @@ const TeamList = () => {
   const error = useSelector(state => state.teams.error)
 
   useEffect(() => {
-      console.log("TEAMS", teams)
-      console.log("CURRENT USER: ", currentUser.id);
-      const db = firebaseApp.firestore();
-      const unsubscribe =  db.collection('teams').where('addedUsersId', 'array-contains', currentUser.id).onSnapshot((snapshot) => {
+    const db = firebaseApp.firestore();
+    const unsubscribe = db.collection('teams')
+      .where('addedUsersId', 'array-contains', currentUser.id).onSnapshot((snapshot) => {
         snapshot.docChanges().map((change) => {
           if (change.type == 'added') {
-            console.log("OUR DATA: ", change.doc.data())
+            console.info("added DATA: ", change.doc.data())
             dispatch(addTeamToAllTeams(change.doc.data()))
           }
-          if (change.type == 'modified') {
-            console.log("OUR DATA: ", change.doc.data())
-            //setNewTeams([change.doc.data()])
-            //dispatch(addTeamToAllTeams(change.doc.data()))
-            //array.push(change.doc.data())
+          if (change.type == 'modified', change.doc.data()) {
+            console.info("modified DATA: ", change.doc.data())
+            dispatch(exchangeModifiedTeamToExistingTeam(change.doc.data()))
           }
           if (change.type == 'removed') {
-            console.log("OUR DATA: ", change.doc.data())
+            console.log("removed DATA: ", change.doc.data())
           }
         })
       })
-      return unsubscribe;
+    return unsubscribe;
   }, [])
 
   let content
 
-  if(teamStatus === 'loading') {
+  if (teamStatus === 'loading') {
     content = <Text>Loading...</Text>
   } else if (teamStatus === 'succeeded') {
     content = <View style={style_teamList.listContainer}>
-    <StatusBar
-      barStyle="dark-content"
-      hidden={false}
-      backgroundColor="#00BCD4"
-      translucent={true}
-    />
-    <FlatList
-      data={teams}
-      renderItem={(item) => renderTeamListItem(item, navigation, dispatch)}
-      keyExtractor={(item, index) => index.toString()}
-    />
-  </View>
+      <StatusBar
+        barStyle="dark-content"
+        hidden={false}
+        backgroundColor="#00BCD4"
+        translucent={true}
+      />
+      <FlatList
+        data={teams}
+        renderItem={(item) => renderTeamListItem(item, navigation, dispatch)}
+        keyExtractor={(item, index) => index.toString()}
+      />
+    </View>
   } else if (teamStatus === 'failed') {
     content = <View>{error}</View>
   }

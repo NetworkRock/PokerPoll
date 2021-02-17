@@ -12,72 +12,81 @@ export const pollSlice = createSlice({
   name: 'polls',
   initialState,
   reducers: {
-    pollAdded(state, action) {
-      state.polls.push(action.payload)
-    },
     addCurrentSelectedGroup(state, action) {
       state.currentSelectedGroup = action.payload
-      state.status = 'idle'
+      state.status = 'succeeded'
+    },
+    pollAdded(state, action) {
+      console.log("PAY:", action.payload)
+      const existsAlready = state.polls.find((poll) => poll.id === action.payload.id)
+      if (!existsAlready) {
+        state.polls.push(action.payload)
+      }
+      state.status = 'succeeded'
+    },
+    exchangeModifiedPollToExistingPoll(state, action) {
+      const { title, description, id } = action.payload
+      const exisitngPoll = state.polls.find((poll) => poll.id === id)
+      if (exisitngPoll) {
+        exisitngPoll.title = title
+        exisitngPoll.description = description
+      }
     }
   },
   extraReducers: builder => {
-    builder.addCase('polls/fetchPollsByGroupId/pending', (state, action) => {
+    builder.addCase('polls/addNewPoll/pending', (state, action) => {
       state.status = 'loading'
     })
-    builder.addCase('polls/fetchPollsByGroupId/fulfilled', (state, action) => {
+    builder.addCase('polls/addNewPoll/fulfilled', (state, action) => {
       state.status = 'succeeded'
-      state.polls = action.payload
     })
-    builder.addCase('polls/fetchPollsByGroupId/rejected', (state, action) => {
+    builder.addCase('polls/addNewPoll/rejected', (state, action) => {
       state.status = 'failed'
       state.error = action.error.message
     })
-    builder.addCase('polls/addNewPoll/fulfilled', (state, action) => {
-      state.status = 'idle'
-    })
   }
-})
-
-
-/**
- * Define a thunk function create slice not support that
- */
-export const fetchPollsByGroupId = createAsyncThunk('polls/fetchPollsByGroupId', async (teamId) => {
-  const db = firebase.firestore();
-  let pollsArray: Array<Object> = [];
-  console.log("CURREN FETCH:", teamId)
-  try {
-    const snapshot = await db.collection('poll').doc(teamId.currentTeamId).collection('polls').get()
-    snapshot.forEach((doc) => {
-      // Use concat because of immutability
-      pollsArray = pollsArray.concat(doc.data())
-    })
-  } catch (error) {
-    console.error("Fetch polls error: ", error)
-  }
-  console.info("Polls-Array: ", pollsArray);
-  return pollsArray
 })
 
 /**
  * Define a thunk funktion for save a new poll
  */
 export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
-  const db = firebase.firestore();
-  const response = await db.collection('poll').doc(poll.currentTeamId).collection('polls').add({
-    title: poll.title,
-    description: poll.description
-  })
-  const dataResponse = await db.collection('poll').doc(poll.currentTeamId).collection('polls').doc(response.id).get()
+  let dataResponse
+  try {
+    const db = firebase.firestore();
+    const pRef = await db.collection('poll')
+    const reponse = pRef.doc(poll.currentTeamId)
+    const pollsRef = reponse.collection('polls').doc()
+
+    reponse.collection('polls').doc(pollsRef.id).set({
+      id: pollsRef.id,
+      title: poll.title,
+      description: poll.description
+    })
+
+
+    dataResponse = await db.collection('poll')
+      .doc(poll.currentTeamId)
+      .collection('polls')
+      .doc(reponse.id).get()
+  } catch (error) {
+    console.error("Error by creating a poll: ", error)
+  }
+
   return dataResponse.data()
 })
 
 
 
+export const {
+  pollAdded,
+  addCurrentSelectedGroup,
+  exchangeModifiedPollToExistingPoll
+} = pollSlice.actions
+
+
 export const selectAllPolls = state => state.polls.polls
 
 export const selectCurrentGroup = state => state.polls.currentSelectedGroup
-
-export const { pollAdded, addCurrentSelectedGroup} = pollSlice.actions
 
 export default pollSlice.reducer

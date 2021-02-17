@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import renderPollListItem from './PollListItem'
 import stylePollList from './style_pollList';
-import { selectAllPolls, fetchPollsByGroupId } from '../../../features/polls/pollSlice'
-import { selectCurrentGroup} from '../../../features/polls/pollSlice'
+import { selectAllPolls, pollAdded, exchangeModifiedPollToExistingPoll } from '../../../features/polls/pollSlice'
+import { selectCurrentGroup } from '../../../features/polls/pollSlice'
+import { firebaseApp } from "../../../../config";
+
 
 const SearchPollsList = () => {
   const dispatch = useDispatch();
@@ -20,29 +22,48 @@ const SearchPollsList = () => {
   const error = useSelector(state => state.polls.error)
 
   useEffect(() => {
-    if(pollStatus === 'idle') {
-      dispatch(fetchPollsByGroupId({currentTeamId}))
-    }
-  }, [pollStatus, dispatch])
+    const db = firebaseApp.firestore();
+    const unsubscribe = db.collection('poll')
+      .doc(currentTeamId)
+      .collection('polls')
+      .onSnapshot({ includeMetadataChanges: false }, (snapshot) => {
+        var source = snapshot.metadata.hasPendingWrites ? "Local" : "Server";
+        console.log(source, " data: ")
+        snapshot.docChanges().map((change) => {
+          if (change.type == 'added') {
+            console.info("added DATA: ", change.doc.data())
+            dispatch(pollAdded(change.doc.data()))
+          }
+          if (change.type == 'modified') {
+            console.info("modified DATA: ", change.doc.data())
+            dispatch(exchangeModifiedPollToExistingPoll(change.doc.data()))
+          }
+          if (change.type == 'removed') {
+            console.log("removed DATA: ", change.doc.data())
+          }
+        })
+      })
+    return unsubscribe;
+  }, [])
 
   let content
 
-  if(pollStatus === 'loading') {
+  if (pollStatus === 'loading') {
     content = <Text>Loading...</Text>
   } else if (pollStatus === 'succeeded') {
     content = <View style={stylePollList.listContainer}>
-    <StatusBar
-      barStyle="dark-content"
-      hidden={false}
-      backgroundColor="#00BCD4"
-      translucent={true}
-    />
-    <FlatList
-      data={polls}
-      renderItem={(item) => renderPollListItem(item)}
-      keyExtractor={(item, index) => index.toString()}
-    />
-  </View>
+      <StatusBar
+        barStyle="dark-content"
+        hidden={false}
+        backgroundColor="#00BCD4"
+        translucent={true}
+      />
+      <FlatList
+        data={polls}
+        renderItem={(item) => renderPollListItem(item)}
+        keyExtractor={(item, index) => index.toString()}
+      />
+    </View>
   } else if (pollStatus === 'failed') {
     content = <View>{error}</View>
   }

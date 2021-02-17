@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { setStatusBarBackgroundColor } from 'expo-status-bar';
 import firebase from "firebase";
 
 const initialState = {
@@ -28,9 +27,21 @@ export const teamSlice = createSlice({
       state.createANewTeamWithNewMembers.title = action.payload
     },
     addTeamToAllTeams(state, action) {
-      state.teams.push(action.payload)
+      const exisitngTeam = state.teams.find((team) => team.id === action.payload.id)
+      if (!exisitngTeam) {
+        state.teams.push(action.payload)
+      }
       //Maybe the most important line of the whole program :D
       state.status = 'succeeded'
+    },
+    exchangeModifiedTeamToExistingTeam(state, action) {
+      const { createdBy, teamTitle, addedUsersId, id } = action.payload
+      const exisitngTeam = state.teams.find((team) => team.id === id)
+      if (exisitngTeam) {
+        exisitngTeam.createdBy = createdBy
+        exisitngTeam.teamTitle = teamTitle
+        exisitngTeam.addedUsersId = addedUsersId
+      }
     }
   },
   extraReducers: builder => {
@@ -47,28 +58,6 @@ export const teamSlice = createSlice({
   }
 })
 
-
-/**
- * Define a thunk function create slice not support that
- */
-export const fetchAllTeamsForOneUser = createAsyncThunk('teams/fetchAllTeamsForOneUser', async (user) => {
-  const db = firebase.firestore();
-  let teamsArray: Array<Object> = [];
-  try {
-    const teamsRef = db.collection('teams')
-    teamsRef.where('addedUsersId', 'array-contains', [user.currentUser.id])
-    const snapshot = await teamsRef.get();
-    snapshot.forEach((doc) => {
-      // Use concat because of immutability
-      teamsArray = teamsArray.concat(doc.data())
-    })
-  } catch (error) {
-    console.error("Fetch polls error: ", error)
-  }
-  console.info("TEAMSARRAY:", teamsArray)
-  return teamsArray
-})
-
 /**
  * Define a thunk funktion for save a new team
  */
@@ -78,16 +67,20 @@ export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team) => {
     const db = firebase.firestore();
     const teamRef = await db.collection('teams');
     const userRef = await db.collection('users');
-    const response = await teamRef.add(team)
+    const response = await teamRef.doc()
     console.log("TEAM:", team)
+    await teamRef.doc(response.id).set({ ...{ id: response.id }, ...team })
+    dataResponse = await teamRef.doc(response.id).get()
+    console.log("RESPONSE", dataResponse.data())
+
+
+    //Update the connected membersOfTeam array for user
     team.addedUsersId.map(async (userId) => {
       await userRef.doc(userId).update({
         memberOfTeams: firebase.firestore.FieldValue.arrayUnion(response.id)
       });
     })
-    await teamRef.doc(response.id).update({ id: response.id })
-    dataResponse = await teamRef.doc(response.id).get()
-    console.log("RESPONSE", dataResponse.data())
+
   } catch (error) {
     console.error("Error by creating a team: ", error)
   }
@@ -95,7 +88,12 @@ export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team) => {
   return dataResponse.data()
 })
 
-export const { addMemberToNewTeam, addTeamTitle, addTeamToAllTeams } = teamSlice.actions
+export const {
+  addMemberToNewTeam,
+  addTeamTitle,
+  addTeamToAllTeams,
+  exchangeModifiedTeamToExistingTeam
+} = teamSlice.actions
 
 export const selectNewAddedTeamMembers = state => state.teams.createANewTeamWithNewMembers.members
 
