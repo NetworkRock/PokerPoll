@@ -5,6 +5,7 @@ import {addCurrentSelectedGroup} from '../../../features/polls/pollSlice';
 
 const renderTeamListItem = ({ item }: Object, navigation, dispatch) => {
 
+  console.log("ITEM: ", item);
   const onAddCurrentSelectedGroup= () => {
     try {
       dispatch(addCurrentSelectedGroup(item.id));
@@ -21,7 +22,9 @@ const renderTeamListItem = ({ item }: Object, navigation, dispatch) => {
       onPress={onAddCurrentSelectedGroup}>
       <View style={style_teamList.listItem}>
         <View style={style_teamList.listItemContainerWithoutImage}>
-          <Text>{item.teamTitle}</Text>
+        <Text>{item.teamTitle}</Text>
+        <Text>{item.createdBy}</Text>
+        <Text>{item.id}</Text>
         </View>
       </View>
     </TouchableHighlight>

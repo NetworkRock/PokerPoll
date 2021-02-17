@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import {
   Text,
@@ -7,11 +7,13 @@ import {
   FlatList,
   StatusBar,
 } from 'react-native';
-import { selectAllTeams, fetchAllTeamsForOneUser } from '../../../features/team/teamSlice'
+import { selectAllTeams, addTeamToAllTeams } from '../../../features/team/teamSlice'
 import style_teamList from './style_teamList';
 import renderTeamListItem from './TeamListItem';
 import { useNavigation } from '@react-navigation/native';
 import { selectCurrentUser } from '../../../features/users/userSlice'
+import { firebaseApp } from "../../../../config";
+
 
 const TeamList = () => {
   const navigation = useNavigation();
@@ -22,10 +24,28 @@ const TeamList = () => {
   const error = useSelector(state => state.teams.error)
 
   useEffect(() => {
-    if(teamStatus === 'idle') {
-      dispatch(fetchAllTeamsForOneUser({currentUser}))
-    }
-  }, [teamStatus, dispatch])
+      console.log("TEAMS", teams)
+      console.log("CURRENT USER: ", currentUser.id);
+      const db = firebaseApp.firestore();
+      const unsubscribe =  db.collection('teams').where('addedUsersId', 'array-contains', currentUser.id).onSnapshot((snapshot) => {
+        snapshot.docChanges().map((change) => {
+          if (change.type == 'added') {
+            console.log("OUR DATA: ", change.doc.data())
+            dispatch(addTeamToAllTeams(change.doc.data()))
+          }
+          if (change.type == 'modified') {
+            console.log("OUR DATA: ", change.doc.data())
+            //setNewTeams([change.doc.data()])
+            //dispatch(addTeamToAllTeams(change.doc.data()))
+            //array.push(change.doc.data())
+          }
+          if (change.type == 'removed') {
+            console.log("OUR DATA: ", change.doc.data())
+          }
+        })
+      })
+      return unsubscribe;
+  }, [])
 
   let content
 
