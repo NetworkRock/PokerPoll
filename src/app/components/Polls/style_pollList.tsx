@@ -31,7 +31,7 @@ export default StyleSheet.create({
   },
   iconInListContainer: {
     flex: 1,
-    height: 75,
+    height: 62,
     justifyContent: 'center',
     alignItems: 'center',
     flexGrow: 0.2,
@@ -43,18 +43,9 @@ export default StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold'
   },
-  searchField: {
-    borderRadius: 10,
-    fontSize: 20,
-    backgroundColor: '#e3e3e3',
-    padding: 5,
-    marginTop: 5,
-    marginBottom: 5,
-  },
-
 
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     paddingBottom: 5,
     color: '#fff',
@@ -63,6 +54,7 @@ export default StyleSheet.create({
 
   description: {
     color: '#fff',
+    fontSize: 16,
     //lineHeight: 22
   }
 })

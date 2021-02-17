@@ -10,8 +10,8 @@ const renderPollListItem = ({ item }: Object) => {
       onPress={() => { }}>
       <View style={stylePollList.listItem}>
         <View style={stylePollList.listItemContainerWithoutImage}>
-          <Text style={stylePollList.title}>{item.title}</Text>
-          <Text numberOfLines={4} style={stylePollList.description}>{item.description}</Text>
+          <Text numberOfLines={1} style={stylePollList.title}>{item.title}</Text>
+          <Text numberOfLines={3} style={stylePollList.description}>{item.description}</Text>
         </View>
         <View style={stylePollList.iconInListContainer}>
           <Icon name='lock-open' color="green" size={35} />

@@ -8,7 +8,7 @@ export default StyleSheet.create({
   listContainer: {
     flex: 1,
     alignSelf: 'stretch',
-    backgroundColor: '#0099ff',
+    backgroundColor: '#706f77',
   },
 
   flatListHeader: {
@@ -16,18 +16,31 @@ export default StyleSheet.create({
     alignItems: 'stretch'
   },
   listItem: {
-    flex: 1,
-    flexDirection: 'row',
-    minHeight: 50,
-    margin: 2
+    display: 'flex',
+    backgroundColor: 'white',
+    flexDirection: 'row-reverse',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    height: 130,
   },
   listItemContainerWithoutImage: {
-    fontSize: 15,
-    flexDirection: 'row',
-    flexGrow: 1,
-    borderColor: 'lightgrey',
-    justifyContent: 'space-between',
-    borderBottomWidth: 0.7, 
+    flex: 1,
+    flexGrow: 0.8,
+    padding: 20,
+    justifyContent: 'center',
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1,
+    height: 130,
+  },
+  iconInListContainer: {
+    flex: 1,
+    height: 62,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexGrow: 0.2,
+    backgroundColor: '#0099ff',
+    borderRadius: 60,
+    margin: 10
   },
   headerTitle: {
     fontSize: 30,
@@ -41,5 +54,17 @@ export default StyleSheet.create({
     marginTop: 5,
     marginBottom: 5,
   },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    paddingBottom: 5,
+    color: '#706f77',
+    textShadowColor: '#0099ff',
+  },
+
+  description: {
+    color: 'lightgrey',
+    //lineHeight: 22
+  }
   
 })

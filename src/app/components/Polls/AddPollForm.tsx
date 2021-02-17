@@ -4,7 +4,8 @@ import { addNewPoll, pollAdded } from '../../../features/polls/pollSlice';
 import { StyleSheet, View, Text, Button } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { unwrapResult } from '@reduxjs/toolkit'
-import { selectCurrentGroup} from '../../../features/polls/pollSlice'
+import { selectCurrentGroup } from '../../../features/polls/pollSlice'
+import styleAddPollForm from './stlye_addPollForm'
 
 const AddPostForm = () => {
   const [title, setTitle] = useState('')
@@ -40,37 +41,30 @@ const AddPostForm = () => {
 
   return (
     <View style={styleAddPollForm.container}>
-      <Text>Create a new Poll</Text>
-      <TextInput
-        placeholder="How is your poll called?"
-        placeholderTextColor="#C8C8C8"
-        value={title}
-        onChangeText={onTitleChanged}
-      />
-      <TextInput
-        placeholder="Describe what the poll is about"
-        placeholderTextColor="#C8C8C8"
-        multiline={true}
-        numberOfLines={4}
-        value={description} 
-        onChangeText={onDescriptionChanged}
-      />
-      <Button title="create poll" onPress={onSavePollClicked} />
+      <View style={styleAddPollForm.headerContainer}>
+        <TextInput
+          style={styleAddPollForm.textField}
+          placeholder="How is your poll called?"
+          placeholderTextColor="#C8C8C8"
+          value={title}
+          onChangeText={onTitleChanged}
+          maxLength={25}
+        />
+      </View>
+      <View style={styleAddPollForm.descriptionContainer}>
+        <TextInput
+          style={styleAddPollForm.textArea}
+          placeholder="Describe what the poll is about"
+          placeholderTextColor="#C8C8C8"
+          multiline={true}
+          numberOfLines={12}
+          value={description}
+          onChangeText={onDescriptionChanged}
+        />
+        <Button title="create poll" onPress={onSavePollClicked} />
+      </View>
     </View>
   )
 }
-
-// TODO: later do that in a seperated file --> styles for the App.tsx file
-const styleAddPollForm = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default AddPostForm

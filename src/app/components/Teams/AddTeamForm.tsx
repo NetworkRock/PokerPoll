@@ -25,6 +25,7 @@ const AddTeamForm = () => {
         placeholderTextColor="#C8C8C8"
         value={title}
         onChangeText={onTitleChanged}
+        maxLength={38}
       />
     </View>
   )
