@@ -1,0 +1,52 @@
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  Text,
+  View,
+  FlatList,
+  StatusBar,
+} from 'react-native';
+import renderTeamListItem from './UserListItem'
+import style_userForm from './style_userForm';
+import { selectAllFilteredUsers ,fetchUserListById } from '../../../features/users/userSlice'
+import { selectCurrentUser } from '../../../features/users/userSlice'
+
+const UserSearchList = () => {
+  const searchTitle = useSelector(state => state.user.titleOfDisplayNameUserSearch)
+  const filteredUsers = useSelector(selectAllFilteredUsers)
+  const userStatus = useSelector(state => state.user.status)
+  const error = useSelector(state => state.user.error)
+  const currentUser = useSelector(selectCurrentUser)
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUserListById({ searchTitle, currentUser }))
+  }, [searchTitle, dispatch])
+
+  let content
+  if (userStatus === 'loading') {
+    content = <View style={style_userForm.container}><Text>Loading...</Text></View>
+  } else if (userStatus === 'succeeded') {
+    content = <View style={style_userForm.listContainer}>
+    <StatusBar
+      barStyle="dark-content"
+      hidden={false}
+      backgroundColor="#00BCD4"
+      translucent={true}
+    />
+    <FlatList
+      data={filteredUsers}
+      renderItem={(item) => renderTeamListItem(item, dispatch)}
+      keyExtractor={(item) => item.id.toString()}
+    />
+  </View>
+  } else if (userStatus === 'failed') {
+    content = <View>{error}</View>
+  }
+
+  return (
+    <View style={style_userForm.listContainer}>{content}</View>
+  );
+}
+
+export default UserSearchList
