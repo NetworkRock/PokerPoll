@@ -38,6 +38,7 @@ export const pollSlice = createSlice({
       state.status = 'loading'
     })
     builder.addCase('polls/addNewPoll/fulfilled', (state, action) => {
+      console.log("POLL ADDED:", action.payload)
       state.status = 'succeeded'
     })
     builder.addCase('polls/addNewPoll/rejected', (state, action) => {
@@ -60,6 +61,7 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
 
     reponse.collection('polls').doc(pollsRef.id).set({
       id: pollsRef.id,
+      groupId: poll.currentTeamId,
       title: poll.title,
       description: poll.description
     })
@@ -68,7 +70,9 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
     dataResponse = await db.collection('poll')
       .doc(poll.currentTeamId)
       .collection('polls')
-      .doc(reponse.id).get()
+      .doc(pollsRef.id).get()
+
+
   } catch (error) {
     console.error("Error by creating a poll: ", error)
   }
@@ -85,7 +89,8 @@ export const {
 } = pollSlice.actions
 
 
-export const selectAllPolls = state => state.polls.polls
+export const selectAllPollsForOneGroup = (state, currentTeamId) => 
+  state.polls.polls.filter((poll) => poll.groupId === currentTeamId)
 
 export const selectCurrentGroup = state => state.polls.currentSelectedGroup
 

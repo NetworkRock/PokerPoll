@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import renderPollListItem from './PollListItem'
 import stylePollList from './style_pollList';
-import { selectAllPolls, pollAdded, exchangeModifiedPollToExistingPoll } from '../../../features/polls/pollSlice'
+import { selectAllPollsForOneGroup, pollAdded, exchangeModifiedPollToExistingPoll } from '../../../features/polls/pollSlice'
 import { selectCurrentGroup } from '../../../features/polls/pollSlice'
 import { firebaseApp } from "../../../../config";
 
@@ -17,12 +17,14 @@ import { firebaseApp } from "../../../../config";
 const SearchPollsList = () => {
   const dispatch = useDispatch();
   const currentTeamId = useSelector(selectCurrentGroup)
-  const polls = useSelector(selectAllPolls)
+  const polls = useSelector((state) => selectAllPollsForOneGroup(state, currentTeamId))
   const pollStatus = useSelector(state => state.polls.status)
   const error = useSelector(state => state.polls.error)
 
   useEffect(() => {
     const db = firebaseApp.firestore();
+
+    console.log("G-ID: ", currentTeamId)
     const unsubscribe = db.collection('poll')
       .doc(currentTeamId)
       .collection('polls')
