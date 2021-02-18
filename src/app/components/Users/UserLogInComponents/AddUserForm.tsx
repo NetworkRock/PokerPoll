@@ -36,7 +36,7 @@ export const AddUserForm = (props) => {
   const onDisplayNameDisplayName = e => setDisplayName(e)
 
   const canLogin =
-  [displayName, profilePictureURL].every(Boolean) && addRequestStatus === 'idle'
+  [displayName.trim().length > 2, profilePictureURL].every(Boolean) && addRequestStatus === 'idle'
 
   const signInAnonymouslyClicked = () => {
     firebaseApp.auth().onAuthStateChanged(async (firebaseAuthUserData) => {
