@@ -11,13 +11,14 @@ import store from './src/app/store'
 import { firebaseApp } from './config';
 
 //  App component imports
-import PollList from './src/app/components/Polls/PollList';
+import PollList from './src/app/components/Polls/PollList/PollList';
 import { HEADER_BTN_TYPES } from './src/app/components/NavigationComponents/HeaderButtonEnum';
-import AddPostForm from './src/app/components/Polls/AddPollForm';
+import AddPostForm from './src/app/components/Polls/AddPoll/AddPollForm';
 import AddUserForm from './src/app/components/Users/UserLogInComponents/AddUserForm';
 import AddTeamForm from './src/app/components/Teams/AddTeamForm';
+import DetailsPollForm from './src/app/components/Polls/DetailsPoll/DetailsPollForm'
 import AddTeamHeaderBtn from './src/app/components/Teams/AddTeamHeaderBtn'
-import AddPollHeaderBtn from './src/app/components/Polls/AddPollHeaderBtn'
+import AddPollHeaderBtn from './src/app/components/Polls/AddPoll/AddPollHeaderBtn'
 import UserSearchList from './src/app/components/Users/UserSearchList';
 import UserSearchListHeader from './src/app/components/Users/UserSearchListHeader';
 import UserSearchListAddedMemebersHeader from './src/app/components/Users/UserSearchListAddedMembersHeader';
@@ -33,6 +34,7 @@ import SettingsView from './src/app/components/Settings/SettingsView';
 const RootStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootPollsForGroupStack = createStackNavigator();
+const RootPollsDetailStack = createStackNavigator();
 const RootUserLogInStack = createStackNavigator();
 const RootTeamStack = createStackNavigator();
 
@@ -60,8 +62,16 @@ const PollTeamStack = () => {
         name="PollsForGroupStack"
         component={PollsForGroupStack}
         options={({ navigation }) => ({
-          headerTitle: () => <Text>Search Polls</Text>,
+          headerTitle: () => <Text>Polls</Text>,
           headerRight: () => <Button title={HEADER_BTN_TYPES.CREATE} onPress={() => navigation.navigate('CreatePollsStack')} />,
+        })}
+      />
+      <RootTeamStack.Screen
+        name="PollsDetailStack"
+        component={PollsDetailStack}
+        options={({ navigation }) => ({
+          headerTitle: () => <Text>Details for the Poll</Text>,
+          headerRight: () => <Button title={HEADER_BTN_TYPES.EDIT} onPress={() => navigation.navigate('PollsDetailEditScreen')} />,
         })}
       />
     </RootTeamStack.Navigator>
@@ -84,7 +94,7 @@ const PollTeamScreen = () => {
 const PollsForGroupStack = () => {
   return (
     <RootPollsForGroupStack.Navigator mode="card" headerMode="none">
-      <RootTeamStack.Screen
+      <RootPollsForGroupStack.Screen
         name="PollsForGroupScreen"
         component={PollsForGroupScreen}
       />
@@ -94,6 +104,48 @@ const PollsForGroupStack = () => {
 const PollsForGroupScreen = () => {
   return (
     <PollList />
+  )
+}
+
+/**
+ * Workflow of showing details for one poll
+ */
+const PollsDetailStack = () => {
+  return (
+    <RootPollsDetailStack.Navigator mode="modal" headerMode="none">
+      <RootPollsDetailStack.Screen
+        name="PollsDetailScreen"
+        component={PollsDetailScreen}
+        options={({ navigation }) => ({
+          headerTitle: () => <Text>Details for the Poll</Text>,
+          headerRight: () => <Button title={HEADER_BTN_TYPES.EDIT} onPress={() => navigation.navigate('PollsDetailEditScreen')} />,
+        })}
+      />
+      <RootPollsDetailStack.Screen
+        name="PollsDetailEditScreen"
+        component={PollsDetailEditScreen}
+        options={({ navigation }) => ({
+          headerTitle: () => <Text>Details for the Poll</Text>,
+          headerRight: () => <Button title={HEADER_BTN_TYPES.SAVE} onPress={() => navigation.navigate('PollsDetailEditScreen')} />,
+          headerLeft: () => <View></View>
+        })}
+      />
+    </RootPollsDetailStack.Navigator>
+  )
+}
+/**
+ * Detail screens for the details poll workflow
+ */
+const PollsDetailScreen = () => {
+  return (
+    <DetailsPollForm/>
+  )
+}
+const PollsDetailEditScreen = () => {
+  return (
+    <View style={globalStyles.container}>
+      <Text>HIER KANN DER ERSTELLER DIE UMFRAGE VERÄNDERN</Text>
+    </View>
   )
 }
 
@@ -135,9 +187,9 @@ const AddMembersToPollScreen = () => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={{ flex: 1 }}>
       <View style={globalStyles.container}>
-          <UserSearchListHeader />
-          <UserSearchListAddedMemebersHeader />
-          <UserSearchList />
+        <UserSearchListHeader />
+        <UserSearchListAddedMemebersHeader />
+        <UserSearchList />
       </View>
     </KeyboardAvoidingView>
   )
@@ -148,9 +200,7 @@ const CreateNewTeamScreen = () => {
       <View style={globalStyles.container}>
         <AddTeamForm />
         <View style={globalStyles.container} >
-          <ScrollView contentContainerStyle={globalStyles.addTeamFormHorizontalScrollView} horizontal={false} alwaysBounceHorizontal={false} >
-            <UserSearchListAddedMemebersHeader />
-          </ScrollView>
+          <UserSearchListAddedMemebersHeader />
         </View>
       </View>
     </KeyboardAvoidingView>

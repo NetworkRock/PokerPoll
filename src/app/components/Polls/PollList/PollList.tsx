@@ -9,12 +9,14 @@ import {
 } from 'react-native';
 import renderPollListItem from './PollListItem'
 import stylePollList from './style_pollList';
-import { selectAllPollsForOneGroup, pollAdded, exchangeModifiedPollToExistingPoll } from '../../../features/polls/pollSlice'
-import { selectCurrentGroup } from '../../../features/polls/pollSlice'
-import { firebaseApp } from "../../../../config";
+import { selectAllPollsForOneGroup, pollAdded, exchangeModifiedPollToExistingPoll } from '../../../../features/polls/pollSlice'
+import { selectCurrentGroup } from '../../../../features/polls/pollSlice'
+import { firebaseApp } from "../../../../../config";
+import { useNavigation } from '@react-navigation/native';
 
 
 const SearchPollsList = () => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const currentTeamId = useSelector(selectCurrentGroup)
   const polls = useSelector((state) => selectAllPollsForOneGroup(state, currentTeamId))
@@ -62,7 +64,7 @@ const SearchPollsList = () => {
       />
       <FlatList
         data={polls}
-        renderItem={(item) => renderPollListItem(item)}
+        renderItem={(item) => renderPollListItem(item, navigation)}
         keyExtractor={(item, index) => index.toString()}
       />
     </View>

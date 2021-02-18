@@ -5,9 +5,9 @@ import { unwrapResult } from '@reduxjs/toolkit'
 import { selectCurrentPollTitle,
   selectCurrentPollDescription,
   selectCurrentGroup
- } from '../../../features/polls/pollSlice'
-import { HEADER_BTN_TYPES } from '../NavigationComponents/HeaderButtonEnum';
-import { addNewPoll } from '../../../features/polls/pollSlice';
+ } from '../../../../features/polls/pollSlice'
+import { HEADER_BTN_TYPES } from '../../NavigationComponents/HeaderButtonEnum';
+import { addNewPoll } from '../../../../features/polls/pollSlice';
 import stlye_addPollForm from './stlye_addPollForm';
 
 const AddPollHeaderBtn = (props) => {

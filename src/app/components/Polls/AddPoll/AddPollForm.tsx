@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import styleAddPollForm from './stlye_addPollForm'
-import { addCurrentPollTitle, addCurrentPollDescription } from '../../../features/polls/pollSlice';
+import { addCurrentPollTitle, addCurrentPollDescription } from '../../../../features/polls/pollSlice';
 
 const AddPostForm = () => {
   const [title, setTitle] = useState('')

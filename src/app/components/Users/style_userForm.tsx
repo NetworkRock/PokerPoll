@@ -83,8 +83,8 @@ export default StyleSheet.create({
     margin: 10
   },
   scrollViewAddMembersToPollScreen: {
-    flex: 1,
-    flexGrow: 1,
+    // flex: 1,
+    // flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -3,11 +3,28 @@ import { TouchableHighlight, View, Text } from 'react-native';
 import stylePollList from "./style_pollList";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 
-const renderPollListItem = ({ item }: Object) => {
+const renderPollListItem = ({ item }, navigation) => {
+
+
+
+  const onPollListItemClicked = () => {
+    console.log("CLICKED");
+    try {
+      //dispatch(addCurrentSelectedGroup(item.id));
+    } catch (error) {
+      console.error(error)
+    } finally {
+      console.log("CLICKED");
+      navigation.navigate('PollsDetailStack');
+    }
+  }
+
+
+
   return (
     <TouchableHighlight
       key={item.currentTeamId}
-      onPress={() => { }}>
+      onPress={onPollListItemClicked}>
       <View style={stylePollList.listItem}>
         <View style={stylePollList.listItemContainerWithoutImage}>
           <Text numberOfLines={1} style={stylePollList.title}>{item.pollTitle}</Text>

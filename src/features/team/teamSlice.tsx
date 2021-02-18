@@ -4,7 +4,7 @@ import firebase from "firebase";
 const initialState = {
   teams: [],
   createANewTeamWithNewMembers: {
-    title: null,
+    title: '',
     members: [],
   },
   status: 'idle',
