@@ -135,13 +135,9 @@ const AddMembersToPollScreen = () => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={{ flex: 1 }}>
       <View style={globalStyles.container}>
-        <UserSearchListHeader />
-        <View style={globalStyles.container}>
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }} horizontal={true} alwaysBounceHorizontal={false} >
-            <UserSearchListAddedMemebersHeader />
-          </ScrollView>
-        </View>
-        <UserSearchList />
+          <UserSearchListHeader />
+          <UserSearchListAddedMemebersHeader />
+          <UserSearchList />
       </View>
     </KeyboardAvoidingView>
   )
@@ -336,6 +332,9 @@ const globalStyles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  scrollContainerForMembers: {
+    //alignSelf: 'stretch',
   },
   addMembersToPollScreen: {
     flex: 1,
