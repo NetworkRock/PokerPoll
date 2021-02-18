@@ -37,4 +37,11 @@ export default StyleSheet.create({
     fontSize: 20,
     backgroundColor: '#e3e3e3',
   },
+  btn: {
+    marginTop: 10,
+    borderRadius: 10,
+    fontSize: 40,
+    fontWeight: 'bold',
+    backgroundColor: '#e3e3e3',
+  }
 });

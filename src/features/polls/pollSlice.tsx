@@ -2,8 +2,10 @@ import { createSlice, createAsyncThunk, current } from '@reduxjs/toolkit';
 import firebase from "firebase";
 
 const initialState = {
-  polls: [],
   currentSelectedGroup: null,
+  polls: [],
+  currentPollTitle: '',
+  currentPollDescription: '',
   status: 'idle',
   error: null
 }
@@ -31,7 +33,13 @@ export const pollSlice = createSlice({
         exisitngPoll.title = title
         exisitngPoll.description = description
       }
-    }
+    },
+    addCurrentPollTitle(state, action) {
+      state.currentPollTitle = action.payload
+    },
+    addCurrentPollDescription(state, action) {
+      state.currentPollDescription = action.payload
+    },
   },
   extraReducers: builder => {
     builder.addCase('polls/addNewPoll/pending', (state, action) => {
@@ -62,8 +70,8 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
     reponse.collection('polls').doc(pollsRef.id).set({
       id: pollsRef.id,
       groupId: poll.currentTeamId,
-      title: poll.title,
-      description: poll.description
+      pollTitle: poll.pollTitle,
+      pollDescription: poll.pollDescription
     })
 
 
@@ -85,7 +93,9 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
 export const {
   pollAdded,
   addCurrentSelectedGroup,
-  exchangeModifiedPollToExistingPoll
+  exchangeModifiedPollToExistingPoll,
+  addCurrentPollDescription,
+  addCurrentPollTitle
 } = pollSlice.actions
 
 
@@ -93,5 +103,8 @@ export const selectAllPollsForOneGroup = (state, currentTeamId) =>
   state.polls.polls.filter((poll) => poll.groupId === currentTeamId)
 
 export const selectCurrentGroup = state => state.polls.currentSelectedGroup
+export const selectCurrentPollTitle = state => state.polls.currentPollTitle
+export const selectCurrentPollDescription = state => state.polls.currentPollDescription
+export const selectCurrenPollTitle = state => state.current
 
 export default pollSlice.reducer

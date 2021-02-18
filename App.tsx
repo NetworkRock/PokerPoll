@@ -17,6 +17,7 @@ import AddPostForm from './src/app/components/Polls/AddPollForm';
 import AddUserForm from './src/app/components/Users/UserLogInComponents/AddUserForm';
 import AddTeamForm from './src/app/components/Teams/AddTeamForm';
 import AddTeamHeaderBtn from './src/app/components/Teams/AddTeamHeaderBtn'
+import AddPollHeaderBtn from './src/app/components/Polls/AddPollHeaderBtn'
 import UserSearchList from './src/app/components/Users/UserSearchList';
 import UserSearchListHeader from './src/app/components/Users/UserSearchListHeader';
 import UserSearchListAddedMemebersHeader from './src/app/components/Users/UserSearchListAddedMembersHeader';
@@ -180,7 +181,7 @@ const CreatePollsStack = () => {
         component={CreateNewPollScreen}
         options={({ navigation }) => ({
           headerTitle: () => <Text>Create poll</Text>,
-          headerRight: () => <Button title={HEADER_BTN_TYPES.CREATE} onPress={() => navigation.navigate('PollsForGroupStack')} />,
+          headerRight: () => <AddPollHeaderBtn navigation={navigation} />,
           headerBackTitleVisible: false
         })}
       />
