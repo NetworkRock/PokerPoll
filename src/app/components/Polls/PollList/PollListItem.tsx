@@ -2,15 +2,16 @@ import React from 'react';
 import { TouchableHighlight, View, Text } from 'react-native';
 import stylePollList from "./style_pollList";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
+import { addCurrentSelectedPoll } from '../../../../features/polls/pollSlice';
 
-const renderPollListItem = ({ item }, navigation) => {
+const renderPollListItem = ({ item }, navigation, dispatch) => {
 
 
 
   const onPollListItemClicked = () => {
     console.log("CLICKED");
     try {
-      //dispatch(addCurrentSelectedGroup(item.id));
+      dispatch(addCurrentSelectedPoll(item));
     } catch (error) {
       console.error(error)
     } finally {

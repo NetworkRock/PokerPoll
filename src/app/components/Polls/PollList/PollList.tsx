@@ -64,7 +64,7 @@ const SearchPollsList = () => {
       />
       <FlatList
         data={polls}
-        renderItem={(item) => renderPollListItem(item, navigation)}
+        renderItem={(item) => renderPollListItem(item, navigation, dispatch)}
         keyExtractor={(item, index) => index.toString()}
       />
     </View>

@@ -3,6 +3,7 @@ import firebase from "firebase";
 
 const initialState = {
   currentSelectedGroup: null,
+  currentSelectedPoll: null,
   polls: [],
   currentPollTitle: '',
   currentPollDescription: '',
@@ -16,6 +17,10 @@ export const pollSlice = createSlice({
   reducers: {
     addCurrentSelectedGroup(state, action) {
       state.currentSelectedGroup = action.payload
+      state.status = 'succeeded'
+    },
+    addCurrentSelectedPoll(state, action) {
+      state.currentSelectedPoll = action.payload
       state.status = 'succeeded'
     },
     pollAdded(state, action) {
@@ -93,16 +98,18 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
 export const {
   pollAdded,
   addCurrentSelectedGroup,
+  addCurrentSelectedPoll,
   exchangeModifiedPollToExistingPoll,
   addCurrentPollDescription,
-  addCurrentPollTitle
+  addCurrentPollTitle,
 } = pollSlice.actions
 
 
 export const selectAllPollsForOneGroup = (state, currentTeamId) => 
   state.polls.polls.filter((poll) => poll.groupId === currentTeamId)
 
-export const selectCurrentGroup = state => state.polls.currentSelectedGroup
+  export const selectCurrentGroup = state => state.polls.currentSelectedGroup
+  export const selectCurrentPoll = state => state.polls.currentSelectedPoll
 export const selectCurrentPollTitle = state => state.polls.currentPollTitle
 export const selectCurrentPollDescription = state => state.polls.currentPollDescription
 export const selectCurrenPollTitle = state => state.current
