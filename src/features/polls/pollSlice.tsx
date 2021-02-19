@@ -67,12 +67,12 @@ export const pollSlice = createSlice({
 export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
   let dataResponse
   try {
-    const db = firebase.firestore();
+    const db = firebase.firestore()
     const pRef = await db.collection('poll')
-    const reponse = pRef.doc(poll.currentTeamId)
-    const pollsRef = reponse.collection('polls').doc()
+    const response = pRef.doc(poll.currentTeamId)
+    const pollsRef = response.collection('polls').doc()
 
-    reponse.collection('polls').doc(pollsRef.id).set({
+    response.collection('polls').doc(pollsRef.id).set({
       id: pollsRef.id,
       groupId: poll.currentTeamId,
       pollTitle: poll.pollTitle,
@@ -92,6 +92,32 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
 
   return dataResponse.data()
 })
+
+
+/**
+ * Define a thunk function for rate a poll
+ */
+
+ export const ratePoll = createAsyncThunk('polls/ratePoll', async (poll: Object) => {
+   console.log(poll)
+
+   try {
+     const db = firebase.firestore()
+     const userRatingsRef = await db.collection('userRatings')
+     
+     db.collection('poll')
+     .doc(poll.pollWithRating.groupId)
+     .collection('polls')
+     .doc(poll.pollWithRating.id)
+     .collection('userRatings')
+     .doc(poll.pollWithRating.user).set(
+       {
+         [poll.pollWithRating.user]: {rate: poll.pollWithRating.rating}
+        })
+   } catch (error) {
+     console.error('Error by rating a poll: ', error)
+   }
+ })
 
 
 
