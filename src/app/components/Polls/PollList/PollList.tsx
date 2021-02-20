@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import {
   Text,
@@ -10,27 +10,31 @@ import {
 import renderPollListItem from './PollListItem'
 import stylePollList from './style_pollList';
 import { selectAllPollsForOneGroup, pollAdded, exchangeModifiedPollToExistingPoll } from '../../../../features/polls/pollSlice'
-import { selectCurrentGroup } from '../../../../features/polls/pollSlice'
+import { selectCurrentGroup, selectCurrentPoll } from '../../../../features/polls/pollSlice'
 import { firebaseApp } from "../../../../../config";
 import { useNavigation } from '@react-navigation/native';
+import { selectAllTeams } from '../../../../features/team/teamSlice'
+
 
 
 const SearchPollsList = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const currentTeamId = useSelector(selectCurrentGroup)
+  const allTeamsWhereCurrentUserIsMember = useSelector(selectAllTeams)
   const polls = useSelector((state) => selectAllPollsForOneGroup(state, currentTeamId))
   const pollStatus = useSelector(state => state.polls.status)
   const error = useSelector(state => state.polls.error)
 
   useEffect(() => {
     const db = firebaseApp.firestore();
-
-    console.log("G-ID: ", currentTeamId)
+    /**
+     * Listen when somebody creates a new poll
+     */
     const unsubscribe = db.collection('poll')
       .doc(currentTeamId)
       .collection('polls')
-      .onSnapshot({ includeMetadataChanges: false }, (snapshot) => {
+      .onSnapshot({includeMetadataChanges: true}, (snapshot) => {
         var source = snapshot.metadata.hasPendingWrites ? "Local" : "Server";
         console.log(source, " data: ")
         snapshot.docChanges().map((change) => {
@@ -64,7 +68,7 @@ const SearchPollsList = () => {
       />
       <FlatList
         data={polls}
-        renderItem={(item) => renderPollListItem(item, navigation)}
+        renderItem={(item) => renderPollListItem(item, navigation, dispatch, allTeamsWhereCurrentUserIsMember)}
         keyExtractor={(item, index) => index.toString()}
       />
     </View>

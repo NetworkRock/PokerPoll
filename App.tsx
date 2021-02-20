@@ -26,6 +26,7 @@ import TeamList from './src/app/components/Teams/TeamList';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import SettingsView from './src/app/components/Settings/SettingsView';
+import RatingPollForm from './src/app/components/Polls/DetailsPoll/RatingPollForm';
 
 
 /**
@@ -66,14 +67,6 @@ const PollTeamStack = () => {
           headerRight: () => <Button title={HEADER_BTN_TYPES.CREATE} onPress={() => navigation.navigate('CreatePollsStack')} />,
         })}
       />
-      <RootTeamStack.Screen
-        name="PollsDetailStack"
-        component={PollsDetailStack}
-        options={({ navigation }) => ({
-          headerTitle: () => <Text>Details for the Poll</Text>,
-          headerRight: () => <Button title={HEADER_BTN_TYPES.EDIT} onPress={() => navigation.navigate('PollsDetailEditScreen')} />,
-        })}
-      />
     </RootTeamStack.Navigator>
   )
 }
@@ -112,21 +105,24 @@ const PollsForGroupScreen = () => {
  */
 const PollsDetailStack = () => {
   return (
-    <RootPollsDetailStack.Navigator mode="modal" headerMode="none">
+    <RootPollsDetailStack.Navigator mode="modal" headerMode="screen">
       <RootPollsDetailStack.Screen
         name="PollsDetailScreen"
         component={PollsDetailScreen}
         options={({ navigation }) => ({
-          headerTitle: () => <Text>Details for the Poll</Text>,
+          headerBackTitleVisible: false,
+          headerTitle: () => <Text></Text>,
           headerRight: () => <Button title={HEADER_BTN_TYPES.EDIT} onPress={() => navigation.navigate('PollsDetailEditScreen')} />,
+          headerLeft: () => <Button title={HEADER_BTN_TYPES.SAVE} onPress={() => navigation.navigate('PollsForGroupStack')} />,
         })}
       />
       <RootPollsDetailStack.Screen
         name="PollsDetailEditScreen"
         component={PollsDetailEditScreen}
         options={({ navigation }) => ({
+          headerBackTitleVisible: false,
           headerTitle: () => <Text>Details for the Poll</Text>,
-          headerRight: () => <Button title={HEADER_BTN_TYPES.SAVE} onPress={() => navigation.navigate('PollsDetailEditScreen')} />,
+          headerRight: () => <Button title={HEADER_BTN_TYPES.SAVE} onPress={() => navigation.navigate('PollsDetailScreen')} />,
           headerLeft: () => <View></View>
         })}
       />
@@ -138,7 +134,7 @@ const PollsDetailStack = () => {
  */
 const PollsDetailScreen = () => {
   return (
-    <DetailsPollForm/>
+    <RatingPollForm/>
   )
 }
 const PollsDetailEditScreen = () => {
@@ -322,6 +318,36 @@ const UserLogInStack = () => {
 
 
 
+/**
+ * Root modal navigator 
+ */
+
+const RootModalStack = () => {
+  return (
+    <RootStack.Navigator mode="modal" headerMode="none">
+      <RootStack.Screen
+        name='BottomTabBar'
+        component={BottomTabBar}
+      />
+      <RootStack.Screen
+        name='CreatePollTeamStack'
+        component={CreatePollTeamStack}
+      />
+      <RootStack.Screen
+        name='CreatePollsStack'
+        component={CreatePollsStack}
+      />
+      <RootTeamStack.Screen
+        name="PollsDetailStack"
+        component={PollsDetailStack}
+        options={({ navigation }) => ({
+          headerTitle: () => <Text>Details for the Poll</Text>,
+          headerRight: () => <Button title={HEADER_BTN_TYPES.EDIT} onPress={() => navigation.navigate('PollsDetailEditScreen')} />,
+        })}
+      />
+    </RootStack.Navigator>
+  )
+}
 
 /**
  * App global entry point
@@ -330,27 +356,15 @@ export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <RootStack.Navigator mode="modal" headerMode="none">
+        <RootStack.Navigator mode="card" headerMode="none" screenOptions={{gestureEnabled: false}}>
           <RootStack.Screen
             name='UserLogInStack'
             component={UserLogInStack}
           />
           <RootStack.Screen
-            name='BottomTabBar'
-            component={BottomTabBar}
+            name='RootModalStack'
+            component={RootModalStack}
           />
-          <RootStack.Screen
-            name='CreatePollTeamStack'
-            component={CreatePollTeamStack}
-          />
-
-          <RootStack.Screen
-            name='CreatePollsStack'
-            component={CreatePollsStack}
-          />
-          <RootStack.Screen
-            name='AddMembersToPoll'
-            component={AddMembersToPollScreen} />
         </RootStack.Navigator>
       </NavigationContainer>
     </Provider>

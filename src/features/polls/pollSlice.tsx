@@ -1,8 +1,10 @@
 import { createSlice, createAsyncThunk, current } from '@reduxjs/toolkit';
 import firebase from "firebase";
+import { stringify } from 'querystring';
 
 const initialState = {
   currentSelectedGroup: null,
+  currentSelectedPoll: null,
   polls: [],
   currentPollTitle: '',
   currentPollDescription: '',
@@ -18,6 +20,10 @@ export const pollSlice = createSlice({
       state.currentSelectedGroup = action.payload
       state.status = 'succeeded'
     },
+    addCurrentSelectedPoll(state, action) {
+      state.currentSelectedPoll = action.payload
+      state.status = 'succeeded'
+    },
     pollAdded(state, action) {
       console.log("PAY:", action.payload)
       const existsAlready = state.polls.find((poll) => poll.id === action.payload.id)
@@ -27,11 +33,12 @@ export const pollSlice = createSlice({
       state.status = 'succeeded'
     },
     exchangeModifiedPollToExistingPoll(state, action) {
-      const { title, description, id } = action.payload
+      const { title, description, id, userRatings } = action.payload
       const exisitngPoll = state.polls.find((poll) => poll.id === id)
       if (exisitngPoll) {
         exisitngPoll.title = title
         exisitngPoll.description = description
+        exisitngPoll.userRatings = userRatings
       }
     },
     addCurrentPollTitle(state, action) {
@@ -62,16 +69,17 @@ export const pollSlice = createSlice({
 export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
   let dataResponse
   try {
-    const db = firebase.firestore();
+    const db = firebase.firestore()
     const pRef = await db.collection('poll')
-    const reponse = pRef.doc(poll.currentTeamId)
-    const pollsRef = reponse.collection('polls').doc()
+    const response = pRef.doc(poll.currentTeamId)
+    const pollsRef = response.collection('polls').doc()
 
-    reponse.collection('polls').doc(pollsRef.id).set({
+    response.collection('polls').doc(pollsRef.id).set({
       id: pollsRef.id,
       groupId: poll.currentTeamId,
       pollTitle: poll.pollTitle,
-      pollDescription: poll.pollDescription
+      pollDescription: poll.pollDescription,
+      userRatings: []
     })
 
 
@@ -89,20 +97,62 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
 })
 
 
+/**
+ * Define a thunk function for rate a poll
+ */
+
+export const ratePoll = createAsyncThunk('polls/ratePoll', async (poll: Object) => {
+  console.log(poll)
+
+  try {
+    const db = firebase.firestore()
+
+    await db.collection('poll')
+      .doc(poll.pollWithRating.groupId)
+      .collection('polls')
+      .doc(poll.pollWithRating.id)
+      .set({ userRatings: firebase.firestore.FieldValue.arrayUnion({user: poll.pollWithRating.user, rate: poll.pollWithRating.rating})}, { merge: true })
+
+
+    const dbPoll = await db.collection('poll')
+      .doc(poll.pollWithRating.groupId)
+      .collection('polls')
+      .doc(poll.pollWithRating.id).get()
+
+    let ratingsArray: Array<Object> = dbPoll.data().userRatings
+
+    let arrayWithoutPreviouseRates = ratingsArray.filter(data => (data.user !== poll.pollWithRating.user));
+    
+    arrayWithoutPreviouseRates.push({user: poll.pollWithRating.user, rate: poll.pollWithRating.rating})
+
+    await db.collection('poll')
+      .doc(poll.pollWithRating.groupId)
+      .collection('polls')
+      .doc(poll.pollWithRating.id)
+      .set({userRatings: arrayWithoutPreviouseRates}, {merge: true })
+
+  } catch (error) {
+    console.error('Error by rating a poll: ', error)
+  }
+})
+
+
 
 export const {
   pollAdded,
   addCurrentSelectedGroup,
+  addCurrentSelectedPoll,
   exchangeModifiedPollToExistingPoll,
   addCurrentPollDescription,
-  addCurrentPollTitle
+  addCurrentPollTitle,
 } = pollSlice.actions
 
 
-export const selectAllPollsForOneGroup = (state, currentTeamId) => 
+export const selectAllPollsForOneGroup = (state, currentTeamId) =>
   state.polls.polls.filter((poll) => poll.groupId === currentTeamId)
 
 export const selectCurrentGroup = state => state.polls.currentSelectedGroup
+export const selectCurrentPoll = state => state.polls.currentSelectedPoll
 export const selectCurrentPollTitle = state => state.polls.currentPollTitle
 export const selectCurrentPollDescription = state => state.polls.currentPollDescription
 export const selectCurrenPollTitle = state => state.current
