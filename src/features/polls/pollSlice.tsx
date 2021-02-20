@@ -33,11 +33,12 @@ export const pollSlice = createSlice({
       state.status = 'succeeded'
     },
     exchangeModifiedPollToExistingPoll(state, action) {
-      const { title, description, id } = action.payload
+      const { title, description, id, userRatings } = action.payload
       const exisitngPoll = state.polls.find((poll) => poll.id === id)
       if (exisitngPoll) {
         exisitngPoll.title = title
         exisitngPoll.description = description
+        exisitngPoll.userRatings = userRatings
       }
     },
     addCurrentPollTitle(state, action) {
