@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, current } from '@reduxjs/toolkit';
 import firebase from "firebase";
+import { stringify } from 'querystring';
 
 const initialState = {
   currentSelectedGroup: null,
@@ -76,7 +77,8 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
       id: pollsRef.id,
       groupId: poll.currentTeamId,
       pollTitle: poll.pollTitle,
-      pollDescription: poll.pollDescription
+      pollDescription: poll.pollDescription,
+      userRatings: []
     })
 
 
@@ -98,26 +100,40 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
  * Define a thunk function for rate a poll
  */
 
- export const ratePoll = createAsyncThunk('polls/ratePoll', async (poll: Object) => {
-   console.log(poll)
+export const ratePoll = createAsyncThunk('polls/ratePoll', async (poll: Object) => {
+  console.log(poll)
 
-   try {
-     const db = firebase.firestore()
-     const userRatingsRef = await db.collection('userRatings')
-     
-     db.collection('poll')
-     .doc(poll.pollWithRating.groupId)
-     .collection('polls')
-     .doc(poll.pollWithRating.id)
-     .collection('userRatings')
-     .doc(poll.pollWithRating.user).set(
-       {
-         [poll.pollWithRating.user]: {rate: poll.pollWithRating.rating}
-        })
-   } catch (error) {
-     console.error('Error by rating a poll: ', error)
-   }
- })
+  try {
+    const db = firebase.firestore()
+
+    await db.collection('poll')
+      .doc(poll.pollWithRating.groupId)
+      .collection('polls')
+      .doc(poll.pollWithRating.id)
+      .set({ userRatings: firebase.firestore.FieldValue.arrayUnion({user: poll.pollWithRating.user, rate: poll.pollWithRating.rating})}, { merge: true })
+
+
+    const dbPoll = await db.collection('poll')
+      .doc(poll.pollWithRating.groupId)
+      .collection('polls')
+      .doc(poll.pollWithRating.id).get()
+
+    let ratingsArray: Array<Object> = dbPoll.data().userRatings
+
+    let arrayWithoutPreviouseRates = ratingsArray.filter(data => (data.user !== poll.pollWithRating.user));
+    
+    arrayWithoutPreviouseRates.push({user: poll.pollWithRating.user, rate: poll.pollWithRating.rating})
+
+    await db.collection('poll')
+      .doc(poll.pollWithRating.groupId)
+      .collection('polls')
+      .doc(poll.pollWithRating.id)
+      .set({userRatings: arrayWithoutPreviouseRates}, {merge: true })
+
+  } catch (error) {
+    console.error('Error by rating a poll: ', error)
+  }
+})
 
 
 
@@ -131,11 +147,11 @@ export const {
 } = pollSlice.actions
 
 
-export const selectAllPollsForOneGroup = (state, currentTeamId) => 
+export const selectAllPollsForOneGroup = (state, currentTeamId) =>
   state.polls.polls.filter((poll) => poll.groupId === currentTeamId)
 
-  export const selectCurrentGroup = state => state.polls.currentSelectedGroup
-  export const selectCurrentPoll = state => state.polls.currentSelectedPoll
+export const selectCurrentGroup = state => state.polls.currentSelectedGroup
+export const selectCurrentPoll = state => state.polls.currentSelectedPoll
 export const selectCurrentPollTitle = state => state.polls.currentPollTitle
 export const selectCurrentPollDescription = state => state.polls.currentPollDescription
 export const selectCurrenPollTitle = state => state.current
