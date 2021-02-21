@@ -34,14 +34,16 @@ export const pollSlice = createSlice({
       state.status = 'succeeded'
     },
     exchangeModifiedPollToExistingPoll(state, action) {
-      const { title, description, id, userRatings, pollFlag } = action.payload
+      const { title, description, id, userRatings, pollFlag, pollEstimation } = action.payload
       const exisitngPoll = state.polls.find((poll) => poll.id === id)
       if (exisitngPoll) {
         exisitngPoll.title = title
         exisitngPoll.description = description
         exisitngPoll.userRatings = userRatings
-        exisitngPoll.pollFlag = pollFlag        
+        exisitngPoll.pollFlag = pollFlag     
+        exisitngPoll.pollEstimation = pollEstimation   
       }
+      state.status = 'succeeded'
     },
     addCurrentPollTitle(state, action) {
       state.currentPollTitle = action.payload
@@ -78,6 +80,7 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
 
     response.collection('polls').doc(pollsRef.id).set({
       id: pollsRef.id,
+      createdBy: poll.currentUser.id,
       groupId: poll.currentTeamId,
       pollTitle: poll.pollTitle,
       pollDescription: poll.pollDescription,
@@ -97,6 +100,23 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
   }
 
   return dataResponse.data()
+})
+
+/**
+ * Define a thunk funktion for close a poll with a evaluation of the group
+ */
+export const closePoll = createAsyncThunk('polls/closePoll', async (poll: Object) => {
+  console.log("SEND")
+  const db = firebase.firestore()
+  try {
+    await db.collection('poll')
+    .doc(poll.poll.groupId)
+    .collection('polls')
+    .doc(poll.poll.id)
+    .set({pollFlag: POLL_FLAG_ENUM.CLOSE, pollEstimation: poll.estimation}, { merge: true })
+  } catch (error) {
+    console.error("Error by creating a poll: ", error)
+  }
 })
 
 
@@ -163,8 +183,12 @@ export const {
 } = pollSlice.actions
 
 
-export const selectAllPollsForOneGroup = (state, currentTeamId) =>
-  state.polls.polls.filter((poll) => poll.groupId === currentTeamId)
+export const selectAllOpenAndVotedPollsForOneGroup = (state, currentTeamId) =>
+  state.polls.polls.filter((poll) => poll.groupId === currentTeamId
+  && poll.pollFlag !== POLL_FLAG_ENUM.CLOSE)
+
+export const selectAllPollsWhichAreClosed = (state) =>
+  state.polls.polls.filter((poll) => poll.pollFlag === POLL_FLAG_ENUM.CLOSE)
 
 export const selectCurrentGroup = state => state.polls.currentSelectedGroup
 export const selectCurrentPoll = state => state.polls.currentSelectedPoll

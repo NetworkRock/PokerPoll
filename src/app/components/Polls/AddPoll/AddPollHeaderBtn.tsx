@@ -9,9 +9,10 @@ import { selectCurrentPollTitle,
 import { HEADER_BTN_TYPES } from '../../NavigationComponents/HeaderButtonEnum';
 import { addNewPoll } from '../../../../features/polls/pollSlice';
 import stlye_addPollForm from './stlye_addPollForm';
+import { selectCurrentUser } from '../../../../features/users/userSlice'
 
 const AddPollHeaderBtn = (props) => {
-
+  const currentUser = useSelector(selectCurrentUser)
   const pollTitle = useSelector(selectCurrentPollTitle);
   const pollDescription = useSelector(selectCurrentPollDescription);
   const currentTeamId = useSelector(selectCurrentGroup)
@@ -28,7 +29,7 @@ const AddPollHeaderBtn = (props) => {
       try {
         setAddRequestStatus('pending')
         const resultAction = await dispatch(
-          addNewPoll({pollTitle, pollDescription, currentTeamId})
+          addNewPoll({pollTitle, pollDescription, currentTeamId, currentUser})
         )
         unwrapResult(resultAction)
       } catch (error) {

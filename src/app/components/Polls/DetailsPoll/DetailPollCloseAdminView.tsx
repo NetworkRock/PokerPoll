@@ -1,0 +1,63 @@
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { View, Text } from 'react-native';
+import style_detailsPollForm from './style_detailsPollForm'
+import { closePoll } from '../../../../features/polls/pollSlice';
+import { selectCurrentPoll } from '../../../../features/polls/pollSlice';
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+
+
+const DetailPollCloseAdminView = (props) => {
+  const navigation = useNavigation()
+  const [estimation, setEstimation] = useState()
+  const [statusClosed, setStatusClose] = useState(false)
+  const poll = useSelector(selectCurrentPoll);
+  const [addRequestStatus, setAddRequestStatus] = useState('idle')
+
+  const onEstimationChanged = e => setEstimation(e)
+  const dispatch = useDispatch()
+
+  const canSave = estimation && addRequestStatus === 'idle'
+
+
+  const onClosePollClicked = async () => {
+    console.log(statusClosed)
+    if(canSave) {
+      try {
+        setAddRequestStatus('pending')
+        await dispatch(closePoll({poll, estimation}))
+      } catch (error) {
+        console.error('Failed to close the poll: ', error)
+      } finally {
+        setAddRequestStatus('idle')
+        setStatusClose(true)
+        navigation.navigate('PollsForGroupStack')
+      }
+    } 
+  }
+
+  return (
+    <View style={style_detailsPollForm.adminviewContainer}>
+
+      <TouchableOpacity 
+      onPress={onClosePollClicked}
+      disabled={!estimation || statusClosed}
+      style={style_detailsPollForm.submitRatingBtn}>
+        <Text style={style_detailsPollForm.adminRatingBtnLabel}>Close the poll</Text>
+      </TouchableOpacity>
+      <TextInput
+        editable={!statusClosed}
+        placeholder="SP"
+        onChangeText={onEstimationChanged}
+        numberOfLines={1}
+        maxLength={2}
+        keyboardType="numeric"
+        style={style_detailsPollForm.adminRatingPointsField}
+      />
+    </View>
+
+  )
+}
+
+export default DetailPollCloseAdminView

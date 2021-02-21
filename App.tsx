@@ -5,18 +5,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 // Redux imports
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import store from './src/app/store'
 // Import firebase config
 import { firebaseApp } from './config';
 
 //  App component imports
 import PollList from './src/app/components/Polls/PollList/PollList';
+import ClosedPollList from './src/app/components/Polls/PollList/ClosedPollList';
 import { HEADER_BTN_TYPES } from './src/app/components/NavigationComponents/HeaderButtonEnum';
 import AddPostForm from './src/app/components/Polls/AddPoll/AddPollForm';
 import AddUserForm from './src/app/components/Users/UserLogInComponents/AddUserForm';
 import AddTeamForm from './src/app/components/Teams/AddTeamForm';
-import DetailsPollForm from './src/app/components/Polls/DetailsPoll/DetailsPollForm'
 import AddTeamHeaderBtn from './src/app/components/Teams/AddTeamHeaderBtn'
 import AddPollHeaderBtn from './src/app/components/Polls/AddPoll/AddPollHeaderBtn'
 import UserSearchList from './src/app/components/Users/UserSearchList';
@@ -112,19 +112,8 @@ const PollsDetailStack = () => {
         component={PollsDetailScreen}
         options={({ navigation }) => ({
           headerBackTitleVisible: false,
-          headerTitle: () => <Text></Text>,
-          headerRight: () => <Button title={HEADER_BTN_TYPES.EDIT} onPress={() => navigation.navigate('PollsDetailEditScreen')} />,
+          headerTitle: () => <Text>VOTE SCREEN</Text>,
           headerLeft: () => <Button title={HEADER_BTN_TYPES.SAVE} onPress={() => navigation.navigate('PollsForGroupStack')} />,
-        })}
-      />
-      <RootPollsDetailStack.Screen
-        name="PollsDetailEditScreen"
-        component={PollsDetailEditScreen}
-        options={({ navigation }) => ({
-          headerBackTitleVisible: false,
-          headerTitle: () => <Text>Details for the Poll</Text>,
-          headerRight: () => <Button title={HEADER_BTN_TYPES.SAVE} onPress={() => navigation.navigate('PollsDetailScreen')} />,
-          headerLeft: () => <View></View>
         })}
       />
       <RootPollsDetailStack.Screen
@@ -132,9 +121,7 @@ const PollsDetailStack = () => {
         component={PollsDetailResultScreen}
         options={({ navigation }) => ({
           headerBackTitleVisible: false,
-          headerTitle: () => <Text>Details for the Poll</Text>,
-          headerRight: () => <Button title={HEADER_BTN_TYPES.SAVE} onPress={() => navigation.navigate('PollsDetailScreen')} />,
-          headerLeft: () => <View></View>
+          headerTitle: () => <Text>Details</Text>,
         })}
       />
     </RootPollsDetailStack.Navigator>
@@ -148,16 +135,11 @@ const PollsDetailScreen = () => {
     <RatingPollForm/>
   )
 }
-const PollsDetailEditScreen = () => {
+const PollsDetailResultScreen = ({ route }) => {
   return (
-    <View style={globalStyles.container}>
-      <Text>HIER KANN DER ERSTELLER DIE UMFRAGE VERÄNDERN</Text>
-    </View>
-  )
-}
-const PollsDetailResultScreen = ({route}) => {
-  return (
-    <ResultPollForm route={route}/>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={{ flex: 1 }}>
+      <ResultPollForm route={route} />
+    </KeyboardAvoidingView>
   )
 }
 
@@ -358,7 +340,7 @@ const RootModalStack = () => {
         component={PollsDetailStack}
         options={({ navigation }) => ({
           headerTitle: () => <Text>Details for the Poll</Text>,
-          headerRight: () => <Button title={HEADER_BTN_TYPES.EDIT} onPress={() => navigation.navigate('PollsDetailEditScreen')} />,
+
         })}
       />
     </RootStack.Navigator>
@@ -389,9 +371,7 @@ export default function App() {
 
 const ClosedPollsScreen = () => {
   return (
-    <View style={globalStyles.container}>
-      <Text>Here appears all closed Polls</Text>
-    </View>
+      <ClosedPollList />
   )
 }
 

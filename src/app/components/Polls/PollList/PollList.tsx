@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import renderPollListItem from './PollListItem'
 import stylePollList from './style_pollList';
-import { selectAllPollsForOneGroup, pollAdded, exchangeModifiedPollToExistingPoll } from '../../../../features/polls/pollSlice'
+import { selectAllOpenAndVotedPollsForOneGroup, pollAdded, exchangeModifiedPollToExistingPoll } from '../../../../features/polls/pollSlice'
 import { selectCurrentGroup, selectCurrentPoll } from '../../../../features/polls/pollSlice'
 import { firebaseApp } from "../../../../../config";
 import { useNavigation } from '@react-navigation/native';
@@ -17,12 +17,12 @@ import { selectAllTeams } from '../../../../features/team/teamSlice'
 
 
 
-const SearchPollsList = () => {
+const PollsList = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const currentTeamId = useSelector(selectCurrentGroup)
   const allTeamsWhereCurrentUserIsMember = useSelector(selectAllTeams)
-  const polls = useSelector((state) => selectAllPollsForOneGroup(state, currentTeamId))
+  const polls = useSelector((state) => selectAllOpenAndVotedPollsForOneGroup(state, currentTeamId))
   const pollStatus = useSelector(state => state.polls.status)
   const error = useSelector(state => state.polls.error)
 
@@ -81,4 +81,4 @@ const SearchPollsList = () => {
   );
 }
 
-export default SearchPollsList
+export default PollsList

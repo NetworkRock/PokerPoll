@@ -1,33 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { View, Text, Image } from 'react-native';
 import style_detailsPollForm from './style_detailsPollForm'
 import { RATING_SYSTEM_ENUM } from './RatingSystemEnum'
 import {
   PieChart,
 } from "react-native-chart-kit";
-import { ScrollView } from 'react-native-gesture-handler';
-
+import { ScrollView, TextInput } from 'react-native-gesture-handler';
+import { selectCurrentUser } from '../../../../features/users/userSlice'
+import DetailPollCloseAdminView from './DetailPollCloseAdminView';
 
 const ResultPollForm = (props) => {
-
+  const currentUser = useSelector(selectCurrentUser)
 
   const userWhoAlreadyRateDetails = props.route.params.users
-
-  
-
+  let userRatings = props.route.params.poll.userRatings
+  let poll = props.route.params
+  let adminView: boolean = false;
   let imageArray
 
-  imageArray = userWhoAlreadyRateDetails.map((user) => (
-    <View>
-    <Image key={user.id} source={{
-      uri: user.profilePictureURL,
-    }} style={style_detailsPollForm.iconInAddMemberHeader} />
-    <Text>{user.displayName}</Text>
+  if(poll.poll.createdBy === currentUser.id) {
+    adminView = true
+  }
+
+  imageArray = userWhoAlreadyRateDetails.map((user, index) => (
+    <View key={user.id} style={style_detailsPollForm.userIconContainer}>
+      <View style={style_detailsPollForm.userIconContainerWithoutRate}>
+        <Image source={{
+          uri: user.profilePictureURL,
+        }} style={style_detailsPollForm.iconInAddMemberHeader} />
+        <Text style={style_detailsPollForm.userName}>{user.displayName}</Text>
+      </View>
+      <View style={style_detailsPollForm.rateNumberContainer}>
+        <Text style={style_detailsPollForm.rateNumber}>{userRatings[index].rate}</Text>
+      </View>
     </View>
   ))
 
-  console.log("ARSCHLECKEN GEIL: ",  userWhoAlreadyRateDetails)
+  console.log("ARSCHLECKEN GEIL: ",  props.route.params)
+  console.log("CURRETN User: ",  currentUser)
+  console.log("CURRETN User: ",  adminView)
+
 
 
   const chartConfig = {
@@ -43,17 +56,25 @@ const ResultPollForm = (props) => {
 
   const resultArray: Array<Object> = [];
 
+
   RATING_SYSTEM_ENUM.map((el) => {
-    let fibunatiConfig = { name: el.name, legendFontColor: el.legendFontColor, color: el.color, legendFontSize: 15 }
-    let data3 = { ...fibunatiConfig, ...{ rating: Math.round(Math.random() * 100) } }
-    resultArray.push(data3);
+    let counter = 0
+    let data
+    let fibunatiConfig = { name: ":times " + el.name, legendFontColor: el.legendFontColor, color: el.color, legendFontSize: 15 }
+    for(let i = 0; i < userRatings.length; i++) {
+      if (userRatings[i].rate === el.name) {
+        counter++
+        data = { ...fibunatiConfig, ...{ rating: counter} }
+        resultArray.push(data);
+      }
+    }
+    counter = 0
   })
-  // console.log("RESULT: ", resultArray);
 
   return (
     <View style={style_detailsPollForm.container}>
+      {!adminView ? false : <DetailPollCloseAdminView />}
       <View style={style_detailsPollForm.chartContainer}>
-        <Text style={style_detailsPollForm.chartTitle} numberOfLines={1}>HIER STEHT DER TITLE</Text>
         <PieChart
           data={resultArray}
           width={350}
@@ -61,16 +82,15 @@ const ResultPollForm = (props) => {
           chartConfig={chartConfig}
           accessor={"rating"}
           backgroundColor={"transparent"}
-          paddingLeft={"0"}
+          paddingLeft={"40"}
           center={[0, 0]}
           absolute
         />
       </View>
-      <View style={style_detailsPollForm.pollDescriptionContainer}>
-        <ScrollView bounces={false} contentContainerStyle={style_detailsPollForm.pollContentInScrollView}>
-          {imageArray}<Text>HIER STEHT WAS</Text>
+        <ScrollView bounces={false} contentContainerStyle={style_detailsPollForm.pollContentInScrollView} style={style_detailsPollForm.scrollViewContainer}>
+          {imageArray}
         </ScrollView>
-      </View>
+        
     </View>
 
   )

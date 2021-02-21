@@ -14,30 +14,28 @@ const renderPollListItem = ({ item }, navigation, dispatch, allTeams) => {
   const alreadyVotedMembersNumber: Number = item.userRatings.length
   let inivitedMembersForTheTeam: Array<Object> = []
   let inivitedMembersForTheTeamNumber: Number = 0
-  /**
-   * Find the right group to find the invited members
-   */
-  allTeams.map((el) => {
-    if (item.groupId === el.id) {
-      inivitedMembersForTheTeamNumber = el.addedUsersId.length
-      inivitedMembersForTheTeam = el.addedUsersId
-    }
-  })
+
+    /**
+     * Find the right group to find the invited members
+     */
+    allTeams.map((el) => {
+      if (item.groupId === el.id) {
+        inivitedMembersForTheTeamNumber = el.addedUsersId.length
+        inivitedMembersForTheTeam = el.addedUsersId
+      }
+    })
+
 
   const onPollListItemClicked = async () => {
     try {
       await dispatch(addCurrentSelectedPoll(item));
-      if (item.pollFlag === POLL_FLAG_ENUM.VOTED) {
+      if (item.pollFlag === POLL_FLAG_ENUM.VOTED || item.pollFlag === POLL_FLAG_ENUM.CLOSE) {
         const resultAction = await dispatch(fetchAllUsersBytheirRatings(item.userRatings))
         unwrapResult(resultAction)
-        console.log("-------CRAZY-----", resultAction.payload)
-        navigation.navigate('PollsDetailStack', { screen: 'PollsDetailResultScreen', params: { users: resultAction.payload } });
+        navigation.navigate('PollsDetailStack', { screen: 'PollsDetailResultScreen', params: { users: resultAction.payload, poll: item} });
       } else {
         navigation.navigate('PollsDetailStack', { screen: 'PollsDetailScreen' });
       }
-
-
-
     } catch (error) {
       console.error(error)
     }
@@ -95,7 +93,7 @@ const renderPollListItem = ({ item }, navigation, dispatch, allTeams) => {
     return (
       openPollListItemLayout
     );
-  } else if(item.pollFlag === POLL_FLAG_ENUM.VOTED) {
+  } else if(item.pollFlag === POLL_FLAG_ENUM.VOTED || item.pollFlag === POLL_FLAG_ENUM.CLOSE) {
     return (
       votedPollListItemLayout
     );
