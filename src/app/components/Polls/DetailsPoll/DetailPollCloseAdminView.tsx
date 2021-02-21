@@ -6,9 +6,10 @@ import { closePoll } from '../../../../features/polls/pollSlice';
 import { selectCurrentPoll } from '../../../../features/polls/pollSlice';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import { POLL_FLAG_ENUM } from '../PollList/PollFlagEnum';
 
 
-const DetailPollCloseAdminView = (props) => {
+const DetailPollCloseAdminView = () => {
   const navigation = useNavigation()
   const [estimation, setEstimation] = useState()
   const [statusClosed, setStatusClose] = useState(false)
@@ -23,10 +24,10 @@ const DetailPollCloseAdminView = (props) => {
 
   const onClosePollClicked = async () => {
     console.log(statusClosed)
-    if(canSave) {
+    if (canSave) {
       try {
         setAddRequestStatus('pending')
-        await dispatch(closePoll({poll, estimation}))
+        await dispatch(closePoll({ poll, estimation }))
       } catch (error) {
         console.error('Failed to close the poll: ', error)
       } finally {
@@ -34,30 +35,35 @@ const DetailPollCloseAdminView = (props) => {
         setStatusClose(true)
         navigation.navigate('PollsForGroupStack')
       }
-    } 
+    }
   }
 
-  return (
-    <View style={style_detailsPollForm.adminviewContainer}>
 
-      <TouchableOpacity 
+
+  const closeButton: JSX.Element =
+    <TouchableOpacity
       onPress={onClosePollClicked}
       disabled={!estimation || statusClosed}
       style={style_detailsPollForm.submitRatingBtn}>
-        <Text style={style_detailsPollForm.adminRatingBtnLabel}>Close the poll</Text>
-      </TouchableOpacity>
-      <TextInput
-        editable={!statusClosed}
-        placeholder="SP"
-        onChangeText={onEstimationChanged}
-        numberOfLines={1}
-        maxLength={2}
-        keyboardType="numeric"
-        style={style_detailsPollForm.adminRatingPointsField}
-      />
-    </View>
+      <Text style={style_detailsPollForm.adminRatingBtnLabel}>Close the poll</Text>
+    </TouchableOpacity>
 
-  )
+
+    return (
+      <View style={style_detailsPollForm.adminviewContainer}>
+        {closeButton}
+        <TextInput
+          editable={!statusClosed}
+          placeholder="SP"
+          onChangeText={onEstimationChanged}
+          numberOfLines={1}
+          maxLength={2}
+          keyboardType="numeric"
+          style={style_detailsPollForm.adminRatingPointsField}
+        />
+      </View>
+    )
+
 }
 
 export default DetailPollCloseAdminView

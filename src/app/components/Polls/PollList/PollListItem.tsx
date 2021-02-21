@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableHighlight, View, Text } from 'react-native';
 import stylePollList from "./style_pollList";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
-import { addCurrentSelectedPoll } from '../../../../features/polls/pollSlice';
+import { addCurrentSelectedPoll, pollAdded } from '../../../../features/polls/pollSlice';
 import AnimatedShowVoteView from './AnimateShowVoteView';
 import { POLL_FLAG_ENUM } from './PollFlagEnum';
 import { fetchAllUsersBytheirRatings } from '../../../../features/users/userSlice';
@@ -15,15 +15,15 @@ const renderPollListItem = ({ item }, navigation, dispatch, allTeams) => {
   let inivitedMembersForTheTeam: Array<Object> = []
   let inivitedMembersForTheTeamNumber: Number = 0
 
-    /**
-     * Find the right group to find the invited members
-     */
-    allTeams.map((el) => {
-      if (item.groupId === el.id) {
-        inivitedMembersForTheTeamNumber = el.addedUsersId.length
-        inivitedMembersForTheTeam = el.addedUsersId
-      }
-    })
+  /**
+   * Find the right group to find the invited members
+   */
+  allTeams.map((el) => {
+    if (item.groupId === el.id) {
+      inivitedMembersForTheTeamNumber = el.addedUsersId.length
+      inivitedMembersForTheTeam = el.addedUsersId
+    }
+  })
 
 
   const onPollListItemClicked = async () => {
@@ -32,7 +32,7 @@ const renderPollListItem = ({ item }, navigation, dispatch, allTeams) => {
       if (item.pollFlag === POLL_FLAG_ENUM.VOTED || item.pollFlag === POLL_FLAG_ENUM.CLOSE) {
         const resultAction = await dispatch(fetchAllUsersBytheirRatings(item.userRatings))
         unwrapResult(resultAction)
-        navigation.navigate('PollsDetailStack', { screen: 'PollsDetailResultScreen', params: { users: resultAction.payload, poll: item} });
+        navigation.navigate('PollsDetailStack', { screen: 'PollsDetailResultScreen', params: { users: resultAction.payload, poll: item } });
       } else {
         navigation.navigate('PollsDetailStack', { screen: 'PollsDetailScreen' });
       }
@@ -87,16 +87,34 @@ const renderPollListItem = ({ item }, navigation, dispatch, allTeams) => {
   </TouchableHighlight>
 
 
+  const closedPollListItemLayout: JSX.Element = <TouchableHighlight
+    key={item.currentTeamId}
+    onPress={onPollListItemClicked}>
+    <View style={stylePollList.listItem}>
+      <View style={stylePollList.listItemContainerWithoutImage}>
+        <Text numberOfLines={1} style={stylePollList.title}>{item.pollTitle}</Text>
+      </View>
+      <View style={stylePollList.iconInListContainer}>
+        <Text style={{fontSize: 20}}>{item.pollEstimation}</Text>
+      </View>
+    </View>
+  </TouchableHighlight>
 
 
-  if(item.pollFlag === POLL_FLAG_ENUM.OPEN) {
+
+
+  if (item.pollFlag === POLL_FLAG_ENUM.OPEN) {
     return (
       openPollListItemLayout
     );
-  } else if(item.pollFlag === POLL_FLAG_ENUM.VOTED || item.pollFlag === POLL_FLAG_ENUM.CLOSE) {
+  } else if (item.pollFlag === POLL_FLAG_ENUM.VOTED) {
     return (
       votedPollListItemLayout
     );
+  } else {
+    return (
+      closedPollListItemLayout
+    )
   }
 
 

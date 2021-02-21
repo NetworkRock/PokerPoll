@@ -9,6 +9,7 @@ import {
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { selectCurrentUser } from '../../../../features/users/userSlice'
 import DetailPollCloseAdminView from './DetailPollCloseAdminView';
+import { POLL_FLAG_ENUM } from '../PollList/PollFlagEnum';
 
 const ResultPollForm = (props) => {
   const currentUser = useSelector(selectCurrentUser)
@@ -36,10 +37,6 @@ const ResultPollForm = (props) => {
       </View>
     </View>
   ))
-
-  console.log("ARSCHLECKEN GEIL: ",  props.route.params)
-  console.log("CURRETN User: ",  currentUser)
-  console.log("CURRETN User: ",  adminView)
 
 
 
@@ -73,7 +70,17 @@ const ResultPollForm = (props) => {
 
   return (
     <View style={style_detailsPollForm.container}>
-      {!adminView ? false : <DetailPollCloseAdminView />}
+      {poll.poll.pollFlag !== POLL_FLAG_ENUM.CLOSE && adminView 
+
+        ? <DetailPollCloseAdminView />
+
+        :
+
+          <View style={style_detailsPollForm.adminviewContainer}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>{poll.poll.pollEstimation}</Text>
+          </View>
+
+      }
       <View style={style_detailsPollForm.chartContainer}>
         <PieChart
           data={resultArray}
@@ -90,7 +97,7 @@ const ResultPollForm = (props) => {
         <ScrollView bounces={false} contentContainerStyle={style_detailsPollForm.pollContentInScrollView} style={style_detailsPollForm.scrollViewContainer}>
           {imageArray}
         </ScrollView>
-        
+      
     </View>
 
   )
