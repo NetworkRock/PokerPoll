@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, current } from '@reduxjs/toolkit';
 import firebase from "firebase";
 import { stringify } from 'querystring';
+import { POLL_FLAG_ENUM } from '../../app/components/Polls/PollList/PollFlagEnum';
 
 const initialState = {
   currentSelectedGroup: null,
@@ -33,12 +34,13 @@ export const pollSlice = createSlice({
       state.status = 'succeeded'
     },
     exchangeModifiedPollToExistingPoll(state, action) {
-      const { title, description, id, userRatings } = action.payload
+      const { title, description, id, userRatings, pollFlag } = action.payload
       const exisitngPoll = state.polls.find((poll) => poll.id === id)
       if (exisitngPoll) {
         exisitngPoll.title = title
         exisitngPoll.description = description
         exisitngPoll.userRatings = userRatings
+        exisitngPoll.pollFlag = pollFlag        
       }
     },
     addCurrentPollTitle(state, action) {
@@ -79,6 +81,7 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
       groupId: poll.currentTeamId,
       pollTitle: poll.pollTitle,
       pollDescription: poll.pollDescription,
+      pollFlag: POLL_FLAG_ENUM.OPEN,
       userRatings: []
     })
 
@@ -111,7 +114,7 @@ export const ratePoll = createAsyncThunk('polls/ratePoll', async (poll: Object) 
       .doc(poll.pollWithRating.groupId)
       .collection('polls')
       .doc(poll.pollWithRating.id)
-      .set({ userRatings: firebase.firestore.FieldValue.arrayUnion({user: poll.pollWithRating.user, rate: poll.pollWithRating.rating})}, { merge: true })
+      .set({ userRatings: firebase.firestore.FieldValue.arrayUnion({ user: poll.pollWithRating.user, rate: poll.pollWithRating.rating }) }, { merge: true })
 
 
     const dbPoll = await db.collection('poll')
@@ -122,14 +125,26 @@ export const ratePoll = createAsyncThunk('polls/ratePoll', async (poll: Object) 
     let ratingsArray: Array<Object> = dbPoll.data().userRatings
 
     let arrayWithoutPreviouseRates = ratingsArray.filter(data => (data.user !== poll.pollWithRating.user));
-    
-    arrayWithoutPreviouseRates.push({user: poll.pollWithRating.user, rate: poll.pollWithRating.rating})
+
+    arrayWithoutPreviouseRates.push({ user: poll.pollWithRating.user, rate: poll.pollWithRating.rating })
 
     await db.collection('poll')
       .doc(poll.pollWithRating.groupId)
       .collection('polls')
       .doc(poll.pollWithRating.id)
-      .set({userRatings: arrayWithoutPreviouseRates}, {merge: true })
+      .set({ userRatings: arrayWithoutPreviouseRates }, { merge: true })
+
+    const currentGroup = await db.collection('teams')
+      .doc(poll.pollWithRating.groupId).get()
+
+
+    if (currentGroup.data().addedUsersId.length === arrayWithoutPreviouseRates.length) {
+      await db.collection('poll')
+        .doc(poll.pollWithRating.groupId)
+        .collection('polls')
+        .doc(poll.pollWithRating.id)
+        .set({pollFlag: POLL_FLAG_ENUM.VOTED}, { merge: true })
+    }
 
   } catch (error) {
     console.error('Error by rating a poll: ', error)

@@ -19,7 +19,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    height: 130,
+    height: 110,
     borderBottomColor: 'lightgrey',
     borderBottomWidth: 1,
   },

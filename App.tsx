@@ -27,6 +27,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import SettingsView from './src/app/components/Settings/SettingsView';
 import RatingPollForm from './src/app/components/Polls/DetailsPoll/RatingPollForm';
+import ResultPollForm from './src/app/components/Polls/DetailsPoll/ResultPollForm';
 
 
 /**
@@ -126,6 +127,16 @@ const PollsDetailStack = () => {
           headerLeft: () => <View></View>
         })}
       />
+      <RootPollsDetailStack.Screen
+        name="PollsDetailResultScreen"
+        component={PollsDetailResultScreen}
+        options={({ navigation }) => ({
+          headerBackTitleVisible: false,
+          headerTitle: () => <Text>Details for the Poll</Text>,
+          headerRight: () => <Button title={HEADER_BTN_TYPES.SAVE} onPress={() => navigation.navigate('PollsDetailScreen')} />,
+          headerLeft: () => <View></View>
+        })}
+      />
     </RootPollsDetailStack.Navigator>
   )
 }
@@ -142,6 +153,11 @@ const PollsDetailEditScreen = () => {
     <View style={globalStyles.container}>
       <Text>HIER KANN DER ERSTELLER DIE UMFRAGE VERÄNDERN</Text>
     </View>
+  )
+}
+const PollsDetailResultScreen = ({route}) => {
+  return (
+    <ResultPollForm route={route}/>
   )
 }
 

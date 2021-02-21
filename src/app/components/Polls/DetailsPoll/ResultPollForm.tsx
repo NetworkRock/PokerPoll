@@ -1,23 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { View, Text, Dimensions } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { View, Text, Image } from 'react-native';
 import style_detailsPollForm from './style_detailsPollForm'
 import { RATING_SYSTEM_ENUM } from './RatingSystemEnum'
 import {
-  LineChart,
-  BarChart,
   PieChart,
-  ProgressChart,
-  ContributionGraph,
-  StackedBarChart
 } from "react-native-chart-kit";
-import { selectCurrentPoll } from '../../../../features/polls/pollSlice';
 import { ScrollView } from 'react-native-gesture-handler';
-import RatingPollForm from './RatingPollForm';
 
-const AddPostForm = () => {
 
-  const poll = useSelector(selectCurrentPoll);
+const ResultPollForm = (props) => {
+
+
+  const userWhoAlreadyRateDetails = props.route.params.users
+
+  
+
+  let imageArray
+
+  imageArray = userWhoAlreadyRateDetails.map((user) => (
+    <View>
+    <Image key={user.id} source={{
+      uri: user.profilePictureURL,
+    }} style={style_detailsPollForm.iconInAddMemberHeader} />
+    <Text>{user.displayName}</Text>
+    </View>
+  ))
+
+  console.log("ARSCHLECKEN GEIL: ",  userWhoAlreadyRateDetails)
+
 
   const chartConfig = {
     backgroundGradientFrom: "#1E2923",
@@ -30,19 +41,19 @@ const AddPostForm = () => {
     useShadowColorFromDataset: false // optional
   };
 
-  const resultArray = [];
+  const resultArray: Array<Object> = [];
 
   RATING_SYSTEM_ENUM.map((el) => {
-    let fibunatiConfig = {name: el.name, legendFontColor: el.legendFontColor, color: el.color, legendFontSize: 15}
-    let data3 = {...fibunatiConfig, ...{rating: Math.round(Math.random() * 100)}}
+    let fibunatiConfig = { name: el.name, legendFontColor: el.legendFontColor, color: el.color, legendFontSize: 15 }
+    let data3 = { ...fibunatiConfig, ...{ rating: Math.round(Math.random() * 100) } }
     resultArray.push(data3);
   })
-  console.log("RESULT: ", resultArray);
+  // console.log("RESULT: ", resultArray);
 
   return (
     <View style={style_detailsPollForm.container}>
       <View style={style_detailsPollForm.chartContainer}>
-        <Text style={style_detailsPollForm.chartTitle} numberOfLines={1}>{poll.pollTitle}</Text>
+        <Text style={style_detailsPollForm.chartTitle} numberOfLines={1}>HIER STEHT DER TITLE</Text>
         <PieChart
           data={resultArray}
           width={350}
@@ -55,17 +66,14 @@ const AddPostForm = () => {
           absolute
         />
       </View>
-      <View  style={style_detailsPollForm.pollDescriptionContainer}>
+      <View style={style_detailsPollForm.pollDescriptionContainer}>
         <ScrollView bounces={false} contentContainerStyle={style_detailsPollForm.pollContentInScrollView}>
-          <Text style={style_detailsPollForm.pollDescription}>{poll.pollDescription}</Text>
-          </ScrollView>
-      </View>
-      <View style={style_detailsPollForm.votingContainer}>
-        <RatingPollForm/>
+          {imageArray}<Text>HIER STEHT WAS</Text>
+        </ScrollView>
       </View>
     </View>
 
   )
 }
 
-export default AddPostForm
+export default ResultPollForm

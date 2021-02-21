@@ -25,7 +25,9 @@ export default StyleSheet.create({
     minHeight: 50,
     backgroundColor: '#0099ff',
     justifyContent: 'flex-start',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1,
   },
 
   listItemContainerWithoutImage: {
@@ -36,8 +38,6 @@ export default StyleSheet.create({
     flexGrow: 1,
     borderColor: 'lightgrey',
     justifyContent: 'space-between',
-    borderBottomColor: 'lightgrey',
-    borderBottomWidth: 1,
   },
 
   displayNameInUserSearchList: {

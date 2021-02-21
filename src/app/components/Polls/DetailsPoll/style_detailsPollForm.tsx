@@ -19,7 +19,7 @@ export default StyleSheet.create({
     flex: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: 'green',
   },
   pollContentInScrollView: {
     paddingTop: 10,
@@ -32,5 +32,11 @@ export default StyleSheet.create({
   },
   pollDescription: {
     fontSize: 18
-  }
+  },
+  iconInAddMemberHeader: {
+    height: 70,
+    width: 70,
+    borderRadius: 100,
+    margin: 10
+  },
 });

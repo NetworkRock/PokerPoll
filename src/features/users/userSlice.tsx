@@ -72,6 +72,23 @@ export const fetchUserListById = createAsyncThunk('user/fetchUsers', async (sear
   return filteredUsersArray
 })
 
+
+export const fetchAllUsersBytheirRatings = createAsyncThunk('user/fetchUsers', async (userRatings) => {
+  const db = firebaseApp.firestore();
+  let filteredUsersArray: Array<Object> = [];
+  try {
+    
+    for(let i = 0; i < userRatings.length; i++) {
+        const snapshot = await db.collection('users').doc(userRatings[i].user).get()
+        filteredUsersArray = filteredUsersArray.concat(snapshot.data())
+    }
+  } catch (error) {
+    console.error("Fetch user error: ", error)
+  }
+  console.info("USERS: ", filteredUsersArray)
+  return filteredUsersArray
+})
+
 export const { addSearchUserTitle } = userSlice.actions
 
 export const selectCurrentUser = state => state.user.user
