@@ -57,15 +57,19 @@ const ResultPollForm = (props) => {
   RATING_SYSTEM_ENUM.map((el) => {
     let counter = 0
     let data
-    let fibunatiConfig = { name: ":times " + el.name, legendFontColor: el.legendFontColor, color: el.color, legendFontSize: 15 }
-    for(let i = 0; i < userRatings.length; i++) {
+    let fibunatiConfig = {
+      name: "times " + el.name, legendFontColor: el.legendFontColor,
+      color: el.color, legendFontSize: 16
+    }
+
+    for (let i = 0; i < userRatings.length; i++) {
       if (userRatings[i].rate === el.name) {
         counter++
-        data = { ...fibunatiConfig, ...{ rating: counter} }
-        resultArray.push(data);
       }
     }
-    counter = 0
+    data = { ...fibunatiConfig, ...{ rating: counter } }
+    resultArray.push(data);
+
   })
 
   return (
