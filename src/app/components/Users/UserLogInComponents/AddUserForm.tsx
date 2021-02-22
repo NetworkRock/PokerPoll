@@ -29,7 +29,8 @@ export const AddUserForm = (props) => {
   const onEmail = e => setEmail(e)
   const onPassword = e => setPassword(e)
 
-  const canSignUp = [displayName.trim().length > 2, email, password].every(Boolean) && addRequestStatus === 'idle'
+  const canSignUp = [displayName.trim().length > 2, email, password, profilePictureURL].every(Boolean) && addRequestStatus === 'idle'
+  const canLogIn = [displayName.trim().length > 2, email, password].every(Boolean) && addRequestStatus === 'idle'
 
   const loginClicked = () => {
     const loginPromise = auth.signInWithEmailAndPassword(email, password)
@@ -43,6 +44,7 @@ export const AddUserForm = (props) => {
         console.error("Error by login user: ", error)
       } finally {
         setAddRequestStatus('idle')
+        setLoading('')
       }
     }).catch(e => Alert.alert("Error:" + e))
   }
@@ -65,7 +67,7 @@ export const AddUserForm = (props) => {
           setDisplayName('')
           setEmail('')
           setPassword('')
-          setDefaultImage(null)
+          setProfilePictureURL(null)
         } catch (error) {
           console.error("SIGN UP ERROR: ", error)
         } finally {
@@ -168,7 +170,7 @@ export const AddUserForm = (props) => {
           <Button
             title="Log In"
             onPress={loginClicked}
-            disabled={!canSignUp}
+            disabled={!canLogIn}
           />
           <Button
             title="Sign Up"

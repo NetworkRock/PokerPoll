@@ -50,6 +50,9 @@ export const pollSlice = createSlice({
     addCurrentPollDescription(state, action) {
       state.currentPollDescription = action.payload
     },
+    clearUpPollState() {
+      return initialState
+    }
   },
   extraReducers: builder => {
     builder.addCase('polls/addNewPoll/pending', (state, action) => {
@@ -175,6 +178,7 @@ export const {
   exchangeModifiedPollToExistingPoll,
   addCurrentPollDescription,
   addCurrentPollTitle,
+  clearUpPollState
 } = pollSlice.actions
 
 

@@ -16,6 +16,9 @@ export const userSlice = createSlice({
   reducers: {
     addSearchUserTitle(state, action) {
       state.titleOfDisplayNameUserSearch = action.payload
+    },
+    clearUpUserState() {
+      return initialState
     }
   },
   extraReducers: builder => {
@@ -99,7 +102,7 @@ export const fetchAllUsersBytheirRatings = createAsyncThunk('user/fetchUsers', a
   return filteredUsersArray
 })
 
-export const { addSearchUserTitle } = userSlice.actions
+export const { addSearchUserTitle, clearUpUserState} = userSlice.actions
 
 export const selectCurrentUser = state => state.user.user
 

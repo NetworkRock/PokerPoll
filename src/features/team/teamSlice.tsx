@@ -42,6 +42,9 @@ export const teamSlice = createSlice({
         exisitngTeam.teamTitle = teamTitle
         exisitngTeam.addedUsersId = addedUsersId
       }
+    },
+    clearUpTeamState() {
+      return initialState
     }
   },
   extraReducers: builder => {
@@ -90,7 +93,8 @@ export const {
   addMemberToNewTeam,
   addTeamTitle,
   addTeamToAllTeams,
-  exchangeModifiedTeamToExistingTeam
+  exchangeModifiedTeamToExistingTeam,
+  clearUpTeamState
 } = teamSlice.actions
 
 export const selectNewAddedTeamMembers = state => state.teams.createANewTeamWithNewMembers.members
