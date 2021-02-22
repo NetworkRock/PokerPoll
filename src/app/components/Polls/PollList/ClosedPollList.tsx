@@ -21,7 +21,6 @@ const ClosedPollsList = () => {
   const allTeamsWhereCurrentUserIsMember = useSelector(selectAllTeams)
 
   return (
-    <View style={stylePollList.listContainer}>
       <View style={stylePollList.listContainer}>
         <StatusBar
           barStyle="dark-content"
@@ -35,7 +34,6 @@ const ClosedPollsList = () => {
           keyExtractor={(item, index) => index.toString()}
         />
       </View>
-    </View>
   );
 }
 

@@ -39,6 +39,7 @@ const RootPollsForGroupStack = createStackNavigator();
 const RootPollsDetailStack = createStackNavigator();
 const RootUserLogInStack = createStackNavigator();
 const RootTeamStack = createStackNavigator();
+const RootClosedPollsStack = createStackNavigator();
 
 /**
  * Stack for poll teams
@@ -132,7 +133,7 @@ const PollsDetailStack = () => {
  */
 const PollsDetailScreen = () => {
   return (
-    <RatingPollForm/>
+    <RatingPollForm />
   )
 }
 const PollsDetailResultScreen = ({ route }) => {
@@ -266,10 +267,9 @@ const BottomTabBar = () => {
         })}
       />
       <Tab.Screen
-        name="ClosedPolls"
-        component={ClosedPollsScreen}
+        name="ClosedPollStack"
+        component={ClosedPollStack}
         options={({ route }) => ({
-          title: 'Closed Polls',
           tabBarIcon: ({ color, size }) => {
             // You can return any component that you like here!
             return <SimpleLineIcons name="lock" size={size} color={color} />;
@@ -354,7 +354,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <RootStack.Navigator mode="card" headerMode="none" screenOptions={{gestureEnabled: false}}>
+        <RootStack.Navigator mode="card" headerMode="none" screenOptions={{ gestureEnabled: false }}>
           <RootStack.Screen
             name='UserLogInStack'
             component={UserLogInStack}
@@ -369,11 +369,28 @@ export default function App() {
   );
 }
 
-const ClosedPollsScreen = () => {
+const ClosedPollStack = () => {
   return (
-      <ClosedPollList />
+    <RootClosedPollsStack.Navigator mode="card" headerMode="screen">
+      <RootClosedPollsStack.Screen
+        name='ClosedPollListScreen'
+        component={ClosedPollListScreen}
+        options={() => ({
+          headerTitle: () => <Text>Closed Polls</Text>,
+        })}
+      />
+    </RootClosedPollsStack.Navigator>
   )
 }
+
+
+const ClosedPollListScreen = () => {
+  return (
+    <ClosedPollList />
+  )
+}
+
+
 
 const SettingsScreen = ({ navigation }) => {
 
