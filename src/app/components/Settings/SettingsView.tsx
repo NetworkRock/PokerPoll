@@ -9,9 +9,10 @@ const SettingsView = (props) => {
   const currentUser = useSelector(selectCurrentUser)
 
   const logout = async () => {
-    console.log("PROPS: ", props.navigation.navigate('UserLogInStack'))
     try {
-      await firebaseApp.auth().signOut();
+      await firebaseApp.auth().signOut().then(() => {
+        props.navigation.navigate('UserLogInStack')
+      });
     } catch (error) {
       console.error("Failed to logout: ", error)
     }

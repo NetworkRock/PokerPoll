@@ -43,10 +43,20 @@ export const userSlice = createSlice({
  */
 export const addNewUser = createAsyncThunk('user/addNewUser', async (user) => {
   const db = firebaseApp.firestore();
-  const response = await db.collection('users').add(user)
-  await db.collection('users').doc(response.id).update({id: response.id})
-  const dataResponse = await db.collection('users').doc(response.id).get()
-  return dataResponse.data()
+  try {
+    let dataResponse
+    if (user.uid) {
+      dataResponse = await db.collection('users').doc(user.uid).get()
+      return dataResponse.data()
+    } else {
+      await db.collection('users').doc(user.id).set(user)
+      dataResponse = await db.collection('users').doc(user.id).get()
+      return dataResponse.data()
+    }
+  } catch (error) {
+    console.error("Error by safing user to db: ", error)
+  }
+
 })
 
 /**

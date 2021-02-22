@@ -5,6 +5,7 @@ import {
   View,
   FlatList,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import renderTeamListItem from './UserListItem'
 import style_userForm from './style_userForm';
@@ -25,7 +26,7 @@ const UserSearchList = () => {
 
   let content
   if (userStatus === 'loading') {
-    content = <View style={style_userForm.container}><Text>Loading...</Text></View>
+    content = <View style={style_userForm.container}><ActivityIndicator size="large"/></View>
   } else if (userStatus === 'succeeded') {
     content = <View style={style_userForm.listContainer}>
     <StatusBar
