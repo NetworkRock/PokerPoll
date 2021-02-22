@@ -23,7 +23,6 @@ const DetailPollCloseAdminView = () => {
 
 
   const onClosePollClicked = async () => {
-    console.log(statusClosed)
     if (canSave) {
       try {
         setAddRequestStatus('pending')

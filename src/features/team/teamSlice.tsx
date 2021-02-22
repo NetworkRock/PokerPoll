@@ -68,10 +68,8 @@ export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team) => {
     const teamRef = await db.collection('teams');
     const userRef = await db.collection('users');
     const response = await teamRef.doc()
-    console.log("TEAM:", team)
     await teamRef.doc(response.id).set({ ...{ id: response.id }, ...team })
     dataResponse = await teamRef.doc(response.id).get()
-    console.log("RESPONSE", dataResponse.data())
 
 
     //Update the connected membersOfTeam array for user

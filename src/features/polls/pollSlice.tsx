@@ -26,7 +26,6 @@ export const pollSlice = createSlice({
       state.status = 'succeeded'
     },
     pollAdded(state, action) {
-      console.log("PAY:", action.payload)
       const existsAlready = state.polls.find((poll) => poll.id === action.payload.id)
       if (!existsAlready) {
         state.polls.push(action.payload)
@@ -57,7 +56,6 @@ export const pollSlice = createSlice({
       state.status = 'loading'
     })
     builder.addCase('polls/addNewPoll/fulfilled', (state, action) => {
-      console.log("POLL ADDED:", action.payload)
       state.status = 'succeeded'
     })
     builder.addCase('polls/addNewPoll/rejected', (state, action) => {
@@ -106,7 +104,6 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
  * Define a thunk funktion for close a poll with a evaluation of the group
  */
 export const closePoll = createAsyncThunk('polls/closePoll', async (poll: Object) => {
-  console.log("SEND")
   const db = firebase.firestore()
   try {
     await db.collection('poll')
@@ -125,8 +122,6 @@ export const closePoll = createAsyncThunk('polls/closePoll', async (poll: Object
  */
 
 export const ratePoll = createAsyncThunk('polls/ratePoll', async (poll: Object) => {
-  console.log(poll)
-
   try {
     const db = firebase.firestore()
 

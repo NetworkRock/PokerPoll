@@ -36,7 +36,7 @@ const PollsList = () => {
       .collection('polls')
       .onSnapshot({includeMetadataChanges: true}, (snapshot) => {
         var source = snapshot.metadata.hasPendingWrites ? "Local" : "Server";
-        console.log(source, " data: ")
+        console.info(source, " data: ")
         snapshot.docChanges().map((change) => {
           if (change.type == 'added') {
             console.info("added DATA: ", change.doc.data())
@@ -47,7 +47,7 @@ const PollsList = () => {
             dispatch(exchangeModifiedPollToExistingPoll(change.doc.data()))
           }
           if (change.type == 'removed') {
-            console.log("removed DATA: ", change.doc.data())
+            console.info("removed DATA: ", change.doc.data())
           }
         })
       })

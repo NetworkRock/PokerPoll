@@ -89,7 +89,6 @@ const RatingPollForm = () => {
             resolve(rateForThePoll)
           }
         }).then((erg) => {
-          console.log("DIETER", erg)
           recentRateNumber = erg
         });
       }
