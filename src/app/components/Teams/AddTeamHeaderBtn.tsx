@@ -16,7 +16,7 @@ const AddTeamHeaderBtn = (props) => {
   const [addRequestStatus, setAddRequestStatus] = useState('idle')
 
   const canSave =
-    [teamTitle, addedUsers.length > 0].every(Boolean) && addRequestStatus === 'idle'
+    [teamTitle.trim().length, addedUsers.length > 0].every(Boolean) && addRequestStatus === 'idle'
 
   const dispatch = useDispatch()
 
@@ -42,7 +42,7 @@ const AddTeamHeaderBtn = (props) => {
 
   return (
       <View style={style_addTeamForm.btn}>
-        <Button title={HEADER_BTN_TYPES.CREATE} onPress={onCreatedTeamClicked} />
+        <Button title={HEADER_BTN_TYPES.CREATE} onPress={onCreatedTeamClicked} disabled={!canSave}/>
       </View>
   )
 

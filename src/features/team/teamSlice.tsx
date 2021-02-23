@@ -4,7 +4,7 @@ import firebase from "firebase";
 const initialState = {
   teams: [],
   createANewTeamWithNewMembers: {
-    title: null,
+    title: '',
     members: [],
   },
   status: 'idle',
@@ -42,6 +42,9 @@ export const teamSlice = createSlice({
         exisitngTeam.teamTitle = teamTitle
         exisitngTeam.addedUsersId = addedUsersId
       }
+    },
+    clearUpTeamState() {
+      return initialState
     }
   },
   extraReducers: builder => {
@@ -68,10 +71,8 @@ export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team) => {
     const teamRef = await db.collection('teams');
     const userRef = await db.collection('users');
     const response = await teamRef.doc()
-    console.log("TEAM:", team)
     await teamRef.doc(response.id).set({ ...{ id: response.id }, ...team })
     dataResponse = await teamRef.doc(response.id).get()
-    console.log("RESPONSE", dataResponse.data())
 
 
     //Update the connected membersOfTeam array for user
@@ -92,7 +93,8 @@ export const {
   addMemberToNewTeam,
   addTeamTitle,
   addTeamToAllTeams,
-  exchangeModifiedTeamToExistingTeam
+  exchangeModifiedTeamToExistingTeam,
+  clearUpTeamState
 } = teamSlice.actions
 
 export const selectNewAddedTeamMembers = state => state.teams.createANewTeamWithNewMembers.members

@@ -19,9 +19,8 @@ const UserSearchListHeader = () => {
 
   return (
     <View style={style_userForm.searchListHeader}>
-      <Text style={style_userForm.headerTitle}>User Search</Text>
       <TextInput
-        placeholder="Search for a user"
+        placeholder="Username (Case sensitive)"
         placeholderTextColor="#C8C8C8"
         style={style_userForm.searchField}
         onChangeText={onSearchTitleChanged}

@@ -13,6 +13,7 @@ import renderTeamListItem from './TeamListItem';
 import { useNavigation } from '@react-navigation/native';
 import { selectCurrentUser } from '../../../features/users/userSlice'
 import { firebaseApp } from "../../../../config";
+import { current } from '@reduxjs/toolkit';
 
 
 const TeamList = () => {
@@ -37,7 +38,7 @@ const TeamList = () => {
             dispatch(exchangeModifiedTeamToExistingTeam(change.doc.data()))
           }
           if (change.type == 'removed') {
-            console.log("removed DATA: ", change.doc.data())
+            console.info("removed DATA: ", change.doc.data())
           }
         })
       })

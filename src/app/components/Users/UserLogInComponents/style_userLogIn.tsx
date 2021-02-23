@@ -9,23 +9,40 @@ export default StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#0099ff',
   },
+  headerContainer: {
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    marginBottom: 20
+  },
+
+  textInputContainer: {
+    flex: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnContainer: {
+    flexDirection: 'row',
+    borderRadius: 10,
+    fontSize: 40,
+    fontWeight: 'bold',
+    backgroundColor: '#e3e3e3',
+    marginBottom: 20
+  },
 
   imgContainer: {
-    display: 'flex',
+    height: 180,
+    width: 180,
     justifyContent: 'center',
     alignItems: 'center',
-    height: 200,
-    width: 200,
     borderRadius: 100,
     backgroundColor: 'grey',
-    marginBottom: 30,
-    marginTop: 30
+    marginBottom: 10
   },
 
   img: {
     borderRadius: 100,
-    height: 200,
-    width: 200
+    height: 180,
+    width: 180
   },
 
   imgDescription: {
@@ -37,7 +54,10 @@ export default StyleSheet.create({
   signInTitle: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 30,
+    fontSize: 50,
+    textShadowColor: 'black',
+    textShadowRadius: 5,
+    textShadowOffset: {width: 0, height: 0}
   },
 
   nickNameField: {
@@ -48,14 +68,9 @@ export default StyleSheet.create({
     borderRadius: 10,
     fontSize: 20,
     backgroundColor: '#e3e3e3',
+    marginBottom: 10
   },
 
-  logInBtn: {
-    marginTop: 10,
-    borderRadius: 10,
-    fontSize: 40,
-    fontWeight: 'bold',
-    backgroundColor: '#e3e3e3',
-  }
+
 
 })

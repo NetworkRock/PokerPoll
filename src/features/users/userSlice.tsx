@@ -16,6 +16,9 @@ export const userSlice = createSlice({
   reducers: {
     addSearchUserTitle(state, action) {
       state.titleOfDisplayNameUserSearch = action.payload
+    },
+    clearUpUserState() {
+      return initialState
     }
   },
   extraReducers: builder => {
@@ -43,10 +46,20 @@ export const userSlice = createSlice({
  */
 export const addNewUser = createAsyncThunk('user/addNewUser', async (user) => {
   const db = firebaseApp.firestore();
-  const response = await db.collection('users').add(user)
-  await db.collection('users').doc(response.id).update({id: response.id})
-  const dataResponse = await db.collection('users').doc(response.id).get()
-  return dataResponse.data()
+  try {
+    let dataResponse
+    if (user.uid) {
+      dataResponse = await db.collection('users').doc(user.uid).get()
+      return dataResponse.data()
+    } else {
+      await db.collection('users').doc(user.id).set(user)
+      dataResponse = await db.collection('users').doc(user.id).get()
+      return dataResponse.data()
+    }
+  } catch (error) {
+    console.error("Error by safing user to db: ", error)
+  }
+
 })
 
 /**
@@ -72,7 +85,24 @@ export const fetchUserListById = createAsyncThunk('user/fetchUsers', async (sear
   return filteredUsersArray
 })
 
-export const { addSearchUserTitle } = userSlice.actions
+
+export const fetchAllUsersBytheirRatings = createAsyncThunk('user/fetchUsers', async (userRatings) => {
+  const db = firebaseApp.firestore();
+  let filteredUsersArray: Array<Object> = [];
+  try {
+    
+    for(let i = 0; i < userRatings.length; i++) {
+        const snapshot = await db.collection('users').doc(userRatings[i].user).get()
+        filteredUsersArray = filteredUsersArray.concat(snapshot.data())
+    }
+  } catch (error) {
+    console.error("Fetch user error: ", error)
+  }
+  console.info("USERS: ", filteredUsersArray)
+  return filteredUsersArray
+})
+
+export const { addSearchUserTitle, clearUpUserState} = userSlice.actions
 
 export const selectCurrentUser = state => state.user.user
 

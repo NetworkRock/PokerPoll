@@ -1,9 +1,14 @@
 import { createSlice, createAsyncThunk, current } from '@reduxjs/toolkit';
 import firebase from "firebase";
+import { stringify } from 'querystring';
+import { POLL_FLAG_ENUM } from '../../app/components/Polls/PollList/PollFlagEnum';
 
 const initialState = {
-  polls: [],
   currentSelectedGroup: null,
+  currentSelectedPoll: null,
+  polls: [],
+  currentPollTitle: '',
+  currentPollDescription: '',
   status: 'idle',
   error: null
 }
@@ -16,8 +21,11 @@ export const pollSlice = createSlice({
       state.currentSelectedGroup = action.payload
       state.status = 'succeeded'
     },
+    addCurrentSelectedPoll(state, action) {
+      state.currentSelectedPoll = action.payload
+      state.status = 'succeeded'
+    },
     pollAdded(state, action) {
-      console.log("PAY:", action.payload)
       const existsAlready = state.polls.find((poll) => poll.id === action.payload.id)
       if (!existsAlready) {
         state.polls.push(action.payload)
@@ -25,12 +33,25 @@ export const pollSlice = createSlice({
       state.status = 'succeeded'
     },
     exchangeModifiedPollToExistingPoll(state, action) {
-      const { title, description, id } = action.payload
+      const { title, description, id, userRatings, pollFlag, pollEstimation } = action.payload
       const exisitngPoll = state.polls.find((poll) => poll.id === id)
       if (exisitngPoll) {
         exisitngPoll.title = title
         exisitngPoll.description = description
+        exisitngPoll.userRatings = userRatings
+        exisitngPoll.pollFlag = pollFlag     
+        exisitngPoll.pollEstimation = pollEstimation   
       }
+      state.status = 'succeeded'
+    },
+    addCurrentPollTitle(state, action) {
+      state.currentPollTitle = action.payload
+    },
+    addCurrentPollDescription(state, action) {
+      state.currentPollDescription = action.payload
+    },
+    clearUpPollState() {
+      return initialState
     }
   },
   extraReducers: builder => {
@@ -38,7 +59,6 @@ export const pollSlice = createSlice({
       state.status = 'loading'
     })
     builder.addCase('polls/addNewPoll/fulfilled', (state, action) => {
-      console.log("POLL ADDED:", action.payload)
       state.status = 'succeeded'
     })
     builder.addCase('polls/addNewPoll/rejected', (state, action) => {
@@ -54,16 +74,19 @@ export const pollSlice = createSlice({
 export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
   let dataResponse
   try {
-    const db = firebase.firestore();
+    const db = firebase.firestore()
     const pRef = await db.collection('poll')
-    const reponse = pRef.doc(poll.currentTeamId)
-    const pollsRef = reponse.collection('polls').doc()
+    const response = pRef.doc(poll.currentTeamId)
+    const pollsRef = response.collection('polls').doc()
 
-    reponse.collection('polls').doc(pollsRef.id).set({
+    response.collection('polls').doc(pollsRef.id).set({
       id: pollsRef.id,
+      createdBy: poll.currentUser.id,
       groupId: poll.currentTeamId,
-      title: poll.title,
-      description: poll.description
+      pollTitle: poll.pollTitle,
+      pollDescription: poll.pollDescription,
+      pollFlag: POLL_FLAG_ENUM.OPEN,
+      userRatings: []
     })
 
 
@@ -80,18 +103,96 @@ export const addNewPoll = createAsyncThunk('polls/addNewPoll', async (poll) => {
   return dataResponse.data()
 })
 
+/**
+ * Define a thunk funktion for close a poll with a evaluation of the group
+ */
+export const closePoll = createAsyncThunk('polls/closePoll', async (poll: Object) => {
+  const db = firebase.firestore()
+  try {
+    await db.collection('poll')
+    .doc(poll.poll.groupId)
+    .collection('polls')
+    .doc(poll.poll.id)
+    .set({pollFlag: POLL_FLAG_ENUM.CLOSE, pollEstimation: poll.estimation}, { merge: true })
+  } catch (error) {
+    console.error("Error by creating a poll: ", error)
+  }
+})
+
+
+/**
+ * Define a thunk function for rate a poll
+ */
+
+export const ratePoll = createAsyncThunk('polls/ratePoll', async (poll: Object) => {
+  try {
+    const db = firebase.firestore()
+
+    await db.collection('poll')
+      .doc(poll.pollWithRating.groupId)
+      .collection('polls')
+      .doc(poll.pollWithRating.id)
+      .set({ userRatings: firebase.firestore.FieldValue.arrayUnion({ user: poll.pollWithRating.user, rate: poll.pollWithRating.rating }) }, { merge: true })
+
+
+    const dbPoll = await db.collection('poll')
+      .doc(poll.pollWithRating.groupId)
+      .collection('polls')
+      .doc(poll.pollWithRating.id).get()
+
+    let ratingsArray: Array<Object> = dbPoll.data().userRatings
+
+    let arrayWithoutPreviouseRates = ratingsArray.filter(data => (data.user !== poll.pollWithRating.user));
+
+    arrayWithoutPreviouseRates.push({ user: poll.pollWithRating.user, rate: poll.pollWithRating.rating })
+
+    await db.collection('poll')
+      .doc(poll.pollWithRating.groupId)
+      .collection('polls')
+      .doc(poll.pollWithRating.id)
+      .set({ userRatings: arrayWithoutPreviouseRates }, { merge: true })
+
+    const currentGroup = await db.collection('teams')
+      .doc(poll.pollWithRating.groupId).get()
+
+
+    if (currentGroup.data().addedUsersId.length === arrayWithoutPreviouseRates.length) {
+      await db.collection('poll')
+        .doc(poll.pollWithRating.groupId)
+        .collection('polls')
+        .doc(poll.pollWithRating.id)
+        .set({pollFlag: POLL_FLAG_ENUM.VOTED}, { merge: true })
+    }
+
+  } catch (error) {
+    console.error('Error by rating a poll: ', error)
+  }
+})
+
 
 
 export const {
   pollAdded,
   addCurrentSelectedGroup,
-  exchangeModifiedPollToExistingPoll
+  addCurrentSelectedPoll,
+  exchangeModifiedPollToExistingPoll,
+  addCurrentPollDescription,
+  addCurrentPollTitle,
+  clearUpPollState
 } = pollSlice.actions
 
 
-export const selectAllPollsForOneGroup = (state, currentTeamId) => 
-  state.polls.polls.filter((poll) => poll.groupId === currentTeamId)
+export const selectAllOpenAndVotedPollsForOneGroup = (state, currentTeamId) =>
+  state.polls.polls.filter((poll) => poll.groupId === currentTeamId
+  && poll.pollFlag !== POLL_FLAG_ENUM.CLOSE)
+
+export const selectAllPollsWhichAreClosed = (state) =>
+  state.polls.polls.filter((poll) => poll.pollFlag === POLL_FLAG_ENUM.CLOSE)
 
 export const selectCurrentGroup = state => state.polls.currentSelectedGroup
+export const selectCurrentPoll = state => state.polls.currentSelectedPoll
+export const selectCurrentPollTitle = state => state.polls.currentPollTitle
+export const selectCurrentPollDescription = state => state.polls.currentPollDescription
+export const selectCurrenPollTitle = state => state.current
 
 export default pollSlice.reducer

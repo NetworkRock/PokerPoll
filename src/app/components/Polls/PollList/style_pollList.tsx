@@ -19,25 +19,29 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    height: 130,
+    height: 110,
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1,
   },
   listItemContainerWithoutImage: {
     flex: 1,
     flexGrow: 0.8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 20,
-    borderBottomColor: 'lightgrey',
-    borderBottomWidth: 1,
     height: 130,
   },
   iconInListContainer: {
     flex: 1,
-    height: 62,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    height: 65,
+    justifyContent: 'space-evenly',
     alignItems: 'center',
-    flexGrow: 0.2,
+    flexGrow: 0.5,
     backgroundColor: 'white',
-    borderRadius: 60,
-    margin: 10
+    borderRadius: 20,
+    margin: 12,
   },
   headerTitle: {
     fontSize: 30,
@@ -45,6 +49,7 @@ export default StyleSheet.create({
   },
 
   title: {
+    flex: 1,
     fontSize: 22,
     fontWeight: 'bold',
     paddingBottom: 5,
@@ -56,5 +61,6 @@ export default StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     //lineHeight: 22
-  }
+  },
+
 })

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import {
   Text,
@@ -9,28 +9,34 @@ import {
 } from 'react-native';
 import renderPollListItem from './PollListItem'
 import stylePollList from './style_pollList';
-import { selectAllPollsForOneGroup, pollAdded, exchangeModifiedPollToExistingPoll } from '../../../features/polls/pollSlice'
-import { selectCurrentGroup } from '../../../features/polls/pollSlice'
-import { firebaseApp } from "../../../../config";
+import { selectAllOpenAndVotedPollsForOneGroup, pollAdded, exchangeModifiedPollToExistingPoll } from '../../../../features/polls/pollSlice'
+import { selectCurrentGroup, selectCurrentPoll } from '../../../../features/polls/pollSlice'
+import { firebaseApp } from "../../../../../config";
+import { useNavigation } from '@react-navigation/native';
+import { selectAllTeams } from '../../../../features/team/teamSlice'
 
 
-const SearchPollsList = () => {
+
+const PollsList = () => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const currentTeamId = useSelector(selectCurrentGroup)
-  const polls = useSelector((state) => selectAllPollsForOneGroup(state, currentTeamId))
+  const allTeamsWhereCurrentUserIsMember = useSelector(selectAllTeams)
+  const polls = useSelector((state) => selectAllOpenAndVotedPollsForOneGroup(state, currentTeamId))
   const pollStatus = useSelector(state => state.polls.status)
   const error = useSelector(state => state.polls.error)
 
   useEffect(() => {
     const db = firebaseApp.firestore();
-
-    console.log("G-ID: ", currentTeamId)
+    /**
+     * Listen when somebody creates a new poll
+     */
     const unsubscribe = db.collection('poll')
       .doc(currentTeamId)
       .collection('polls')
-      .onSnapshot({ includeMetadataChanges: false }, (snapshot) => {
+      .onSnapshot({includeMetadataChanges: true}, (snapshot) => {
         var source = snapshot.metadata.hasPendingWrites ? "Local" : "Server";
-        console.log(source, " data: ")
+        console.info(source, " data: ")
         snapshot.docChanges().map((change) => {
           if (change.type == 'added') {
             console.info("added DATA: ", change.doc.data())
@@ -41,7 +47,7 @@ const SearchPollsList = () => {
             dispatch(exchangeModifiedPollToExistingPoll(change.doc.data()))
           }
           if (change.type == 'removed') {
-            console.log("removed DATA: ", change.doc.data())
+            console.info("removed DATA: ", change.doc.data())
           }
         })
       })
@@ -62,7 +68,7 @@ const SearchPollsList = () => {
       />
       <FlatList
         data={polls}
-        renderItem={(item) => renderPollListItem(item)}
+        renderItem={(item) => renderPollListItem(item, navigation, dispatch, allTeamsWhereCurrentUserIsMember)}
         keyExtractor={(item, index) => index.toString()}
       />
     </View>
@@ -75,4 +81,4 @@ const SearchPollsList = () => {
   );
 }
 
-export default SearchPollsList
+export default PollsList

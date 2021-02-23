@@ -21,16 +21,17 @@ export default StyleSheet.create({
     flexDirection: 'row-reverse',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    height: 130,
+    height: 110,
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1,
   },
   listItemContainerWithoutImage: {
     flex: 1,
     flexGrow: 0.8,
     padding: 20,
     justifyContent: 'center',
-    borderBottomColor: 'lightgrey',
-    borderBottomWidth: 1,
-    height: 130,
+
+    height: 110,
   },
   iconInListContainer: {
     flex: 1,
