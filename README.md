@@ -1,5 +1,6 @@
                                                                                                                                                                      
-                                                                                                                                                                     
+ # Poker Poll #
+ 
  This is a little web-app called "Poker Poll". Play planning poker in your scrum teams!
 
 - Create a team
