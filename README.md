@@ -6,7 +6,7 @@
 - Create a team
 - Invite members to it
 - Create polls in your team
-- rate the polls and see the rating results
+- Estimate the polls and see the rating results
 
 
 ---- The app is in a very very early stage, have fun by testing it ----
