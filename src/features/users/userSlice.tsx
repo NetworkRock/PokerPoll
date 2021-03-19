@@ -1,13 +1,17 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { firebaseApp } from "../../../config";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { firebaseApp } from '../../../config'
+import { RootState } from '../../app/store'
+import { status } from '../../app/enums/statusEnum'
+import firebase from 'firebase'
 
+const db = firebaseApp.firestore()
 
 const initialState = {
-  user: {},
+  user: null,
   titleOfDisplayNameUserSearch: '',
   filteredUsersByDisplayUserName: [],
-  status: 'idle',
-  error: null
+  status: status.idle,
+  error: ''
 }
 
 export const userSlice = createSlice({
@@ -22,42 +26,46 @@ export const userSlice = createSlice({
     }
   },
   extraReducers: builder => {
-    builder.addCase('user/fetchUsers/pending', (state, action) => {
-      state.status = 'loading'
-    })
-    builder.addCase('user/fetchUsers/fulfilled', (state, action) => {
-      state.status = 'succeeded'
-      state.filteredUsersByDisplayUserName = action.payload
-    })
-    builder.addCase('user/fetchUsers/rejected', (state, action) => {
-      state.status = 'failed'
-      state.error = action.error.message
-    })
-    builder.addCase('user/addNewUser/fulfilled', (state, action) => {
+    builder.addCase('user/signUpUser/fulfilled', (state, action) => {
       state.user = action.payload
+      state.status = status.succeeded
+    })
+    builder.addCase('user/signUpUser/pending', (state) => {
+      state.status = status.loading
+    })
+    builder.addCase('user/signUpUser/rejected', (state, action) => {
+      state.status = status.failed
+      state.error = action.error.message
     })
   }
 })
 
 
 /**
- * Define a thunk funktion for add the user to the database users
+ * Define a thunk funktion for sign up a new user to the database
  * Get the user back and add them to the redux store as the actual user then
  */
-export const addNewUser = createAsyncThunk('user/addNewUser', async (user) => {
-  const db = firebaseApp.firestore();
+ export const signUpUser = createAsyncThunk('user/signUpUser', async (user: firebase.User) => {
   try {
-    let dataResponse
-    if (user.uid) {
-      dataResponse = await db.collection('users').doc(user.uid).get()
+      await db.collection('users').doc(user.uid).set(JSON.parse(JSON.stringify(user)))
+      const dataResponse = await db.collection('users').doc(user.uid).get()
       return dataResponse.data()
-    } else {
-      await db.collection('users').doc(user.id).set(user)
-      dataResponse = await db.collection('users').doc(user.id).get()
-      return dataResponse.data()
-    }
   } catch (error) {
-    console.error("Error by safing user to db: ", error)
+    console.error('Error by signUp user to db: ', error)
+  }
+
+})
+
+/**
+ * Define a thunk funktion for logIn user to the database
+ * Get the user back and add them to the redux store as the actual user then
+ */
+export const logInUser = createAsyncThunk('user/logInUser', async (user: firebase.User) => {
+  try {
+      const dataResponse = await db.collection('users').doc(user.uid).get()
+      return dataResponse.data()
+  } catch (error) {
+    console.error('Error by logIn user to db: ', error)
   }
 
 })
@@ -69,25 +77,23 @@ export const addNewUser = createAsyncThunk('user/addNewUser', async (user) => {
  * Define a thunk function create slice not support that
  */
 export const fetchUserListById = createAsyncThunk('user/fetchUsers', async (search) => {
-  const db = firebaseApp.firestore();
   let filteredUsersArray: Array<Object> = [];
   try {
-    const snapshot = await db.collection('users').where("displayName", "==", search.searchTitle).get()
+    const snapshot = await db.collection('users').where('displayName', '==', search.searchTitle).get()
     snapshot.forEach((user) => {
       if(search.searchTitle !== search.currentUser.displayName) {
         filteredUsersArray = filteredUsersArray.concat(user.data())
       }
     });
   } catch (error) {
-    console.error("Fetch user error: ", error)
+    console.error('Fetch user error: ', error)
   }
-  console.info("FILTERED USERS: ", filteredUsersArray)
+  console.info('FILTERED USERS: ', filteredUsersArray)
   return filteredUsersArray
 })
 
 
 export const fetchAllUsersBytheirRatings = createAsyncThunk('user/fetchUsers', async (userRatings) => {
-  const db = firebaseApp.firestore();
   let filteredUsersArray: Array<Object> = [];
   try {
     
@@ -96,15 +102,15 @@ export const fetchAllUsersBytheirRatings = createAsyncThunk('user/fetchUsers', a
         filteredUsersArray = filteredUsersArray.concat(snapshot.data())
     }
   } catch (error) {
-    console.error("Fetch user error: ", error)
+    console.error('Fetch user error: ', error)
   }
-  console.info("USERS: ", filteredUsersArray)
+  console.info('USERS: ', filteredUsersArray)
   return filteredUsersArray
 })
 
 export const { addSearchUserTitle, clearUpUserState} = userSlice.actions
 
-export const selectCurrentUser = state => state.user.user
+export const selectUser = (state: RootState): firebase.User | null => state.user.user
 
 export const selectAllFilteredUsers = state => state.user.filteredUsersByDisplayUserName
 

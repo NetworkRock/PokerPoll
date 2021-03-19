@@ -6,9 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 // Redux imports
 import { Provider, useSelector } from 'react-redux';
-import store from './src/app/store'
-// Import firebase config
-import { firebaseApp } from './config';
+import { store } from './src/app/store'
 
 //  App component imports
 import PollList from './src/app/components/Polls/PollList/PollList';
@@ -20,7 +18,6 @@ import AddTeamForm from './src/app/components/Teams/AddTeamForm';
 import AddTeamHeaderBtn from './src/app/components/Teams/AddTeamHeaderBtn'
 import AddPollHeaderBtn from './src/app/components/Polls/AddPoll/AddPollHeaderBtn'
 import UserSearchList from './src/app/components/Users/UserSearchList';
-import UserSearchListHeader from './src/app/components/Users/UserSearchListHeader';
 import UserSearchListAddedMemebersHeader from './src/app/components/Users/UserSearchListAddedMembersHeader';
 import TeamList from './src/app/components/Teams/TeamList';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -182,7 +179,6 @@ const AddMembersToPollScreen = () => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={{ flex: 1 }}>
       <View style={globalStyles.container}>
-        <UserSearchListHeader />
         <UserSearchListAddedMemebersHeader />
         <UserSearchList />
       </View>
@@ -270,6 +266,7 @@ const BottomTabBar = () => {
         name="ClosedPollStack"
         component={ClosedPollStack}
         options={({ route }) => ({
+          title: 'Closed Polls',
           tabBarIcon: ({ color, size }) => {
             // You can return any component that you like here!
             return <SimpleLineIcons name="lock" size={size} color={color} />;
@@ -366,7 +363,7 @@ export default function App() {
         </RootStack.Navigator>
       </NavigationContainer>
     </Provider>
-  );
+  )
 }
 
 const ClosedPollStack = () => {

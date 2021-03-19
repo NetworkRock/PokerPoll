@@ -1,184 +1,205 @@
-import { unwrapResult } from '@reduxjs/toolkit'
-import { useDispatch } from 'react-redux';
+// react specific imports
 import React, { useEffect, useState } from 'react'
-import { View, Text, TextInput, Button, Image, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
-import style_userLogIn from './style_userLogIn';
-import { addNewUser } from '../../../../features/users/userSlice';
-import * as ImagePicker from 'expo-image-picker';
-import { firebaseApp } from '../../../../../config';
+import { View, Text, TextInput, Button, Image, TouchableOpacity, ActivityIndicator, Platform } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+
+// redux
+import { selectUser, signUpUser, logInUser } from '../../../../features/users/userSlice'
 import { nanoid } from '@reduxjs/toolkit'
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useNavigation } from '@react-navigation/native';
+import { useAppSelector, useAppDispatch } from '../../../../app/hooks'
 
-export const AddUserForm = (props) => {
-  const [defaultImage, setDefaultImage] = useState(null)
-  const [loading, setLoading] = useState("");
-  const [displayName, setDisplayName] = useState('')
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [profilePictureURL, setProfilePictureURL] = useState(null)
-  const [addRequestStatus, setAddRequestStatus] = useState('idle')
+// style imports
+import style_userLogIn from './style_userLogIn'
 
+// expo imports
+import * as ImagePicker from 'expo-image-picker'
+
+// firebase
+import { firebaseApp } from '../../../../../config'
+import firebase from 'firebase'
+
+export const AddUserForm = (): JSX.Element => {
+  // firebase refs
   const auth = firebaseApp.auth()
-  const dispatch = useDispatch()
-  const navigation = useNavigation()
-  const onDisplayName = e => {
-    e.trim()
-    setDisplayName(e)
-  }
-  const onEmail = e => setEmail(e)
-  const onPassword = e => setPassword(e)
+  const storageRef = firebaseApp.storage().ref()
 
-  const canSignUp = [displayName.trim().length > 2, email, password, profilePictureURL].every(Boolean) && addRequestStatus === 'idle'
-  const canLogIn = [displayName.trim().length > 2, email, password].every(Boolean) && addRequestStatus === 'idle'
+  // react hooks
+  const user: firebase.User | null = useAppSelector(selectUser)
+  const dispatch = useAppDispatch()
+  const navigation = useNavigation()
+  const [profilePictureURL, setProfilePictureURL] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [displayName, setDisplayName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  // event listener
+  const onDisplayName = (displayName: string) => setDisplayName(displayName)
+  const onEmail = (email: string) => setEmail(email)
+  const onPassword = (password: string) => setPassword(password)
+
+  // boolean checks
+  const canSignUp = [displayName.trim().length > 2, email, password].every(Boolean)
+
+
+  const setDefaulProfilePicture = async (storageRef: firebase.storage.Reference) => {
+    const defaultProfilePictureURL = await storageRef.child('userProfilePicture/defaultProfilePicture.jpg').getDownloadURL()
+    setProfilePictureURL(defaultProfilePictureURL)
+  }
+  useEffect(() => {
+    setDefaulProfilePicture(storageRef)
+  }, [])
 
   const loginClicked = () => {
     const loginPromise = auth.signInWithEmailAndPassword(email, password)
-    loginPromise.then(async (e) => {
+    loginPromise.then(async (userCredential: firebase.auth.UserCredential) => {
       try {
-        setAddRequestStatus('pending')
-        await dispatch(addNewUser(e.user))
-        Alert.alert("Login successfull")
-        navigation.navigate('RootModalStack', { screen: 'BottomTabBar' });
+        if (userCredential.user !== null && auth.currentUser) {
+          dispatch(logInUser(userCredential.user))
+          alert('Login successfull')
+          navigation.navigate('RootModalStack', { screen: 'BottomTabBar' })
+        }
       } catch (error) {
-        console.error("Error by login user: ", error)
-      } finally {
-        setAddRequestStatus('idle')
-        setLoading('')
+        console.error('Error by login user: ', error)
       }
-    }).catch(e => Alert.alert("Error:" + e))
+    })
+    .catch(error => alert(error.message))
   }
 
   const signUpClicked = () => {
     if (canSignUp) {
       const signUpPromise = auth.createUserWithEmailAndPassword(email, password)
-      signUpPromise.then(async (cred) => {
-        try {
-          const user = {
-            id: cred.user?.uid,
-            displayName: displayName,
-            email: email,
-            password: password,
-            profilePictureURL: profilePictureURL
+      signUpPromise
+        .then(async (userCredential: firebase.auth.UserCredential) => {
+          try {
+            if (userCredential.user !== null && auth.currentUser) {
+              await auth.currentUser.updateProfile({
+                displayName: displayName.trim(),
+                photoURL: profilePictureURL
+              })
+              await dispatch(signUpUser(auth.currentUser))
+              setDisplayName('')
+              setEmail('')
+              setPassword('')
+              await setDefaulProfilePicture(storageRef)
+              navigation.navigate('RootModalStack', { screen: 'BottomTabBar' })
+            }
+          } catch (error) {
+            alert(error.message)
           }
-          setAddRequestStatus('pending')
-          await dispatch(addNewUser(user))
-          navigation.navigate('RootModalStack', { screen: 'BottomTabBar' });
-          setDisplayName('')
-          setEmail('')
-          setPassword('')
-          setProfilePictureURL(null)
-        } catch (error) {
-          console.error("SIGN UP ERROR: ", error)
-        } finally {
-          setAddRequestStatus('idle')
-        }
-      }).catch((e) => Alert.alert("Error: " + e))
-    }
-  }
+        })
+        .catch((error) => {
+          alert(error.message)
+        })
+    }}
 
 
-
-  useEffect(() => {
-    if (loading === "loading" && !profilePictureURL) {
-      setDefaultImage(<ActivityIndicator size="large" />)
-    } else if (!profilePictureURL) {
-      setDefaultImage(
-        <View style={style_userLogIn.imgContainer}>
-          <Icon name='account' color="lightgrey" size={130} />
-        </View>)
-    } else {
-      setDefaultImage(<Image source={{ uri: profilePictureURL }} style={style_userLogIn.img} />)
-    }
-  }, [profilePictureURL, loading])
-
-
-
-
-
-
-
+  // use fetch here to convert the b64 file to blob
   const b64toBlob = async (uri: string) => {
-    const blobFile = await (await fetch(uri)).blob()
-    console.info("blobFile: ", blobFile);
-    return blobFile
+    return await (await fetch(uri)).blob()
   }
 
-  const selectAProfilePicture = async () => {
-
-    const permissions = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (permissions.status !== 'granted') {
-      alert("Sorry, we need camera roll permissions to make this work!");
-    } else {
-      setLoading("loading")
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [5, 5],
-        quality: 0.1,
-      });
-      if (!result.cancelled) {
-        const storageRef = firebaseApp.storage().ref()
-        const fileRef = storageRef.child('userProfilePicture/' + nanoid())
-        const blobFile = await b64toBlob(result.uri)
-        await fileRef.put(blobFile)
-        setProfilePictureURL(await fileRef.getDownloadURL());
+  const checkLibraryPermissions = async () => {
+    if (Platform.OS !== 'web') {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!')
       }
     }
   }
 
+  const selectProfilePicture = async () => {
+    await checkLibraryPermissions()
+    setLoading(true)
+    const image: ImagePicker.ImagePickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [5, 5],
+      quality: 0.1,
+    })
+    console.log(image)
+    if (!image.cancelled) {
+      const fileRef = storageRef.child('userProfilePicture/' + nanoid())
+      const blobFile = await b64toBlob(image.uri)
+      await fileRef.put(blobFile)
+      setProfilePictureURL(await fileRef.getDownloadURL())
+      setLoading(false)
+    } else {
+      setLoading(false)
+    }
+  }
 
+  const heading: JSX.Element =
+    <View style={style_userLogIn.headerContainer}>
+      <Text style={style_userLogIn.signInTitle}>Poker Poll</Text>
+    </View>
+
+  const imageContainer: JSX.Element =
+    <View style={style_userLogIn.imgContainer}>
+      <TouchableOpacity
+        onPress={selectProfilePicture}
+      >
+        {
+          loading ? <ActivityIndicator size="large" /> : <Image source={{ uri: profilePictureURL }} style={style_userLogIn.img} />
+        }
+      </TouchableOpacity>
+    </View>
+
+  const passworBtn: JSX.Element = <TextInput
+    secureTextEntry={true}
+    placeholder="Type in your password"
+    placeholderTextColor="#C8C8C8"
+    value={password}
+    onChangeText={onPassword}
+    style={style_userLogIn.nickNameField}
+  />
+
+  const signUpView: JSX.Element = <View style={style_userLogIn.textInputContainer}>
+    <TextInput
+      placeholder="Type in a nickname"
+      placeholderTextColor="#C8C8C8"
+      value={displayName}
+      onChangeText={onDisplayName}
+      style={style_userLogIn.nickNameField}
+      maxLength={25}
+    />
+    <TextInput
+      placeholder="Type your email"
+      placeholderTextColor="#C8C8C8"
+      value={email}
+      onChangeText={onEmail}
+      style={style_userLogIn.nickNameField}
+      maxLength={25}
+    />
+    {passworBtn}
+    <View style={style_userLogIn.btnContainer}>
+      <Button
+        title="Sign Up"
+        onPress={signUpClicked}
+        disabled={!canSignUp}
+      />
+    </View>
+  </View>
+
+  const loginView: JSX.Element = <View style={style_userLogIn.textInputContainer}>
+    {passworBtn}
+    <View style={style_userLogIn.btnContainer}>
+      <Button
+        title="Log In"
+        onPress={loginClicked}
+        disabled={!password}
+      />
+    </View>
+  </View>
 
   return (
     <View style={style_userLogIn.container}>
-      <View style={style_userLogIn.headerContainer}>
-        <Text style={style_userLogIn.signInTitle}>Poker Poll</Text>
-      </View>
-      <View  style={style_userLogIn.imgContainer}>
-      <TouchableOpacity
-        onPress={selectAProfilePicture}
-      >
-        {defaultImage}
-      </TouchableOpacity>
-      </View>
-      <View style={style_userLogIn.textInputContainer}>
-      <TextInput
-        placeholder="Type in a nickname"
-        placeholderTextColor="#C8C8C8"
-        value={displayName}
-        onChangeText={onDisplayName}
-        style={style_userLogIn.nickNameField}
-        maxLength={25}
-      />
-      <TextInput
-        placeholder="Type your email"
-        placeholderTextColor="#C8C8C8"
-        value={email}
-        onChangeText={onEmail}
-        style={style_userLogIn.nickNameField}
-        maxLength={25}
-      />
-      <TextInput
-          secureTextEntry={true}
-          placeholder="Type in your password"
-          placeholderTextColor="#C8C8C8"
-          value={password}
-          onChangeText={onPassword}
-          style={style_userLogIn.nickNameField}
-        />
-        <View style={style_userLogIn.btnContainer}>
-          <Button
-            title="Log In"
-            onPress={loginClicked}
-            disabled={!canLogIn}
-          />
-          <Button
-            title="Sign Up"
-            onPress={signUpClicked}
-            disabled={!canSignUp}
-          />
-        </View>
-      </View>
+      {heading}
+      {imageContainer}
+      {
+        !user ? signUpView : loginView
+      }
+
 
     </View>
   )
