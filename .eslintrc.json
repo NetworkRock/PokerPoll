@@ -23,6 +23,8 @@
       "quotes": ["error", "single"],
       "semi": ["error", "never"],
       "arrow-spacing": ["error"],
-      "no-var": "error"
+      "no-var": "error",
+      "spaced-comment": ["error", "always", { "exceptions": ["-", "+"] }],
+      "capitalized-comments": ["error", "always"]
     }
 }
