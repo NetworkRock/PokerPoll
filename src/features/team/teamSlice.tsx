@@ -1,5 +1,7 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import firebase from "firebase";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import firebase from 'firebase'
+import { Team } from '../../app/models/Team'
+import { RootState } from '../../app/store'
 
 const initialState = {
   teams: [],
@@ -15,12 +17,12 @@ export const teamSlice = createSlice({
   name: 'teams',
   initialState,
   reducers: {
-    addMemberToNewTeam(state, action) {
-      const found = state.createANewTeamWithNewMembers.members.find((user) => user.id === action.payload.id)
+    addMemberToNewTeam(state, action: {payload: firebase.User, type: string}) {
+      const found: Array<firebase.User> | undefined = state.createANewTeamWithNewMembers.members.find((user: firebase.User) => user.uid === action.payload.uid)
       if (!found) {
-        state.createANewTeamWithNewMembers.members.push(action.payload);
+        state.createANewTeamWithNewMembers.members.push(action.payload)
       } else {
-        state.createANewTeamWithNewMembers.members = state.createANewTeamWithNewMembers.members.filter((exisitngUser) => exisitngUser.id !== found.id)
+        state.createANewTeamWithNewMembers.members = state.createANewTeamWithNewMembers.members.filter((exisitngUser: firebase.User) => exisitngUser.uid !== found.uid)
       }
     },
     addTeamTitle(state, action) {
@@ -31,7 +33,7 @@ export const teamSlice = createSlice({
       if (!exisitngTeam) {
         state.teams.push(action.payload)
       }
-      //Maybe the most important line of the whole program :D
+      // Maybe the most important line of the whole program :D
       state.status = 'succeeded'
     },
     exchangeModifiedTeamToExistingTeam(state, action) {
@@ -64,30 +66,25 @@ export const teamSlice = createSlice({
 /**
  * Define a thunk funktion for save a new team
  */
-export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team) => {
-  let dataResponse
+export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team: Team) => {
   try {
-    const db = firebase.firestore();
-    const teamRef = await db.collection('teams');
-    const userRef = await db.collection('users');
+    const db = firebase.firestore()
+    const teamRef = await db.collection('teams')
+    const userRef = await db.collection('users')
     const response = await teamRef.doc()
     await teamRef.doc(response.id).set({ ...{ id: response.id }, ...team })
-    dataResponse = await teamRef.doc(response.id).get()
+    const dataResponse = await teamRef.doc(response.id).get()
 
-
-    //Update the connected membersOfTeam array for user
-    team.addedUsersId.map(async (userId) => {
-      await userRef.doc(userId).update({
-        memberOfTeams: firebase.firestore.FieldValue.arrayUnion(response.id)
-      });
+    // Update the connected membersOfTeam array for user
+    team.members.map(async (memberId: string) => {
+      await userRef.doc(memberId).update({
+        members: firebase.firestore.FieldValue.arrayUnion(response.id)
+      })
     })
-
+    return dataResponse.data()
   } catch (error) {
-    console.error("Error by creating a team: ", error)
-  }
-
-  return dataResponse.data()
-})
+    console.error('Error by creating a team: ', error)
+  }})
 
 export const {
   addMemberToNewTeam,
@@ -97,7 +94,7 @@ export const {
   clearUpTeamState
 } = teamSlice.actions
 
-export const selectNewAddedTeamMembers = state => state.teams.createANewTeamWithNewMembers.members
+export const selectNewAddedTeamMembers = (state: RootState): Array<firebase.User> => state.teams.createANewTeamWithNewMembers.members
 
 export const selectTeamTitle = state => state.teams.createANewTeamWithNewMembers.title
 

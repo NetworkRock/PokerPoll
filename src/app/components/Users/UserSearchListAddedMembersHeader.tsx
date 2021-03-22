@@ -1,21 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux'
-import {
-  Image,
-  View,
-  ScrollView,
-} from 'react-native';
-import style_userForm from './style_userForm';
+// React specific
+import React from 'react'
+import { Image, View, ScrollView } from 'react-native'
+
+// Style
+import style_userForm from './style_userForm'
+
+// Redux
+import { useAppSelector } from '../../../app/hooks'
 import { selectNewAddedTeamMembers } from '../../../features/team/teamSlice'
 
-const UserSearchListAddedMemebersHeader = () => {
-  const addedUsers = useSelector(selectNewAddedTeamMembers)
+const UserSearchListAddedMemebersHeader = (): JSX.Element => {
+  const addedUsers = useAppSelector(selectNewAddedTeamMembers)
 
-  let imageArray
-
-  imageArray = addedUsers.map((user) => (
-    <Image key={user.id} source={{
-      uri: user.profilePictureURL,
+  const imageArray = addedUsers.map((user: firebase.User) => (
+    <Image key={user.uid} source={{
+      uri: user.photoURL,
     }} style={style_userForm.iconInAddMemberHeader} />
   ))
 

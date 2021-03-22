@@ -1,29 +1,29 @@
-// react specific imports
+// React specific imports
 import React, { useEffect, useState } from 'react'
 import { View, Text, TextInput, Button, Image, TouchableOpacity, ActivityIndicator, Platform } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
-// redux
+// Redux
 import { selectUser, signUpUser, logInUser } from '../../../../features/users/userSlice'
 import { nanoid } from '@reduxjs/toolkit'
 import { useAppSelector, useAppDispatch } from '../../../../app/hooks'
 
-// style imports
+// Style imports
 import style_userLogIn from './style_userLogIn'
 
-// expo imports
+// Expo imports
 import * as ImagePicker from 'expo-image-picker'
 
-// firebase
+// Firebase
 import { firebaseApp } from '../../../../../config'
 import firebase from 'firebase'
 
 export const AddUserForm = (): JSX.Element => {
-  // firebase refs
+  // Firebase refs
   const auth = firebaseApp.auth()
   const storageRef = firebaseApp.storage().ref()
 
-  // react hooks
+  // React hooks
   const user: firebase.User | null = useAppSelector(selectUser)
   const dispatch = useAppDispatch()
   const navigation = useNavigation()
@@ -33,12 +33,12 @@ export const AddUserForm = (): JSX.Element => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  // event listener
+  // Event listener
   const onDisplayName = (displayName: string) => setDisplayName(displayName)
   const onEmail = (email: string) => setEmail(email)
   const onPassword = (password: string) => setPassword(password)
 
-  // boolean checks
+  // Boolean checks
   const canSignUp = [displayName.trim().length > 2, email, password].every(Boolean)
 
 
@@ -55,7 +55,7 @@ export const AddUserForm = (): JSX.Element => {
     loginPromise.then(async (userCredential: firebase.auth.UserCredential) => {
       try {
         if (userCredential.user !== null && auth.currentUser) {
-          dispatch(logInUser(userCredential.user))
+          await dispatch(logInUser(userCredential.user))
           alert('Login successfull')
           navigation.navigate('RootModalStack', { screen: 'BottomTabBar' })
         }
@@ -94,7 +94,7 @@ export const AddUserForm = (): JSX.Element => {
     }}
 
 
-  // use fetch here to convert the b64 file to blob
+  // Use fetch here to convert the b64 file to blob
   const b64toBlob = async (uri: string) => {
     return await (await fetch(uri)).blob()
   }

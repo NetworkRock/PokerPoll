@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { firebaseApp } from '../../../config'
 import { RootState } from '../../app/store'
-import { status } from '../../app/enums/statusEnum'
+import { status } from '../../app/enums/StatusEnum'
 import firebase from 'firebase'
 
 const db = firebaseApp.firestore()

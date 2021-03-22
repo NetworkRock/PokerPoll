@@ -1,40 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { StyleSheet, View, Text, Button } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
+// react specific
+import React from 'react'
+import { View,  Button } from 'react-native'
+
+// redux 
+import { useAppDispatch, useAppSelector } from '../../hooks'
 import { unwrapResult } from '@reduxjs/toolkit'
-import { selectTeamTitle, addNewTeam, addTeamTitle } from '../../../features/team/teamSlice'
+import { selectTeamTitle, addNewTeam } from '../../../features/team/teamSlice'
 import { selectNewAddedTeamMembers } from '../../../features/team/teamSlice'
-import style_addTeamForm from "./style_addTeamForm";
-import { HEADER_BTN_TYPES } from '../NavigationComponents/HeaderButtonEnum';
-import { selectCurrentUser } from '../../../features/users/userSlice'
+import { selectUser } from '../../../features/users/userSlice'
+
+// style
+import style_addTeamForm from './style_addTeamForm'
+
+// enum
+import { HEADER_BTN_TYPES } from '../NavigationComponents/HeaderButtonEnum'
+import firebase from 'firebase'
+
+
 
 const AddTeamHeaderBtn = (props) => {
-  const teamTitle = useSelector(selectTeamTitle);
-  const currentUser = useSelector(selectCurrentUser)
-  const addedUsers = useSelector(selectNewAddedTeamMembers)
-  const [addRequestStatus, setAddRequestStatus] = useState('idle')
+  const teamTitle = useAppSelector(selectTeamTitle)
+  const currentUser = useAppSelector(selectUser)
+  const addedUsers = useAppSelector(selectNewAddedTeamMembers)
+  
 
   const canSave =
-    [teamTitle.trim().length, addedUsers.length > 0].every(Boolean) && addRequestStatus === 'idle'
+    [teamTitle.trim().length, addedUsers.length > 0].every(Boolean)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const onCreatedTeamClicked = async () => {
     if (canSave) {
       try {
-        setAddRequestStatus('pending')
-        const createdBy = currentUser.id
-        const addedUsersId = addedUsers.map(user => user.id)
-        addedUsersId.push(createdBy)
-        const resultAction = await dispatch(
-          addNewTeam({ teamTitle, addedUsersId, createdBy})
-        )
-        unwrapResult(resultAction)
+        if (currentUser !== null) {
+
+          const team = new Team(
+            null,
+            teamTitle,
+            null,
+            addedUsers,
+            currentUser.uid
+          )
+
+          const createdBy = currentUser.uid
+          const addedUsersId = addedUsers.map(user => user.id)
+          addedUsersId.push(createdBy)
+          const resultAction = await dispatch(
+            addNewTeam(team)
+          )
+          unwrapResult(resultAction)
+        }
       } catch (error) {
         console.error('Failed to save the team: ', error)
       } finally {
-        setAddRequestStatus('idle')
         props.navigation.navigate('PollTeamStack')
       }
     }
