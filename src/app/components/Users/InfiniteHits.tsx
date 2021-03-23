@@ -16,14 +16,7 @@ const styles = StyleSheet.create({
   separator: {
     borderBottomWidth: 1,
     borderColor: '#ddd',
-  },
-  item: {
-    padding: 10,
-    flexDirection: 'column',
-  },
-  titleText: {
-    fontWeight: 'bold',
-  },
+  }
 })
 
 interface Props {

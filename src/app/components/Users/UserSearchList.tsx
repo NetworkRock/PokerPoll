@@ -12,13 +12,13 @@ import { firebaseApp } from '../../../../config'
 import { searchClient } from '../../../../config'
 import {
   InstantSearch,
-  SearchBox,
   Configure,
-} from 'react-instantsearch-dom'
+} from 'react-instantsearch-native'
 
 // Components
 import InfiniteHits from './InfiniteHits'
 import UserSearchListAddedMemebersHeader from '../Users/UserSearchListAddedMembersHeader'
+import SearchBox from './SearchBox'
 
 const UserSearchList = (): JSX.Element => {
   const algoliaIndex = searchClient.initIndex('users')
@@ -50,16 +50,12 @@ const UserSearchList = (): JSX.Element => {
   }, [])
 
   return (
-    <View style={style_userForm.searchListHeader}>
+    <View style={style_userForm.listContainer}>
       <UserSearchListAddedMemebersHeader />
       <InstantSearch indexName='users' searchClient={searchClient}>
-        <View>
           <Configure hitsPerPage={8} />
-        </View>
-        <View>
-          <SearchBox />
+          <SearchBox/>
           <InfiniteHits />
-        </View>
       </InstantSearch>
     </View>
   )
