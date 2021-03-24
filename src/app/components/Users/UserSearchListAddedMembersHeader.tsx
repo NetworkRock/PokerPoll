@@ -21,10 +21,11 @@ const UserSearchListAddedMemebersHeader = (): JSX.Element => {
 
   if (imageArray.length > 0) {
     return (
-      <View style={{flex: 1, flexGrow: 2, alignSelf: 'stretch'}}>
-      <ScrollView horizontal={true} alwaysBounceHorizontal={false} contentContainerStyle={style_userForm.scrollViewAddMembersToPollScreen} style={{flex: 1, flexGrow: 1}}>
-        {imageArray}
-      </ScrollView>
+      <View style={{ flex: 1, flexGrow: 0.5, alignSelf: 'stretch' }}>
+        <ScrollView horizontal={true} alwaysBounceHorizontal={false}
+          contentContainerStyle={style_userForm.scrollViewAddMembersToPollScreen} style={{ flex: 1, flexGrow: 1 }}>
+          {imageArray}
+        </ScrollView>
       </View>
     )
   } else {

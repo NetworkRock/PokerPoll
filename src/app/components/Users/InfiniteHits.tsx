@@ -1,6 +1,6 @@
 // React specific
 import React from 'react'
-import { StyleSheet, Text, TouchableHighlight, View, Image, FlatList } from 'react-native'
+import { Text, TouchableHighlight, View, Image, FlatList } from 'react-native'
 import { connectInfiniteHits } from 'react-instantsearch-native'
 import firebase from 'firebase'
 import { useAppDispatch } from '../../hooks'
@@ -11,13 +11,6 @@ import style_userForm from '../Users/style_userForm'
 
 // Redux
 import { addMemberToNewTeam } from '../../../features/team/teamSlice'
-
-const styles = StyleSheet.create({
-  separator: {
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
-  }
-})
 
 interface Props {
   hits: Array<firebase.User>,
@@ -41,7 +34,6 @@ const InfiniteHits = ({hits, hasMore, refineNext}: Props) => {
       <FlatList
         data={hits}
         keyExtractor={item => item.uid}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
         onEndReached={() => hasMore && refineNext()}
         renderItem={({ item }) => (
           <TouchableHighlight

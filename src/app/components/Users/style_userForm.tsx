@@ -1,22 +1,17 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
-
-  searchListHeader: {
-    flex: 1,
-    padding: 10,
-    alignSelf: 'stretch',
-    flexDirection: 'column',
-    backgroundColor: 'grey',
-    alignItems: 'stretch',
-    justifyContent: 'center'
-  },
-
+  
   listContainer: {
     display: 'flex',
+    flex: 1,
     alignSelf: 'stretch',
-    flex: 8,
     backgroundColor: '#706f77',
+  },
+
+  searchListHeader: {
+    padding: 10,
+    backgroundColor: 'white',
   },
 
   listItem: {
@@ -45,26 +40,6 @@ export default StyleSheet.create({
     fontSize: 16
   },
 
-  container: {
-    display: 'flex',
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  headerTitle: {
-    fontSize: 30,
-    fontWeight: 'bold'
-  },
-
-  searchField: {
-    padding: 5,
-    borderRadius: 10,
-    fontSize: 20,
-    backgroundColor: '#e3e3e3',
-  },
-
-
   iconInListContainer: {
     alignItems: 'center',
     flexGrow: 0.2,
@@ -82,8 +57,6 @@ export default StyleSheet.create({
     margin: 10
   },
   scrollViewAddMembersToPollScreen: {
-    // flex: 1,
-    // flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
