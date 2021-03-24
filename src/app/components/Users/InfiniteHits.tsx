@@ -1,5 +1,5 @@
 // React specific
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Text, TouchableHighlight, View, Image, FlatList } from 'react-native'
 import { connectInfiniteHits } from 'react-instantsearch-native'
 import firebase from 'firebase'
@@ -19,10 +19,8 @@ interface Props {
 }
 
 
-
 const InfiniteHits = ({hits, hasMore, refineNext}: Props) => {
   const dispatch = useAppDispatch()
-  console.log('HITS:', hits)
   const onAddMemberClicked = (item: firebase.User) => {
     try {
       dispatch(addMemberToNewTeam(item))

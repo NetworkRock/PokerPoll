@@ -1,31 +1,37 @@
-// react specific
+// React specific
 import React from 'react'
 import { View,  Button } from 'react-native'
 
-// redux 
+// Navigation
+import { useNavigation } from '@react-navigation/native'
+
+// Redux 
 import { useAppDispatch, useAppSelector } from '../../hooks'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { selectTeamTitle, addNewTeam } from '../../../features/team/teamSlice'
 import { selectNewAddedTeamMembers } from '../../../features/team/teamSlice'
 import { selectUser } from '../../../features/users/userSlice'
 
-// style
+// Models
+import { Team } from '../../models/Team'
+
+// Style
 import style_addTeamForm from './style_addTeamForm'
 
-// enum
+// Enum
 import { HEADER_BTN_TYPES } from '../NavigationComponents/HeaderButtonEnum'
-import firebase from 'firebase'
 
 
 
-const AddTeamHeaderBtn = (props) => {
+const AddTeamHeaderBtn = (): JSX.Element => {
+  const navigation = useNavigation()
   const teamTitle = useAppSelector(selectTeamTitle)
   const currentUser = useAppSelector(selectUser)
-  const addedUsers = useAppSelector(selectNewAddedTeamMembers)
+  const members = useAppSelector(selectNewAddedTeamMembers)
   
 
   const canSave =
-    [teamTitle.trim().length, addedUsers.length > 0].every(Boolean)
+    [teamTitle.trim().length, members.length > 0].every(Boolean)
 
   const dispatch = useAppDispatch()
 
@@ -33,18 +39,13 @@ const AddTeamHeaderBtn = (props) => {
     if (canSave) {
       try {
         if (currentUser !== null) {
-
           const team = new Team(
-            null,
+            '',
             teamTitle,
-            null,
-            addedUsers,
-            currentUser.uid
+            '',
+            members,
+            currentUser
           )
-
-          const createdBy = currentUser.uid
-          const addedUsersId = addedUsers.map(user => user.id)
-          addedUsersId.push(createdBy)
           const resultAction = await dispatch(
             addNewTeam(team)
           )
@@ -53,7 +54,7 @@ const AddTeamHeaderBtn = (props) => {
       } catch (error) {
         console.error('Failed to save the team: ', error)
       } finally {
-        props.navigation.navigate('PollTeamStack')
+        navigation.navigate('PollTeamStack')
       }
     }
   }

@@ -5,14 +5,14 @@ export class Team {
   teamId: string
   displayName: string
   teamPictureURL: string
-  members: Array<string>
+  members: Array<firebase.User>
   createdBy: firebase.User
 
   constructor(
     teamId: string,
     displayName: string,
     teamPictureURL: string,
-    members: Array<string>,
+    members: Array<firebase.User>,
     createdBy: firebase.User) {
       this.teamId = teamId
       this.displayName = displayName

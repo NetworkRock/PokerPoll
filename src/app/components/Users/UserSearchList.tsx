@@ -2,6 +2,10 @@
 import React, { useEffect } from 'react'
 import { View } from 'react-native'
 
+// Redux 
+import { useAppDispatch, useAppSelector } from '../../hooks'
+import { selectUser } from '../../../features/users/userSlice'
+
 // Stlye
 import style_userForm from './style_userForm'
 
@@ -19,11 +23,19 @@ import {
 import InfiniteHits from './InfiniteHits'
 import UserSearchListAddedMemebersHeader from '../Users/UserSearchListAddedMembersHeader'
 import SearchBox from './SearchBox'
+import { addMemberToNewTeam } from '../../../features/team/teamSlice'
 
 const UserSearchList = (): JSX.Element => {
   const algoliaIndex = searchClient.initIndex('users')
   const db = firebaseApp.firestore()
+  const currentUser = useAppSelector(selectUser)
+  const dispatch = useAppDispatch()
+
   useEffect(() => {
+    // Add the team creator to the members
+    if (currentUser) {
+      dispatch(addMemberToNewTeam(currentUser))
+    }
     const unsubscribe = db.collection('users').onSnapshot((snapshot) => {
       snapshot.docChanges().map((change) => {
         // Create algoliasearch index

@@ -1,21 +1,24 @@
-// react specific imports
+// React specific imports
 import React, { useEffect } from 'react'
 import { Text, View, FlatList, StatusBar } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
-// redux
+// Redux
 import { selectAllTeams, addTeamToAllTeams, exchangeModifiedTeamToExistingTeam } from '../../../features/team/teamSlice'
 import { selectUser } from '../../../features/users/userSlice'
 import { useAppSelector, useAppDispatch } from '../../../app/hooks'
 
-// style imports
+// Style imports
 import style_teamList from './style_teamList'
 
-// jsx elements
+// Jsx elements
 import renderTeamListItem from './TeamListItem'
 
-// firebase
+// Firebase
 import { firebaseApp } from '../../../../config'
+
+// Enum
+import { status } from '../../enums/StatusEnum'
 
 
 
@@ -31,7 +34,7 @@ const TeamList = (): JSX.Element => {
     const db = firebaseApp.firestore()
     if(currentUser !== null) {
       const unsubscribe = db.collection('teams')
-      .where('addedUsersId', 'array-contains', currentUser.uid).onSnapshot((snapshot) => {
+      .where('members', 'array-contains', currentUser.uid).onSnapshot((snapshot) => {
         snapshot.docChanges().map((change) => {
           if (change.type == 'added') {
             console.info('added DATA: ', change.doc.data())
@@ -52,9 +55,9 @@ const TeamList = (): JSX.Element => {
 
   let content
 
-  if (teamStatus === 'loading') {
+  if (teamStatus === status.loading) {
     content = <Text>Loading...</Text>
-  } else if (teamStatus === 'succeeded') {
+  } else if (teamStatus === status.succeeded) {
     content = <View style={style_teamList.listContainer}>
       <StatusBar
         barStyle='dark-content'
@@ -64,11 +67,11 @@ const TeamList = (): JSX.Element => {
       />
       <FlatList
         data={teams}
-        renderItem={(item) => renderTeamListItem(item, navigation, dispatch)}
-        keyExtractor={(item, index) => index.toString()}
+        renderItem={(team) => renderTeamListItem(team, navigation, dispatch)}
+        keyExtractor={(team) => team.teamId}
       />
     </View>
-  } else if (teamStatus === 'failed') {
+  } else if (teamStatus === status.failed) {
     content = <View>{error}</View>
   }
 
