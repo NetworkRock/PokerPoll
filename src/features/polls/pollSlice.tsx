@@ -7,6 +7,7 @@ import { status } from '../../app/enums/StatusEnum'
 
 // Models
 import { Poll } from '../../app/models/Poll'
+import { Rating } from '../../app/models/Rating'
 import { Team } from '../../app/models/Team'
 import { RootState } from '../../app/store'
 
@@ -129,45 +130,26 @@ export const closePoll = createAsyncThunk('polls/closePoll', async (poll: Poll) 
  * Define a thunk function for rate a poll
  */
 
-export const ratePoll = createAsyncThunk('polls/ratePoll', async (poll: Object) => {
+export const ratePoll = createAsyncThunk('polls/ratePoll', async (rate: Rating) => {
   try {
     const db = firebase.firestore()
+    const ratingRef = await db.collection('rating')
+    const response = ratingRef.doc(rate.pollId)
+    const ratingsRef = response.collection('ratings').doc()
+    rate.rateId = ratingsRef.id
 
-    await db.collection('poll')
-      .doc(poll.pollWithRating.groupId)
-      .collection('polls')
-      .doc(poll.pollWithRating.id)
-      .set({ userRatings: firebase.firestore.FieldValue.arrayUnion({ user: poll.pollWithRating.user, rate: poll.pollWithRating.rating }) }, { merge: true })
+     // Really use set here ? Check that if update maybe is better maybe baby!
+    response.collection('rating').doc(ratingsRef.id).set(JSON.parse(JSON.stringify(rate)))
 
-
-    const dbPoll = await db.collection('poll')
-      .doc(poll.pollWithRating.groupId)
-      .collection('polls')
-      .doc(poll.pollWithRating.id).get()
-
-    let ratingsArray: Array<Object> = dbPoll.data().userRatings
-
-    let arrayWithoutPreviouseRates = ratingsArray.filter(data => (data.user !== poll.pollWithRating.user))
-
-    arrayWithoutPreviouseRates.push({ user: poll.pollWithRating.user, rate: poll.pollWithRating.rating })
-
-    await db.collection('poll')
-      .doc(poll.pollWithRating.groupId)
-      .collection('polls')
-      .doc(poll.pollWithRating.id)
-      .set({ userRatings: arrayWithoutPreviouseRates }, { merge: true })
-
-    const currentGroup = await db.collection('teams')
-      .doc(poll.pollWithRating.groupId).get()
-
-
-    if (currentGroup.data().addedUsersId.length === arrayWithoutPreviouseRates.length) {
+    /* MAybe baby in a other functions
+    if (rate.ratingMap.size) {
       await db.collection('poll')
-        .doc(poll.pollWithRating.groupId)
-        .collection('polls')
-        .doc(poll.pollWithRating.id)
+        .doc(ratingsRef.id)
+        .collection('ratings')
+        .doc(ratingsRef.id)
         .set({ pollFlag: POLL_FLAG_ENUM.VOTED }, { merge: true })
-    }
+    } 
+    */
 
   } catch (error) {
     console.error('Error by rating a poll: ', error)

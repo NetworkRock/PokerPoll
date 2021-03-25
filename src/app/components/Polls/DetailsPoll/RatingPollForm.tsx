@@ -1,33 +1,38 @@
-import React, { useState, useEffect, ReactComponentElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { View, Text, Dimensions, StyleSheet, Button } from 'react-native';
+
+// React specific
+import React, { useState, useEffect } from 'react'
+import { View, Text, Dimensions, StyleSheet } from 'react-native'
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
+
+// Redux
+import { selectUser } from '../../../../features/users/userSlice'
+import { selectCurrentPoll, ratePoll } from '../../../../features/polls/pollSlice'
+import { useAppDispatch, useAppSelector } from '../../../hooks'
+
+// Style
+import style_ratingContainer from './style_ratingContainer'
+
+// Enums
 import { RATING_SYSTEM_ENUM } from './RatingSystemEnum'
 
-import { selectCurrentPoll, ratePoll } from '../../../../features/polls/pollSlice';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import style_ratingContainer from './style_ratingContainer';
-import { selectCurrentUser } from '../../../../features/users/userSlice';
-
-
-/**
+/* IMPORTANT TO KNOW
 * undefined => button is shown for voting when click on safe without clicked on btn nothing is voted
 * 0 => when user clicks on the button and not manipulate scroll view default value is set on button click to 0
 * 1 - 13 => when user manipulate scroll view get value out of promise and set it to recentRateNumber
 */
 let recentRateNumber: any = undefined
 
-const RatingPollForm = () => {
+const RatingPollForm = (): JSX.Element => {
   const [voteBegan, setVoteBegan] = useState(false)
-  const poll = useSelector(selectCurrentPoll);
-  const currentUser = useSelector(selectCurrentUser)
-  const aref = React.useRef(null);
-  const dispatch = useDispatch();
-  let pollWithRating: Object
+  const poll = useAppSelector(selectCurrentPoll)
+  const currentUser = useAppSelector(selectUser)
+  const aref = React.useRef(null)
+  const dispatch = useAppDispatch()
 
 
   useEffect(() => {
     return () => {
-      pollWithRating = { ...poll, ...{ rating: recentRateNumber, user: currentUser.id } }
+      const pollWithRating = { ...poll, ...{ rating: recentRateNumber, user: currentUser?.uid } }
 
       if (pollWithRating.rating !== undefined) {
         dispatch(ratePoll({ pollWithRating }))
@@ -36,36 +41,36 @@ const RatingPollForm = () => {
     }
   }, [])
 
-  const swipeInfoString: String = "< swipe to vote >"
+  const swipeInfoString = '< swipe to vote >'
 
   const generalContent: JSX.Element = <View style={style_ratingContainer.container}>
     <View style={style_ratingContainer.header}>
-      <Text style={style_ratingContainer.pollTitle}>{poll.pollTitle}</Text>
+      <Text style={style_ratingContainer.pollTitle}>{poll?.title}</Text>
     </View>
     <View style={style_ratingContainer.pollDescriptionContainer}>
       <ScrollView 
       bounces={false} 
       contentContainerStyle={style_ratingContainer.pollContentInScrollView} 
       style={style_ratingContainer.verticaldescriptionScrollview}>
-        <Text style={style_ratingContainer.pollDescription}>{poll.pollDescription}</Text>
+        <Text style={style_ratingContainer.pollDescription}>{poll?.description}</Text>
       </ScrollView>
     </View>
   </View>
 
-  const fibonacciViewArray: Array<JSX.Element> = RATING_SYSTEM_ENUM.map((el) => (
-    <View key={el.name}
+  const fibonacciViewArray: Array<JSX.Element> = RATING_SYSTEM_ENUM.map((estimateObj) => (
+    <View key={estimateObj.name}
       style={{
         flex: 1,
         flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
-        //backgroundColor: el.color,
+        // CHECK OUT IF THATS COOL - backgroundColor: el.color,
         backgroundColor: 'white',
         width: Dimensions.get('window').width
       }}>
       <View style={globalStyles.voteCircle}>
-        <Text style={globalStyles.TextStyle}>{el.name}</Text>
+        <Text style={globalStyles.TextStyle}>{estimateObj.name}</Text>
       </View>
     </View>
   ))
@@ -81,7 +86,7 @@ const RatingPollForm = () => {
       bounces={false}
       pagingEnabled={true}
       onMomentumScrollEnd={e => {
-        let rateForThePoll = 0;
+        let rateForThePoll = 0
         return new Promise((resolve) => {
           if (Object.entries(e.nativeEvent).length !== 0) {
             const indexOfTheView = (e.nativeEvent.contentOffset.x) / e.nativeEvent.layoutMeasurement.width
@@ -90,7 +95,7 @@ const RatingPollForm = () => {
           }
         }).then((erg) => {
           recentRateNumber = erg
-        });
+        })
       }
       }
       scrollEventThrottle={16}
@@ -104,7 +109,7 @@ const RatingPollForm = () => {
         style={style_ratingContainer.startVotingBtn}
         onPress={() => {
           setVoteBegan(true)
-          recentRateNumber = 0;
+          recentRateNumber = 0
         }}>
         <Text style={style_ratingContainer.btnText}>Click and start voting</Text>
       </TouchableOpacity>
@@ -136,4 +141,4 @@ const globalStyles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold'
   }
-});
+})
