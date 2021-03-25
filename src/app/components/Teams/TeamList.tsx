@@ -37,15 +37,15 @@ const TeamList = (): JSX.Element => {
       .where('members', 'array-contains', currentUser.uid).onSnapshot((snapshot) => {
         snapshot.docChanges().map((change) => {
           if (change.type == 'added') {
-            console.info('added DATA: ', change.doc.data())
+            console.info('added TEAM DATA: ', change.doc.data())
             dispatch(addTeamToAllTeams(change.doc.data()))
           }
           if (change.type == 'modified', change.doc.data()) {
-            console.info('modified DATA: ', change.doc.data())
+            console.info('modified TEAM DATA: ', change.doc.data())
             dispatch(exchangeModifiedTeamToExistingTeam(change.doc.data()))
           }
           if (change.type == 'removed') {
-            console.info('removed DATA: ', change.doc.data())
+            console.info('removed TEAM DATA: ', change.doc.data())
           }
         })
       })

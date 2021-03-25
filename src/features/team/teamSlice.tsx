@@ -3,6 +3,7 @@ import { Team } from '../../app/models/Team'
 import { RootState } from '../../app/store'
 import { status } from '../../app/enums/StatusEnum'
 import firebase from 'firebase'
+import { ServerResponse } from 'node:http'
 
 const initialState = {
   teams: [] as Array<Team>,
@@ -18,44 +19,54 @@ export const teamSlice = createSlice({
   name: 'teams',
   initialState,
   reducers: {
-    addMemberToNewTeam(state, action: {payload: firebase.User, type: string}) {
+    addMemberToNewTeam(state, action: { payload: firebase.User, type: string }) {
       const found = state.createANewTeamWithNewMembers.members.find((user: firebase.User) => user.uid === action.payload.uid)
       if (!found) {
         state.createANewTeamWithNewMembers.members.push(action.payload)
       } else {
-        state.createANewTeamWithNewMembers.members = state.createANewTeamWithNewMembers.members.filter((exisitngUser: firebase.User) => 
-        exisitngUser.uid !== found.uid)
+        state.createANewTeamWithNewMembers.members = state.createANewTeamWithNewMembers.members.filter((exisitngUser: firebase.User) =>
+          exisitngUser.uid !== found.uid)
       }
     },
     addTeamTitle(state, action) {
       state.createANewTeamWithNewMembers.title = action.payload
     },
+    /**
+     * On Snapshot trigger redux functions
+     * @param state 
+     * @param action 
+     */
     addTeamToAllTeams(state, action) {
       const exisitngTeam = state.teams.find((team: Team) => team.teamId === action.payload.teamId)
       if (!exisitngTeam) {
         state.teams.push(action.payload)
       }
-      // Maybe the most important line of the whole program :D
       state.status = status.succeeded
     },
     exchangeModifiedTeamToExistingTeam(state, action) {
-      const { createdBy, teamTitle, addedUsersId, id } = action.payload
-      const exisitngTeam = state.teams.find((team) => team.teamId === id)
+      const payloadTeam: Team = action.payload
+      const exisitngTeam = state.teams.find((team) => team.teamId === payloadTeam.teamId)
       if (exisitngTeam) {
-        exisitngTeam.createdBy = createdBy
-        exisitngTeam.teamTitle = teamTitle
-        exisitngTeam.addedUsersId = addedUsersId
+        exisitngTeam.createdBy = payloadTeam.createdBy
+        exisitngTeam.displayName = payloadTeam.displayName
+        exisitngTeam.teamPictureURL = payloadTeam.teamPictureURL
+        exisitngTeam.members = payloadTeam.members
       }
+      state.status = status.succeeded
     },
+    /**
+     * Clear up the state
+     * @returns 
+     */
     clearUpTeamState() {
       return initialState
     }
   },
   extraReducers: builder => {
-    builder.addCase('teams/addNewTeam/pending', (state, action) => {
+    builder.addCase('teams/addNewTeam/pending', (state) => {
       state.status = status.loading
     })
-    builder.addCase('teams/addNewTeam/fulfilled', (state, action) => {
+    builder.addCase('teams/addNewTeam/fulfilled', (state) => {
       state.status = status.succeeded
     })
     builder.addCase('teams/addNewTeam/rejected', (state, action) => {
@@ -79,8 +90,8 @@ export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team: Team
     const dataResponse = await teamRef.doc(response.id).get()
 
     // Update the connected team members array for user
-    team.members.map(async (member: firebase.User) => {
-      await userRef.doc(member.uid).update({
+    team.members.map(async (memberId: string) => {
+      await userRef.doc(memberId).update({
         members: firebase.firestore.FieldValue.arrayUnion(response.id)
       })
     })
@@ -92,7 +103,8 @@ export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team: Team
     return dataResponse.data()
   } catch (error) {
     console.error('Error by creating a team: ', error)
-  }})
+  }
+})
 
 export const {
   addMemberToNewTeam,

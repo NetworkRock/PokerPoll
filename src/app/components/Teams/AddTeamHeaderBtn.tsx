@@ -39,11 +39,12 @@ const AddTeamHeaderBtn = (): JSX.Element => {
     if (canSave) {
       try {
         if (currentUser !== null) {
+          const memberIds: Array<string> = members.map((user) => user.uid)
           const team = new Team(
             '',
             teamTitle,
             '',
-            members,
+            memberIds,
             currentUser
           )
           const resultAction = await dispatch(
