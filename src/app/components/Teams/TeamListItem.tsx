@@ -6,7 +6,7 @@ import { TouchableHighlight, View, Text, ListRenderItemInfo } from 'react-native
 import style_teamList from './style_teamList'
 
 // Redux
-import { addCurrentSelectedGroup } from '../../../features/polls/pollSlice'
+import { addCurrentSelectedTeam } from '../../../features/polls/pollSlice'
 
 // Icons
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -19,7 +19,7 @@ import { AppDispatch } from '../../store'
 const renderTeamListItem = (team: ListRenderItemInfo<Team>, navigation, dispatch: AppDispatch): JSX.Element => {
   const onAddCurrentSelectedGroup = () => {
     try {
-      dispatch(addCurrentSelectedGroup(team.item.teamId))
+      dispatch(addCurrentSelectedTeam(team.item))
     } catch (error) {
       console.error(error)
     } finally {

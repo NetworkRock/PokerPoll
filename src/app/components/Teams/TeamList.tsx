@@ -4,7 +4,7 @@ import { Text, View, FlatList, StatusBar } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
 // Redux
-import { selectAllTeams, addTeamToAllTeams, exchangeModifiedTeamToExistingTeam } from '../../../features/team/teamSlice'
+import { selectAllTeams, teamAdded, exchangeModifiedTeamToExistingTeam } from '../../../features/team/teamSlice'
 import { selectUser } from '../../../features/users/userSlice'
 import { useAppSelector, useAppDispatch } from '../../../app/hooks'
 
@@ -38,7 +38,7 @@ const TeamList = (): JSX.Element => {
         snapshot.docChanges().map((change) => {
           if (change.type == 'added') {
             console.info('added TEAM DATA: ', change.doc.data())
-            dispatch(addTeamToAllTeams(change.doc.data()))
+            dispatch(teamAdded(change.doc.data()))
           }
           if (change.type == 'modified', change.doc.data()) {
             console.info('modified TEAM DATA: ', change.doc.data())

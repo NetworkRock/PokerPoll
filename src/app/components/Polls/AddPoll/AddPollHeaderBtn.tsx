@@ -1,42 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { View, Button } from 'react-native';
-import { unwrapResult } from '@reduxjs/toolkit'
+// React specific
+import React from 'react'
+import { View, Button } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+
+// Redux
+import { useAppDispatch, useAppSelector } from '../../../hooks'
+import { selectUser } from '../../../../features/users/userSlice'
 import { selectCurrentPollTitle,
   selectCurrentPollDescription,
-  selectCurrentGroup
+  selectCurrentTeam
  } from '../../../../features/polls/pollSlice'
-import { HEADER_BTN_TYPES } from '../../NavigationComponents/HeaderButtonEnum';
-import { addNewPoll } from '../../../../features/polls/pollSlice';
-import stlye_addPollForm from './stlye_addPollForm';
-import { selectCurrentUser } from '../../../../features/users/userSlice'
+import { addNewPoll } from '../../../../features/polls/pollSlice'
+import stlye_addPollForm from './stlye_addPollForm'
 
-const AddPollHeaderBtn = (props) => {
-  const currentUser = useSelector(selectCurrentUser)
-  const pollTitle = useSelector(selectCurrentPollTitle);
-  const pollDescription = useSelector(selectCurrentPollDescription);
-  const currentTeamId = useSelector(selectCurrentGroup)
-  const [addRequestStatus, setAddRequestStatus] = useState('idle')
+// Enum
+import { HEADER_BTN_TYPES } from '../../NavigationComponents/HeaderButtonEnum'
+import { POLL_FLAG_ENUM } from '../PollList/PollFlagEnum'
+
+// Models
+import { Poll } from '../../../models/Poll'
+
+
+
+const AddPollHeaderBtn = (): JSX.Element => {
+  const navigation = useNavigation()
+  const currentUser = useAppSelector(selectUser)
+  const title = useAppSelector(selectCurrentPollTitle)
+  const description = useAppSelector(selectCurrentPollDescription)
+  const currentTeam = useAppSelector(selectCurrentTeam)
 
 
   const canSave =
-    [pollTitle.trim().length, pollDescription.trim().length, currentTeamId].every(Boolean) && addRequestStatus === 'idle'
+    [title.trim().length, description.trim().length, currentTeam, currentUser].every(Boolean)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const onSavePollClicked = async () => {
-    if(canSave) {
+    if(canSave && currentUser !== null) {
       try {
-        setAddRequestStatus('pending')
-        const resultAction = await dispatch(
-          addNewPoll({pollTitle, pollDescription, currentTeamId, currentUser})
+        const poll = new Poll(
+          '',
+          currentTeam.teamId,
+          title,
+          description,
+          currentUser.uid,
+          POLL_FLAG_ENUM.OPEN
         )
-        unwrapResult(resultAction)
+        await dispatch(
+          addNewPoll(poll)
+        )
       } catch (error) {
         console.error('Failed to save the poll: ', error)
       } finally {
-        setAddRequestStatus('idle')
-        props.navigation.navigate('PollsForGroupStack')
+        navigation.navigate('PollsForGroupStack')
       }
     } 
   }

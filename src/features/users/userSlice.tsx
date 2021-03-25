@@ -8,10 +8,10 @@ const db = firebaseApp.firestore()
 
 const initialState = {
   user: null,
-  titleOfDisplayNameUserSearch: '',
+  titleOfDisplayNameUserSearch: '' as string,
   filteredUsersByDisplayUserName: [],
   status: status.idle,
-  error: ''
+  error: null
 }
 
 export const userSlice = createSlice({
@@ -71,24 +71,21 @@ export const logInUser = createAsyncThunk('user/logInUser', async (user: firebas
 })
 
 /**
- * Query a user in realtime to the given user id
+ * Get a list of users by list of user id's
  */
-/**
- * Define a thunk function create slice not support that
- */
-export const fetchUserListById = createAsyncThunk('user/fetchUsers', async (search) => {
-  let filteredUsersArray: Array<Object> = [];
+export const fetchUserListByUserIdList = createAsyncThunk('user/fetchUsers', async (members: Array<string>) => {
+  const filteredUsersArray: firebase.firestore.DocumentData = []
   try {
-    const snapshot = await db.collection('users').where('displayName', '==', search.searchTitle).get()
-    snapshot.forEach((user) => {
-      if(search.searchTitle !== search.currentUser.displayName) {
-        filteredUsersArray = filteredUsersArray.concat(user.data())
-      }
-    });
+    const snapshot = await db.collection('users').get()
+    snapshot.docs
+    .filter((user, index) => user.data().uid === members[index])
+    .map(user => {
+      filteredUsersArray.push(user.data())
+    })
+    return filteredUsersArray
   } catch (error) {
     console.error('Fetch user error: ', error)
   }
-  console.info('FILTERED USERS: ', filteredUsersArray)
   return filteredUsersArray
 })
 

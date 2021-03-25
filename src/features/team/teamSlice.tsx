@@ -3,12 +3,11 @@ import { Team } from '../../app/models/Team'
 import { RootState } from '../../app/store'
 import { status } from '../../app/enums/StatusEnum'
 import firebase from 'firebase'
-import { ServerResponse } from 'node:http'
 
 const initialState = {
   teams: [] as Array<Team>,
   createANewTeamWithNewMembers: {
-    title: '',
+    title: '' as string,
     members: [] as Array<firebase.User>,
   },
   status: status.idle,
@@ -36,7 +35,7 @@ export const teamSlice = createSlice({
      * @param state 
      * @param action 
      */
-    addTeamToAllTeams(state, action) {
+    teamAdded(state, action) {
       const exisitngTeam = state.teams.find((team: Team) => team.teamId === action.payload.teamId)
       if (!exisitngTeam) {
         state.teams.push(action.payload)
@@ -109,7 +108,7 @@ export const addNewTeam = createAsyncThunk('teams/addNewTeam', async (team: Team
 export const {
   addMemberToNewTeam,
   addTeamTitle,
-  addTeamToAllTeams,
+  teamAdded,
   exchangeModifiedTeamToExistingTeam,
   clearUpTeamState
 } = teamSlice.actions
