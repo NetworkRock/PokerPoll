@@ -26,7 +26,7 @@ const PollsList = (): JSX.Element => {
   const navigation = useNavigation()
   const dispatch = useAppDispatch()
   const currentTeamId = useAppSelector(selectCurrentTeam)
-  const allTeamsWhereCurrentUserIsMember = useAppSelector(selectAllTeams)
+  const teams = useAppSelector(selectAllTeams)
   const polls = useAppSelector((state) => selectAllOpenAndVotedPollsForOneTeam(state, currentTeamId))
   const pollStatus = useAppSelector(state => state.polls.status)
   const error = useAppSelector(state => state.polls.error)
@@ -73,8 +73,8 @@ const PollsList = (): JSX.Element => {
       />
       <FlatList
         data={polls}
-        renderItem={(poll) => renderPollListItem(poll, navigation, dispatch, allTeamsWhereCurrentUserIsMember)}
-        keyExtractor={(item, index) => index.toString()}
+        renderItem={(poll) => renderPollListItem(poll, navigation, dispatch, teams)}
+        keyExtractor={(poll) => poll.pollId}
       />
     </View>
   } else if (pollStatus === status.failed) {

@@ -5,6 +5,7 @@ export class Poll {
   description: string
   createdBy: string
   pollFlag: string
+  finalEstimationNumber: number
 
   constructor(
     pollId: string,
@@ -12,12 +13,14 @@ export class Poll {
     title: string,
     description: string,
     createdBy: string,
-    pollFlag: string) {
+    pollFlag: string,
+    finalEstimationNumber: number) {
       this.pollId = pollId
       this.teamId = teamId
       this.title = title
       this.description = description
       this.createdBy = createdBy
       this.pollFlag = pollFlag
+      this.finalEstimationNumber = finalEstimationNumber
   }
 }

@@ -31,12 +31,12 @@ const AddPollHeaderBtn = (): JSX.Element => {
 
 
   const canSave =
-    [title.trim().length, description.trim().length, currentTeam, currentUser].every(Boolean)
+    [title.trim().length, description.trim().length].every(Boolean)
 
   const dispatch = useAppDispatch()
 
   const onSavePollClicked = async () => {
-    if(canSave && currentUser !== null) {
+    if(canSave && currentUser && currentTeam) {
       try {
         const poll = new Poll(
           '',
@@ -44,7 +44,8 @@ const AddPollHeaderBtn = (): JSX.Element => {
           title,
           description,
           currentUser.uid,
-          POLL_FLAG_ENUM.OPEN
+          POLL_FLAG_ENUM.OPEN,
+          0
         )
         await dispatch(
           addNewPoll(poll)

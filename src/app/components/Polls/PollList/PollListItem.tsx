@@ -23,7 +23,12 @@ import { AppDispatch } from '../../../store'
 // Models
 import { Poll } from '../../../models/Poll'
 
-const renderPollListItem = (poll: ListRenderItemInfo<Poll>, navigation, dispatch: AppDispatch, allTeams): JSX.Element => {
+const renderPollListItem = (poll: ListRenderItemInfo<Poll>, navigation, dispatch: AppDispatch, teams: Array<Team>): JSX.Element => {
+
+  const alreadyVotedMembersNumber = 0
+  const inivitedMembersForTheTeamNumber = 0
+
+  /* OLD
 
   const alreadyVotedMembersNumber: Number = poll.userRatings.length
   let inivitedMembersForTheTeam: Array<Object> = []
@@ -31,7 +36,7 @@ const renderPollListItem = (poll: ListRenderItemInfo<Poll>, navigation, dispatch
 
   /**
    * Find the right group to find the invited members
-   */
+
   allTeams.map((el) => {
     if (poll.groupId === el.id) {
       inivitedMembersForTheTeamNumber = el.addedUsersId.length
@@ -39,11 +44,13 @@ const renderPollListItem = (poll: ListRenderItemInfo<Poll>, navigation, dispatch
     }
   })
 
+     */
+
 
   const onPollListItemClicked = async () => {
     try {
-      await dispatch(addCurrentSelectedPoll(poll))
-      if (poll.pollFlag === POLL_FLAG_ENUM.VOTED || poll.pollFlag === POLL_FLAG_ENUM.CLOSE) {
+      await dispatch(addCurrentSelectedPoll(poll.item))
+      if (poll.item.pollFlag === POLL_FLAG_ENUM.VOTED || poll.item.pollFlag === POLL_FLAG_ENUM.CLOSE) {
         const resultAction = await dispatch(fetchAllUsersBytheirRatings(poll.userRatings))
         unwrapResult(resultAction)
         navigation.navigate('PollsDetailStack', { screen: 'PollsDetailResultScreen', params: { users: resultAction.payload, poll: poll } })
@@ -55,28 +62,15 @@ const renderPollListItem = (poll: ListRenderItemInfo<Poll>, navigation, dispatch
     }
   }
 
-  let voteNumberIncreaseView: JSX.Element
-
-  // Check how to listen when to fire the animation
-  if (true) {
-    voteNumberIncreaseView =
-      <AnimatedShowVoteView>
-        <Text style={{ fontSize: 22, }}>{alreadyVotedMembersNumber}</Text>
-      </AnimatedShowVoteView>
-  } else {
-    voteNumberIncreaseView =
-      <Text style={{ fontSize: 22, }}>{alreadyVotedMembersNumber}</Text>
-  }
-
-
-
-
+  const voteNumberIncreaseView: JSX.Element =
+      <AnimatedShowVoteView><Text style={{ fontSize: 22, }}>{alreadyVotedMembersNumber}</Text></AnimatedShowVoteView>
+  
   const openPollListItemLayout: JSX.Element = <TouchableHighlight
-    key={poll.currentTeamId}
+    key={poll.item.pollId}
     onPress={onPollListItemClicked}>
     <View style={stylePollList.listItem}>
       <View style={stylePollList.listItemContainerWithoutImage}>
-        <Text numberOfLines={1} style={stylePollList.title}>{poll.pollTitle}</Text>
+        <Text numberOfLines={1} style={stylePollList.title}>{poll.item.title}</Text>
       </View>
       <View style={stylePollList.iconInListContainer}>
         <Text>{voteNumberIncreaseView} / {inivitedMembersForTheTeamNumber}
@@ -87,11 +81,11 @@ const renderPollListItem = (poll: ListRenderItemInfo<Poll>, navigation, dispatch
   </TouchableHighlight>
 
   const votedPollListItemLayout: JSX.Element = <TouchableHighlight
-    key={poll.currentTeamId}
+    key={poll.item.pollId}
     onPress={onPollListItemClicked}>
     <View style={stylePollList.listItem}>
       <View style={stylePollList.listItemContainerWithoutImage}>
-        <Text numberOfLines={1} style={stylePollList.title}>{poll.pollTitle}</Text>
+        <Text numberOfLines={1} style={stylePollList.title}>{poll.item.title}</Text>
       </View>
       <View style={stylePollList.iconInListContainer}>
         <Text>{alreadyVotedMembersNumber} / {inivitedMembersForTheTeamNumber}</Text>
@@ -102,14 +96,14 @@ const renderPollListItem = (poll: ListRenderItemInfo<Poll>, navigation, dispatch
 
 
   const closedPollListItemLayout: JSX.Element = <TouchableHighlight
-    key={poll.currentTeamId}
+    key={poll.item.pollId}
     onPress={onPollListItemClicked}>
     <View style={stylePollList.listItem}>
       <View style={stylePollList.listItemContainerWithoutImage}>
-        <Text numberOfLines={1} style={stylePollList.title}>{poll.pollTitle}</Text>
+        <Text numberOfLines={1} style={stylePollList.title}>{poll.item.title}</Text>
       </View>
       <View style={stylePollList.iconInListContainer}>
-        <Text style={{fontSize: 20}}>{poll.pollEstimation}</Text>
+        <Text style={{fontSize: 20}}>{poll.item.finalEstimationNumber}</Text>
       </View>
     </View>
   </TouchableHighlight>
@@ -117,11 +111,11 @@ const renderPollListItem = (poll: ListRenderItemInfo<Poll>, navigation, dispatch
 
 
 
-  if (poll.pollFlag === POLL_FLAG_ENUM.OPEN) {
+  if (poll.item.pollFlag === POLL_FLAG_ENUM.OPEN) {
     return (
       openPollListItemLayout
     )
-  } else if (poll.pollFlag === POLL_FLAG_ENUM.VOTED) {
+  } else if (poll.item.pollFlag === POLL_FLAG_ENUM.VOTED) {
     return (
       votedPollListItemLayout
     )
