@@ -15,6 +15,9 @@ import style_ratingContainer from './style_ratingContainer'
 // Enums
 import { RATING_SYSTEM_ENUM } from './RatingSystemEnum'
 
+// Models
+import { Rating } from '../../../models/Rating'
+
 /* IMPORTANT TO KNOW
 * undefined => button is shown for voting when click on safe without clicked on btn nothing is voted
 * 0 => when user clicks on the button and not manipulate scroll view default value is set on button click to 0
@@ -25,17 +28,17 @@ let recentRateNumber: any = undefined
 const RatingPollForm = (): JSX.Element => {
   const [voteBegan, setVoteBegan] = useState(false)
   const poll = useAppSelector(selectCurrentPoll)
-  const currentUser = useAppSelector(selectUser)
+  const user = useAppSelector(selectUser)
   const aref = React.useRef(null)
   const dispatch = useAppDispatch()
 
 
   useEffect(() => {
-    return () => {
-      const pollWithRating = { ...poll, ...{ rating: recentRateNumber, user: currentUser?.uid } }
-
-      if (pollWithRating.rating !== undefined) {
-        dispatch(ratePoll({ pollWithRating }))
+    return () => {        
+      // OLD CODE const pollWithRating = { ...poll, ...{ rating: recentRateNumber, user: user?.uid } }
+      if (recentRateNumber !== undefined) {
+        const rating = new Rating(user?.uid, poll?.pollId, recentRateNumber)
+        dispatch(ratePoll(rating))
         recentRateNumber = undefined
       }
     }

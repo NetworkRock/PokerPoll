@@ -119,7 +119,7 @@ export const closePoll = createAsyncThunk('polls/closePoll', async (poll: Poll) 
       .doc(poll.teamId)
       .collection('polls')
       .doc(poll.pollId)
-      .set({ pollFlag: POLL_FLAG_ENUM.CLOSE, pollEstimation: poll.estimation }, { merge: true })
+      .set({ pollFlag: POLL_FLAG_ENUM.CLOSE, pollEstimation: poll.finalEstimationNumber }, { merge: true })
   } catch (error) {
     console.error('Error by creating a poll: ', error)
   }
@@ -133,13 +133,11 @@ export const closePoll = createAsyncThunk('polls/closePoll', async (poll: Poll) 
 export const ratePoll = createAsyncThunk('polls/ratePoll', async (rate: Rating) => {
   try {
     const db = firebase.firestore()
-    const ratingRef = await db.collection('rating')
-    const response = ratingRef.doc(rate.pollId)
-    const ratingsRef = response.collection('ratings').doc()
-    rate.rateId = ratingsRef.id
-
-     // Really use set here ? Check that if update maybe is better maybe baby!
-    response.collection('rating').doc(ratingsRef.id).set(JSON.parse(JSON.stringify(rate)))
+    await db.collection('rating')
+    .doc(rate.pollId)
+    .collection('rating')
+    .doc(rate.userId)
+    .set(JSON.parse(JSON.stringify(rate)))
 
     /* MAybe baby in a other functions
     if (rate.ratingMap.size) {

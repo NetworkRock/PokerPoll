@@ -1,14 +1,13 @@
 export class Rating {
-  rateId: string
+  userId: string
   pollId: string
-  ratingMap: Map<string, number> 
-
+  rateNumber: number
   constructor(
-    rateId: string,
+    userId: string,
     pollId: string,
-    ratingMap: Map<string, number>) {
-      this.rateId = rateId
+    rateNumber: number) {
+      this.userId = userId
       this.pollId = pollId
-      this.ratingMap = ratingMap
+      this.rateNumber = rateNumber
   }
 }
