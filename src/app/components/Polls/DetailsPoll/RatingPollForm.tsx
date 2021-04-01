@@ -1,8 +1,8 @@
 
 // React specific
 import React, { useState, useEffect } from 'react'
-import { View, Text, Dimensions, StyleSheet } from 'react-native'
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
+import { View, Text, Button, Dimensions, StyleSheet } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
 
 // Redux
 import { selectUser } from '../../../../features/users/userSlice'
@@ -105,14 +105,15 @@ const RatingPollForm = (): JSX.Element => {
     </View>
 
   const startVoteBtn: JSX.Element =
-      <TouchableOpacity
-        style={style_ratingContainer.startVotingBtn}
+    <View style={style_ratingContainer.startVotingBtn}>
+      <Button
+        title='Click and vote!'
         onPress={() => {
           setVoteBegan(true)
           recentRateNumber = 0
         }}>
-        <Text style={style_ratingContainer.btnText}>Click and start voting</Text>
-      </TouchableOpacity>
+      </Button>
+      </View>
     return (
       <View style={style_ratingContainer.container}>
         {generalContent}

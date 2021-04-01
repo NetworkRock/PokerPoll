@@ -1,5 +1,4 @@
-import { StyleSheet } from 'react-native';
-import { color } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
   container: {
@@ -47,8 +46,8 @@ export default StyleSheet.create({
   },
   startVotingBtn: {
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#0099ff',
+    height: 100,
+    backgroundColor: 'lightgray'
   },
   btnText: {
     padding: 50,
@@ -61,4 +60,4 @@ export default StyleSheet.create({
   pollDescription: {
     fontSize: 18,
   },
-});
+})
