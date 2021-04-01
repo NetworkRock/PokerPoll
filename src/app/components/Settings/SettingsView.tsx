@@ -1,35 +1,43 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { View, Text, Button, Image } from 'react-native';
-import stlye_settings from "./stlye_settings";
-import { selectCurrentUser, clearUpUserState } from '../../../features/users/userSlice'
+// React specific
+import React from 'react'
+import { View, Text, Button, Image } from 'react-native'
+import { NavigationContainer, useNavigation } from '@react-navigation/native'
+
+// Redux
+import { selectUser, clearUpUserState } from '../../../features/users/userSlice'
 import { clearUpTeamState } from '../../../features/team/teamSlice'
 import { clearUpPollState } from '../../../features/polls/pollSlice'
+
+// Firebase
 import { firebaseApp } from '../../../../config'
 
-const SettingsView = (props) => {
-  const currentUser = useSelector(selectCurrentUser)
-  const dispatch = useDispatch()
+// Style
+import stlye_settings from './stlye_settings'
+import { useAppDispatch, useAppSelector } from '../../hooks'
+
+const SettingsView = (): JSX.Element => {
+  const currentUser = useAppSelector(selectUser)
+  const dispatch = useAppDispatch()
+  const navigation = useNavigation()
   const logout = async () => {
     try {
-      await dispatch(clearUpUserState())
       await dispatch(clearUpTeamState())
       await dispatch(clearUpPollState())
       await firebaseApp.auth().signOut().then(() => {
-        props.navigation.navigate('UserLogInStack')
-      });
+        navigation.navigate('UserLogInScreen')
+      })
     } catch (error) {
-      console.error("Failed to logout: ", error)
+      console.error('Failed to logout: ', error)
     }
 
   }
 
   return (
     <View style={stlye_settings.container}>
-      <Text style={stlye_settings.settings_title}>{currentUser.displayName}</Text>
-      <Image source={{ uri: currentUser.profilePictureURL }} style={stlye_settings.img} />
+      <Text style={stlye_settings.settings_title}>{currentUser?.displayName}</Text>
+      <Image source={{ uri: currentUser?.photoURL }} style={stlye_settings.img} />
       <View style={stlye_settings.logout_btn}>
-        <Button title="Logout" onPress={logout}></Button>
+        <Button title='Logout' onPress={logout}></Button>
       </View>
     </View>
   )

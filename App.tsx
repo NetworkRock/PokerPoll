@@ -283,7 +283,7 @@ const BottomTabBar = () => {
       <Tab.Screen
         name='Settings'
         component={SettingsScreen}
-        options={({ navigation }) => ({
+        options={() => ({
           title: 'Settings',
           tabBarIcon: ({ color, size }) => {
             // You can return any component that you like here!
@@ -396,10 +396,10 @@ const ClosedPollListScreen = () => {
 
 
 
-const SettingsScreen = ({ navigation }) => {
+const SettingsScreen = () => {
 
   return (
-    <SettingsView navigation={navigation} />
+    <SettingsView />
   )
 }
 

@@ -51,19 +51,20 @@ export const AddUserForm = (): JSX.Element => {
   }, [])
 
   const loginClicked = () => {
-    const loginPromise = auth.signInWithEmailAndPassword(email, password)
-    loginPromise.then(async (userCredential: firebase.auth.UserCredential) => {
-      try {
-        if (userCredential.user !== null && auth.currentUser) {
-          await dispatch(logInUser(userCredential.user))
-          alert('Login successfull')
-          navigation.navigate('RootModalStack', { screen: 'BottomTabBar' })
+
+      auth.signInWithEmailAndPassword(user?.email, password)
+      .then(async (userCredential: firebase.auth.UserCredential) => {
+        try {
+          if (userCredential.user !== null && auth.currentUser) {
+            await dispatch(logInUser(userCredential.user))
+            setPassword('')
+            navigation.navigate('RootModalStack', { screen: 'BottomTabBar' })
+          }
+        } catch (error) {
+          console.error('Error by login user: ', error)
         }
-      } catch (error) {
-        console.error('Error by login user: ', error)
-      }
-    })
-    .catch(error => alert(error.message))
+      })
+      .catch(error => alert(error.message))
   }
 
   const signUpClicked = () => {
