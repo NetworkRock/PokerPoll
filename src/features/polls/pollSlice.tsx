@@ -7,7 +7,6 @@ import { status } from '../../app/enums/StatusEnum'
 
 // Models
 import { Poll } from '../../app/models/Poll'
-import { Rating } from '../../app/models/Rating'
 import { Team } from '../../app/models/Team'
 import { RootState } from '../../app/store'
 
@@ -124,36 +123,6 @@ export const closePoll = createAsyncThunk('polls/closePoll', async (poll: Poll) 
     console.error('Error by creating a poll: ', error)
   }
 })
-
-
-/**
- * Define a thunk function for rate a poll
- */
-
-export const ratePoll = createAsyncThunk('polls/ratePoll', async (rate: Rating) => {
-  try {
-    const db = firebase.firestore()
-    await db.collection('rating')
-    .doc(rate.pollId)
-    .collection('rating')
-    .doc(rate.userId)
-    .set(JSON.parse(JSON.stringify(rate)))
-
-    /* MAybe baby in a other functions
-    if (rate.ratingMap.size) {
-      await db.collection('poll')
-        .doc(ratingsRef.id)
-        .collection('ratings')
-        .doc(ratingsRef.id)
-        .set({ pollFlag: POLL_FLAG_ENUM.VOTED }, { merge: true })
-    } 
-    */
-
-  } catch (error) {
-    console.error('Error by rating a poll: ', error)
-  }
-})
-
 
 
 export const {

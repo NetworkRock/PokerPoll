@@ -6,7 +6,8 @@ import { ScrollView } from 'react-native-gesture-handler'
 
 // Redux
 import { selectUser } from '../../../../features/users/userSlice'
-import { selectCurrentPoll, ratePoll } from '../../../../features/polls/pollSlice'
+import { selectCurrentPoll } from '../../../../features/polls/pollSlice'
+import { ratePoll } from '../../../../features/polls/rateSlice'
 import { useAppDispatch, useAppSelector } from '../../../hooks'
 
 // Style
@@ -88,15 +89,19 @@ const RatingPollForm = (): JSX.Element => {
       horizontal
       bounces={false}
       pagingEnabled={true}
-      onMomentumScrollEnd={e => {
+      onScroll={e => {
         let rateForThePoll = 0
+        console.log(e)
         return new Promise((resolve) => {
           if (Object.entries(e.nativeEvent).length !== 0) {
             const indexOfTheView = (e.nativeEvent.contentOffset.x) / e.nativeEvent.layoutMeasurement.width
-            rateForThePoll = RATING_SYSTEM_ENUM[indexOfTheView].name
-            resolve(rateForThePoll)
+            if (indexOfTheView % 1 === 0) {
+              rateForThePoll = RATING_SYSTEM_ENUM[indexOfTheView].name
+              resolve(rateForThePoll)
+            } 
           }
         }).then((erg) => {
+          console.log(erg)
           recentRateNumber = erg
         })
       }
