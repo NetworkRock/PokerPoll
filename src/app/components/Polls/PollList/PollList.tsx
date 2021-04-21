@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 
 // Redux
 import { selectAllOpenAndVotedPollsForOneTeam, pollAdded, exchangeModifiedPollToExistingPoll } from '../../../../features/polls/pollSlice'
+import { ratingAdded, exchangeModifiedRatingToExistingRating } from '../../../../features/polls/rateSlice'
 import { selectCurrentTeam } from '../../../../features/polls/pollSlice'
 import { selectAllTeams } from '../../../../features/team/teamSlice'
 
@@ -34,7 +35,8 @@ const PollsList = (): JSX.Element => {
   useEffect(() => {
     const db = firebaseApp.firestore()
     /**
-     * Listen when somebody creates a new poll
+     * Listen when something happends with a poll
+     * or a new one is created
      */
     if (currentTeamId !== null) {
       const unsubscribe = db.collection('poll')
@@ -57,6 +59,33 @@ const PollsList = (): JSX.Element => {
       })
     return unsubscribe
     }
+  }, [])
+
+  useEffect(() => {
+    const db = firebaseApp.firestore()
+    /**
+     * Listen when something happens with a rating
+     * or a new rating is fired
+     */
+      const unsubscribe = db.collection('rating')
+      .doc(currentTeamId?.teamId)
+      .collection('ratings')
+      .onSnapshot((snapshot) => {
+        snapshot.docChanges().map((change) => {
+          if (change.type == 'added') {
+            console.info('added rating DATA: ', change.doc.data())
+            dispatch(ratingAdded(change.doc.data()))
+          }
+          if (change.type == 'modified') {
+            console.info('modified rating DATA: ', change.doc.data())
+            dispatch(exchangeModifiedRatingToExistingRating(change.doc.data()))
+          }
+          if (change.type == 'removed') {
+            console.info('removed rating DATA: ', change.doc.data())
+          }
+        })
+      })
+    return unsubscribe
   }, [])
 
   let content

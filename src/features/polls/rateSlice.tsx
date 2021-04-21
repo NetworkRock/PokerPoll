@@ -73,7 +73,7 @@ export const ratingSlice = createSlice({
   try {
     const db = firebase.firestore()
     await db.collection('rating')
-    .doc(rate.pollId)
+    .doc(rate.teamId)
     .collection('ratings')
     .doc(rate.userId)
     .set(JSON.parse(JSON.stringify(rate)))

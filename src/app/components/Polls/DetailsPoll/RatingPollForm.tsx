@@ -6,7 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler'
 
 // Redux
 import { selectUser } from '../../../../features/users/userSlice'
-import { selectCurrentPoll } from '../../../../features/polls/pollSlice'
+import { selectCurrentPoll, selectCurrentTeam } from '../../../../features/polls/pollSlice'
 import { ratePoll } from '../../../../features/polls/rateSlice'
 import { useAppDispatch, useAppSelector } from '../../../hooks'
 
@@ -29,6 +29,7 @@ let recentRateNumber: any = undefined
 const RatingPollForm = (): JSX.Element => {
   const [voteBegan, setVoteBegan] = useState(false)
   const poll = useAppSelector(selectCurrentPoll)
+  const team = useAppSelector(selectCurrentTeam)
   const user = useAppSelector(selectUser)
   const aref = React.useRef(null)
   const dispatch = useAppDispatch()
@@ -38,7 +39,11 @@ const RatingPollForm = (): JSX.Element => {
     return () => {        
       // OLD CODE const pollWithRating = { ...poll, ...{ rating: recentRateNumber, user: user?.uid } }
       if (recentRateNumber !== undefined) {
-        const rating = new Rating(user?.uid, poll?.pollId, recentRateNumber)
+        const rating = new Rating(
+          user?.uid,
+          team?.teamId,
+          poll?.pollId,
+          recentRateNumber)
         dispatch(ratePoll(rating))
         recentRateNumber = undefined
       }
