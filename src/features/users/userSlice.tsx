@@ -26,6 +26,8 @@ export const userSlice = createSlice({
     }
   },
   extraReducers: builder => {
+
+    // SignUp
     builder.addCase('user/signUpUser/fulfilled', (state, action) => {
       state.user = action.payload
       state.status = status.succeeded
@@ -34,6 +36,19 @@ export const userSlice = createSlice({
       state.status = status.loading
     })
     builder.addCase('user/signUpUser/rejected', (state, action) => {
+      state.status = status.failed
+      state.error = action.error.message
+    })
+
+    // LogIn
+    builder.addCase('user/logInUser/fulfilled', (state, action) => {
+      state.user = action.payload
+      state.status = status.succeeded
+    })
+    builder.addCase('user/logInUser/pending', (state) => {
+      state.status = status.loading
+    })
+    builder.addCase('user/logInUser/rejected', (state, action) => {
       state.status = status.failed
       state.error = action.error.message
     })

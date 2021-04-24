@@ -24,7 +24,7 @@ export const AddUserForm = (): JSX.Element => {
   const storageRef = firebaseApp.storage().ref()
 
   // React hooks
-  const user: firebase.User | null = useAppSelector(selectUser)
+  // Maybe use that later functionality later -- const user: firebase.User | null = useAppSelector(selectUser)
   const dispatch = useAppDispatch()
   const navigation = useNavigation()
   const [profilePictureURL, setProfilePictureURL] = useState('')
@@ -32,6 +32,7 @@ export const AddUserForm = (): JSX.Element => {
   const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loginViewShown, setLoginViewShown] = useState(false)
 
   // Event listener
   const onDisplayName = (displayName: string) => setDisplayName(displayName)
@@ -52,7 +53,7 @@ export const AddUserForm = (): JSX.Element => {
 
   const loginClicked = () => {
 
-      auth.signInWithEmailAndPassword(user?.email, password)
+    auth.signInWithEmailAndPassword(email, password)
       .then(async (userCredential: firebase.auth.UserCredential) => {
         try {
           if (userCredential.user !== null && auth.currentUser) {
@@ -92,7 +93,8 @@ export const AddUserForm = (): JSX.Element => {
         .catch((error) => {
           alert(error.message)
         })
-    }}
+    }
+  }
 
 
   // Use fetch here to convert the b64 file to blob
@@ -146,13 +148,22 @@ export const AddUserForm = (): JSX.Element => {
       </TouchableOpacity>
     </View>
 
-  const passworBtn: JSX.Element = <TextInput
+  const passworField: JSX.Element = <TextInput
     secureTextEntry={true}
     placeholder="Type in your password"
     placeholderTextColor="#C8C8C8"
     value={password}
     onChangeText={onPassword}
     style={style_userLogIn.nickNameField}
+  />
+
+  const emailField: JSX = <TextInput
+    placeholder="Type your email"
+    placeholderTextColor="#C8C8C8"
+    value={email}
+    onChangeText={onEmail}
+    style={style_userLogIn.nickNameField}
+    maxLength={25}
   />
 
   const signUpView: JSX.Element = <View style={style_userLogIn.textInputContainer}>
@@ -164,15 +175,8 @@ export const AddUserForm = (): JSX.Element => {
       style={style_userLogIn.nickNameField}
       maxLength={25}
     />
-    <TextInput
-      placeholder="Type your email"
-      placeholderTextColor="#C8C8C8"
-      value={email}
-      onChangeText={onEmail}
-      style={style_userLogIn.nickNameField}
-      maxLength={25}
-    />
-    {passworBtn}
+    {emailField}
+    {passworField}
     <View style={style_userLogIn.btnContainer}>
       <Button
         title="Sign Up"
@@ -180,10 +184,18 @@ export const AddUserForm = (): JSX.Element => {
         disabled={!canSignUp}
       />
     </View>
+
+    <View style={style_userLogIn.btnContainer}>
+      <Button
+        title="Log In"
+        onPress={() => setLoginViewShown(true)}
+      />
+    </View>
   </View>
 
   const loginView: JSX.Element = <View style={style_userLogIn.textInputContainer}>
-    {passworBtn}
+    {emailField}
+    {passworField}
     <View style={style_userLogIn.btnContainer}>
       <Button
         title="Log In"
@@ -198,10 +210,8 @@ export const AddUserForm = (): JSX.Element => {
       {heading}
       {imageContainer}
       {
-        !user ? signUpView : loginView
+        !loginViewShown ? signUpView : loginView
       }
-
-
     </View>
   )
 }
