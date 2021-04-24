@@ -8,6 +8,7 @@ import { selectAllOpenAndVotedPollsForOneTeam, pollAdded, exchangeModifiedPollTo
 import { ratingAdded, exchangeModifiedRatingToExistingRating } from '../../../../features/polls/rateSlice'
 import { selectCurrentTeam } from '../../../../features/polls/pollSlice'
 import { selectAllTeams } from '../../../../features/team/teamSlice'
+import { selectUser } from '../../../../features/users/userSlice'
 
 // Components
 import renderPollListItem from './PollListItem'
@@ -19,6 +20,7 @@ import stylePollList from './style_pollList'
 import { firebaseApp } from '../../../../../config'
 import { useAppDispatch, useAppSelector } from '../../../hooks'
 import { status } from '../../../enums/StatusEnum'
+
 
 
 
@@ -67,9 +69,9 @@ const PollsList = (): JSX.Element => {
      * Listen when something happens with a rating
      * or a new rating is fired
      */
-      const unsubscribe = db.collection('rating')
+      const unsubscribe = db.collection('teams')
       .doc(currentTeamId?.teamId)
-      .collection('ratings')
+      .collection('userRatings')
       .onSnapshot((snapshot) => {
         snapshot.docChanges().map((change) => {
           if (change.type == 'added') {

@@ -40,6 +40,7 @@ const RatingPollForm = (): JSX.Element => {
       // OLD CODE const pollWithRating = { ...poll, ...{ rating: recentRateNumber, user: user?.uid } }
       if (recentRateNumber !== undefined) {
         const rating = new Rating(
+          '',
           user?.uid,
           team?.teamId,
           poll?.pollId,

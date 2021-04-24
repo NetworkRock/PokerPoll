@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import firebase from 'firebase'
+import firebase, { firestore } from 'firebase'
 
 // Enum
 import { status } from '../../app/enums/StatusEnum'
@@ -7,6 +7,8 @@ import { status } from '../../app/enums/StatusEnum'
 // Models
 import { Rating } from '../../app/models/Rating'
 import { RootState } from '../../app/store'
+
+
 
 const initialState = {
   ratings: [] as Array<Rating>,
@@ -24,19 +26,22 @@ export const ratingSlice = createSlice({
      * @param action 
      */
     ratingAdded(state, action) {
-      const existsAlready = state.ratings.find((rating: Rating) => rating.pollId === action.payload.pollId)
-      if (!existsAlready) {
-        state.ratings.push(action.payload)
+      const payloadRating: Rating = action.payload
+      const ratingExistsAlready = state.ratings.find((rate: Rating) => rate.rateId === payloadRating.rateId)
+      if (!ratingExistsAlready) {
+        state.ratings.push(payloadRating)
       }
       state.status = status.succeeded
     },
     exchangeModifiedRatingToExistingRating(state, action) {
       const payloadRating: Rating = action.payload
-      const exisitngRating = state.ratings.find((rating: Rating) => rating.pollId === payloadRating.pollId)
-      if (exisitngRating) {
-        exisitngRating.userId = payloadRating.userId
-        exisitngRating.pollId = payloadRating.pollId
-        exisitngRating.rateNumber = payloadRating.rateNumber
+      const existingRating = state.ratings.find((rate: Rating) => rate.rateId === payloadRating.rateId)
+      if (existingRating) {
+        existingRating.pollId = payloadRating.pollId
+        existingRating.rateId = payloadRating.rateId
+        existingRating.rateNumber = payloadRating.rateNumber
+        existingRating.teamId = payloadRating.teamId
+        existingRating.userId = payloadRating.userId
       }
       state.status = status.succeeded
     },
@@ -72,11 +77,12 @@ export const ratingSlice = createSlice({
  export const ratePoll = createAsyncThunk('polls/ratePoll', async (rate: Rating) => {
   try {
     const db = firebase.firestore()
-    await db.collection('rating')
+    rate.rateId = rate.pollId + rate.userId
+    await db.collection('teams')
     .doc(rate.teamId)
-    .collection('ratings')
-    .doc(rate.userId)
-    .set(JSON.parse(JSON.stringify(rate)))
+    .collection('userRatings')
+    .doc(rate.rateId)
+    .set(JSON.parse(JSON.stringify(rate)), {merge: true})
 
     /* MAybe baby in a other functions
     if (rate.ratingMap.size) {
