@@ -8,7 +8,6 @@ import { selectAllOpenAndVotedPollsForOneTeam, pollAdded, exchangeModifiedPollTo
 import { ratingAdded, exchangeModifiedRatingToExistingRating } from '../../../../features/polls/rateSlice'
 import { selectCurrentTeam } from '../../../../features/polls/pollSlice'
 import { selectAllTeams } from '../../../../features/team/teamSlice'
-import { selectUser } from '../../../../features/users/userSlice'
 
 // Components
 import renderPollListItem from './PollListItem'
@@ -28,9 +27,9 @@ import { status } from '../../../enums/StatusEnum'
 const PollsList = (): JSX.Element => {
   const navigation = useNavigation()
   const dispatch = useAppDispatch()
-  const currentTeamId = useAppSelector(selectCurrentTeam)
-  const teams = useAppSelector(selectAllTeams)
-  const polls = useAppSelector((state) => selectAllOpenAndVotedPollsForOneTeam(state, currentTeamId))
+  const rootState = useAppSelector((state) => state)
+  const currentTeam = useAppSelector(selectCurrentTeam)
+  const polls = useAppSelector((state) => selectAllOpenAndVotedPollsForOneTeam(state, currentTeam))
   const pollStatus = useAppSelector(state => state.polls.status)
   const error = useAppSelector(state => state.polls.error)
 
@@ -40,9 +39,9 @@ const PollsList = (): JSX.Element => {
      * Listen when something happends with a poll
      * or a new one is created
      */
-    if (currentTeamId !== null) {
+    if (currentTeam !== null) {
       const unsubscribe = db.collection('poll')
-      .doc(currentTeamId.teamId)
+      .doc(currentTeam?.teamId)
       .collection('polls')
       .onSnapshot((snapshot) => {
         snapshot.docChanges().map((change) => {
@@ -70,7 +69,7 @@ const PollsList = (): JSX.Element => {
      * or a new rating is fired
      */
       const unsubscribe = db.collection('teams')
-      .doc(currentTeamId?.teamId)
+      .doc(currentTeam?.teamId)
       .collection('userRatings')
       .onSnapshot((snapshot) => {
         snapshot.docChanges().map((change) => {
@@ -104,7 +103,7 @@ const PollsList = (): JSX.Element => {
       />
       <FlatList
         data={polls}
-        renderItem={(poll) => renderPollListItem(poll, navigation, dispatch, teams)}
+        renderItem={(poll) => renderPollListItem(poll, navigation, dispatch, rootState, currentTeam)}
         keyExtractor={(poll) => poll.pollId}
       />
     </View>

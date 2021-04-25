@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import firebase, { firestore } from 'firebase'
+import firebase from 'firebase'
 
 // Enum
 import { status } from '../../app/enums/StatusEnum'
+import { Poll } from '../../app/models/Poll'
 
 // Models
 import { Rating } from '../../app/models/Rating'
-import { RootState } from '../../app/store'
 
 
 
@@ -105,6 +105,9 @@ export const {
   exchangeModifiedRatingToExistingRating,
   clearUpRatingState
 } = ratingSlice.actions
+
+export const selectAllUserRatingsForOnePoll = (state: RootState, poll: Poll | null): Array<Rating> => 
+  state.ratings.ratings.filter((rate: Rating) => rate.pollId === poll?.pollId)
 
 
 export default ratingSlice.reducer

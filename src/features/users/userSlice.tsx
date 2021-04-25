@@ -3,6 +3,7 @@ import { firebaseApp } from '../../../config'
 import { RootState } from '../../app/store'
 import { status } from '../../app/enums/StatusEnum'
 import firebase from 'firebase'
+import { Rating } from '../../app/models/Rating'
 
 const db = firebaseApp.firestore()
 
@@ -105,12 +106,12 @@ export const fetchUserListByUserIdList = createAsyncThunk('user/fetchUsers', asy
 })
 
 
-export const fetchAllUsersBytheirRatings = createAsyncThunk('user/fetchUsers', async (userRatings) => {
-  let filteredUsersArray: Array<Object> = [];
+export const fetchAllUsersBytheirRatings = createAsyncThunk('user/fetchUsers', async (userRatings: Array<Rating>) => {
+  let filteredUsersArray: Array<firebase.User> = []
   try {
     
     for(let i = 0; i < userRatings.length; i++) {
-        const snapshot = await db.collection('users').doc(userRatings[i].user).get()
+        const snapshot = await db.collection('users').doc(userRatings[i].userId).get()
         filteredUsersArray = filteredUsersArray.concat(snapshot.data())
     }
   } catch (error) {
