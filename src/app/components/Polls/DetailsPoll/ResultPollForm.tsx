@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { View, Text, Image } from 'react-native';
+import React from 'react'
+import { useSelector } from 'react-redux'
+import { View, Text, Image } from 'react-native'
 import style_detailsPollForm from './style_detailsPollForm'
 import { RATING_SYSTEM_ENUM } from './RatingSystemEnum'
 import {
   PieChart,
-} from "react-native-chart-kit";
-import { ScrollView, TextInput } from 'react-native-gesture-handler';
-import { selectCurrentUser } from '../../../../features/users/userSlice'
-import DetailPollCloseAdminView from './DetailPollCloseAdminView';
-import { POLL_FLAG_ENUM } from '../PollList/PollFlagEnum';
+} from 'react-native-chart-kit'
+import { ScrollView } from 'react-native-gesture-handler'
+import { selectUser } from '../../../../features/users/userSlice'
+import DetailPollCloseAdminView from './DetailPollCloseAdminView'
+import { POLL_FLAG_ENUM } from '../PollList/PollFlagEnum'
 
-const ResultPollForm = (props) => {
-  const currentUser = useSelector(selectCurrentUser)
+const ResultPollForm = (props): JSX.Element => {
+  const currentUser = useSelector(selectUser)
 
   const userWhoAlreadyRateDetails = props.route.params.users
   let userRatings = props.route.params.poll.userRatings
   let poll = props.route.params
-  let adminView: boolean = false;
+  let adminView: boolean = false
   let imageArray
 
   if(poll.poll.createdBy === currentUser.id) {
@@ -41,24 +41,24 @@ const ResultPollForm = (props) => {
 
 
   const chartConfig = {
-    backgroundGradientFrom: "#1E2923",
+    backgroundGradientFrom: '#1E2923',
     backgroundGradientFromOpacity: 0,
-    backgroundGradientTo: "#08130D",
+    backgroundGradientTo: '#08130D',
     backgroundGradientToOpacity: 0.5,
     color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
     strokeWidth: 2, // optional, default 3
     barPercentage: 0.5,
     useShadowColorFromDataset: false // optional
-  };
+  }
 
-  const resultArray: Array<Object> = [];
+  const resultArray: Array<Object> = []
 
 
   RATING_SYSTEM_ENUM.map((el) => {
     let counter = 0
     let data
     let fibunatiConfig = {
-      name: "times " + el.name, legendFontColor: el.legendFontColor,
+      name: 'times ' + el.name, legendFontColor: el.legendFontColor,
       color: el.color, legendFontSize: 16
     }
 
@@ -68,7 +68,7 @@ const ResultPollForm = (props) => {
       }
     }
     data = { ...fibunatiConfig, ...{ rating: counter } }
-    resultArray.push(data);
+    resultArray.push(data)
 
   })
 
@@ -91,9 +91,9 @@ const ResultPollForm = (props) => {
           width={350}
           height={200}
           chartConfig={chartConfig}
-          accessor={"rating"}
-          backgroundColor={"transparent"}
-          paddingLeft={"40"}
+          accessor={'rating'}
+          backgroundColor={'transparent'}
+          paddingLeft={'40'}
           center={[0, 0]}
           absolute
         />
